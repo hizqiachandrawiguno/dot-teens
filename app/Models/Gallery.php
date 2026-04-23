@@ -12,6 +12,7 @@ class Gallery extends Model
     // Tambahkan baris ini agar sistem mengizinkan penyimpanan
     protected $fillable = [
         'title',
-        'image'
+        'image',
+        'drive_link',
     ];
 }

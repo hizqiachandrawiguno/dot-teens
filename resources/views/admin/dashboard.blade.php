@@ -217,6 +217,74 @@
             </div>
         @endif
 
+        @if($user->role == 'super_admin' || $user->role == 'div_sosmed')
+            <div class="col-12 mb-4">
+                <h4 class="fw-bold text-pink mb-4" style="color:#EC4899;" data-aos="fade-right"><i class="fa-solid fa-camera-retro me-2 icon-float"></i> Panel Divisi Sosial Media</h4>
+                
+                <div class="row g-4">
+                    <div class="col-lg-4" data-aos="fade-up" data-aos-delay="100">
+                        <div class="glass-card h-100">
+                            <h6 class="mb-4 text-white fw-bold">Upload Momen Keren 📸</h6>
+                            <form action="/admin/gallery/add" method="POST" enctype="multipart/form-data">
+                                @csrf
+                                <div class="mb-3">
+                                    <label class="small text-secondary fw-semibold mb-1">Judul Kegiatan</label>
+                                    <input type="text" name="title" class="form-control px-3 py-2" placeholder="Cth: Easter Vibe 2026" required>
+                                </div>
+                                <div class="mb-3">
+                                <label class="small text-secondary fw-semibold mb-1">Pilih Foto (Maks 2MB)</label>
+                                    <input type="file" name="image" class="form-control px-3 py-2" accept="image/*" required>
+                                </div>
+
+                                <div class="mb-4">
+                                    <label class="small text-secondary fw-semibold mb-1">Link Google Drive (Opsional)</label>
+                                    <input type="url" name="drive_link" class="form-control px-3 py-2" placeholder="https://drive.google.com/...">
+                                </div>
+
+                                <button type="submit" class="btn text-white w-100 rounded-pill fw-bold py-2 shadow-lg" style="background: linear-gradient(90deg, #EC4899, #8B5CF6); border:none;">
+                                    <i class="fa-solid fa-cloud-arrow-up me-2"></i>Upload Foto
+                                </button>
+                            </form>
+                        </div>
+                    </div>
+
+                    <div class="col-lg-8" data-aos="fade-up" data-aos-delay="200">
+                        <div class="glass-card h-100">
+                            <div class="d-flex justify-content-between align-items-center mb-4">
+                                <h6 class="mb-0 text-white fw-bold">Kelola Foto Galeri</h6>
+                                <span class="badge rounded-pill bg-pink text-white px-3 py-2" style="background-color: #EC4899;">{{ $galleries->count() }} Foto</span>
+                            </div>
+                            
+                            <div class="table-responsive" style="max-height: 350px; overflow-y: auto;">
+                                <table class="table table-custom align-middle">
+                                    <thead><tr><th>Preview</th><th>Judul Kegiatan</th><th>Tanggal Upload</th><th>Aksi</th></tr></thead>
+                                    <tbody>
+                                        @forelse($galleries as $gal)
+                                        <tr>
+                                            <td>
+                                                <img src="{{ asset('uploads/gallery/' . $gal->image) }}" alt="Preview" class="shadow-sm" style="width: 70px; height: 70px; object-fit: cover; border-radius: 12px; border: 2px solid rgba(255,255,255,0.1);">
+                                            </td>
+                                            <td class="fw-bold text-white">{{ $gal->title }}</td>
+                                            <td class="text-secondary small"><i class="fa-regular fa-calendar me-1"></i> {{ date('d M Y', strtotime($gal->created_at)) }}</td>
+                                            <td>
+                                                <form action="/admin/gallery/delete/{{ $gal->id }}" method="POST">
+                                                    @csrf
+                                                    <button class="btn btn-sm btn-outline-danger rounded-pill px-4 fw-bold" onclick="return confirm('Yakin mau hapus foto keren ini?')"><i class="fa-solid fa-trash me-1"></i> Hapus</button>
+                                                </form>
+                                            </td>
+                                        </tr>
+                                        @empty
+                                        <tr><td colspan="4" class="text-center py-5 text-secondary">Belum ada foto nih. Yuk penuhi galeri dengan keseruan DOT! 🎉</td></tr>
+                                        @endforelse
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            @endif
+
         <div class="row">
             @if($user->role == 'super_admin' || $user->role == 'div_cell')
             <div class="col-12 mb-5">
@@ -307,68 +375,6 @@
                                 @endforelse
                             </tbody>
                         </table>
-                    </div>
-                </div>
-            </div>
-            @endif
-
-            @if($user->role == 'super_admin' || $user->role == 'div_sosmed')
-            <div class="col-12 mb-4">
-                <h4 class="fw-bold text-pink mb-4" style="color:#EC4899;" data-aos="fade-right"><i class="fa-solid fa-camera-retro me-2 icon-float"></i> Panel Divisi Sosial Media</h4>
-                
-                <div class="row g-4">
-                    <div class="col-lg-4" data-aos="fade-up" data-aos-delay="100">
-                        <div class="glass-card h-100">
-                            <h6 class="mb-4 text-white fw-bold">Upload Momen Keren 📸</h6>
-                            <form action="/admin/gallery/add" method="POST" enctype="multipart/form-data">
-                                @csrf
-                                <div class="mb-3">
-                                    <label class="small text-secondary fw-semibold mb-1">Judul Kegiatan</label>
-                                    <input type="text" name="title" class="form-control px-3 py-2" placeholder="Cth: Easter Vibe 2026" required>
-                                </div>
-                                <div class="mb-4">
-                                    <label class="small text-secondary fw-semibold mb-1">Pilih Foto (Maks 2MB)</label>
-                                    <input type="file" name="image" class="form-control px-3 py-2" accept="image/*" required>
-                                </div>
-                                <button type="submit" class="btn text-white w-100 rounded-pill fw-bold py-2 shadow-lg" style="background: linear-gradient(90deg, #EC4899, #8B5CF6); border:none;">
-                                    <i class="fa-solid fa-cloud-arrow-up me-2"></i>Upload Foto
-                                </button>
-                            </form>
-                        </div>
-                    </div>
-
-                    <div class="col-lg-8" data-aos="fade-up" data-aos-delay="200">
-                        <div class="glass-card h-100">
-                            <div class="d-flex justify-content-between align-items-center mb-4">
-                                <h6 class="mb-0 text-white fw-bold">Kelola Foto Galeri</h6>
-                                <span class="badge rounded-pill bg-pink text-white px-3 py-2" style="background-color: #EC4899;">{{ $galleries->count() }} Foto</span>
-                            </div>
-                            
-                            <div class="table-responsive" style="max-height: 350px; overflow-y: auto;">
-                                <table class="table table-custom align-middle">
-                                    <thead><tr><th>Preview</th><th>Judul Kegiatan</th><th>Tanggal Upload</th><th>Aksi</th></tr></thead>
-                                    <tbody>
-                                        @forelse($galleries as $gal)
-                                        <tr>
-                                            <td>
-                                                <img src="{{ asset('uploads/gallery/' . $gal->image) }}" alt="Preview" class="shadow-sm" style="width: 70px; height: 70px; object-fit: cover; border-radius: 12px; border: 2px solid rgba(255,255,255,0.1);">
-                                            </td>
-                                            <td class="fw-bold text-white">{{ $gal->title }}</td>
-                                            <td class="text-secondary small"><i class="fa-regular fa-calendar me-1"></i> {{ date('d M Y', strtotime($gal->created_at)) }}</td>
-                                            <td>
-                                                <form action="/admin/gallery/delete/{{ $gal->id }}" method="POST">
-                                                    @csrf
-                                                    <button class="btn btn-sm btn-outline-danger rounded-pill px-4 fw-bold" onclick="return confirm('Yakin mau hapus foto keren ini?')"><i class="fa-solid fa-trash me-1"></i> Hapus</button>
-                                                </form>
-                                            </td>
-                                        </tr>
-                                        @empty
-                                        <tr><td colspan="4" class="text-center py-5 text-secondary">Belum ada foto nih. Yuk penuhi galeri dengan keseruan DOT! 🎉</td></tr>
-                                        @endforelse
-                                    </tbody>
-                                </table>
-                            </div>
-                        </div>
                     </div>
                 </div>
             </div>

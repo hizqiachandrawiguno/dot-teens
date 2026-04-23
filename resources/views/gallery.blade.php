@@ -53,7 +53,7 @@
             border-radius: 50%; 
             filter: blur(80px); 
             z-index: -1;
-            opacity: 0.5; /* Agak disamarkan biar teks tetap terbaca */
+            opacity: 0.5;
             animation: float 10s infinite ease-in-out alternate;
         }
         
@@ -146,14 +146,23 @@
             </div>
 
             <div class="modal fade" id="previewModal{{ $gal->id }}" tabindex="-1" aria-hidden="true">
-                <div class="modal-dialog modal-dialog-centered modal-xl"> <div class="modal-content bg-transparent border-0">
+                <div class="modal-dialog modal-dialog-centered modal-xl"> 
+                    <div class="modal-content bg-transparent border-0">
                         <div class="modal-header border-0 pb-0 justify-content-end">
                             <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close" style="filter: drop-shadow(0 0 5px rgba(0,0,0,0.8));"></button>
                         </div>
                         <div class="modal-body text-center p-0">
                             <img src="{{ $imageSource }}" class="img-fluid rounded" alt="{{ $gal->title }}" style="max-height: 85vh; object-fit: contain; box-shadow: 0 10px 40px rgba(0,0,0,0.5);">
+                            
                             <h4 class="text-white mt-4 fw-bold mb-1">{{ $gal->title }}</h4>
-                            <p class="text-secondary">{{ date('d F Y', strtotime($gal->created_at)) }}</p>
+                            <p class="text-secondary mb-3">{{ date('d F Y', strtotime($gal->created_at)) }}</p>
+
+                            @if(!empty($gal->drive_link))
+                                <a href="{{ $gal->drive_link }}" target="_blank" class="btn btn-outline-info rounded-pill px-4 py-2 mb-4">
+                                    <i class="fa-brands fa-google-drive me-2"></i> Lihat & Download Full Album
+                                </a>
+                            @endif
+
                         </div>
                     </div>
                 </div>

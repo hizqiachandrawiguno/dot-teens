@@ -75,6 +75,7 @@ class AdminController extends Controller
         $request->validate([
             'title' => 'required',
             'image' => 'required|image|mimes:jpeg,png,jpg,webp|max:2048',
+            'drive_link' => 'nullable|url', // [BARU] Pastikan yang diinput benar-benar link URL, tapi boleh dikosongkan (nullable)
         ]);
 
         $imageName = time().'.'.$request->image->extension();  
@@ -82,10 +83,11 @@ class AdminController extends Controller
 
         Gallery::create([
             'title' => $request->title,
-            'image' => $imageName
+            'image' => $imageName,
+            'drive_link' => $request->drive_link, // [BARU] Menangkap link G-Drive dari form dan menyimpannya
         ]);
 
-        return back()->with('success', 'Foto berhasil diunggah ke Galeri!');
+        return back()->with('success', 'Foto dan Link Google Drive berhasil diunggah!');
     }
 
     // --- FUNGSI DIVISI SOSMED: HAPUS FOTO ---
