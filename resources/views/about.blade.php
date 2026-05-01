@@ -5,6 +5,16 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>About Us - DOT GBI Sawangan</title>
 
+    <meta name="description" content="Website resmi DOT (Department of Teens) Sawangan. Temukan jadwal ibadah, info komunitas cell, galeri kegiatan, dan mari bertumbuh bersama komunitas youth kami!">
+    <meta name="keywords" content="DOT Sawangan, Youth Sawangan, Pemuda Kristen Sawangan, Ibadah Youth Sawangan, Gereja Sawangan, Komunitas Pemuda, Cell DOT">
+    <meta name="author" content="DOT Sawangan">
+
+    <meta property="og:type" content="website">
+    <meta property="og:url" content="https://dotsawangan.com/">
+    <meta property="og:title" content="DOT Sawangan - Teens & Youth Community">
+    <meta property="og:description" content="Website resmi DOT Sawangan. Temukan jadwal ibadah dan bergabunglah dengan komunitas kami!">
+    <meta property="og:image" content="{{ asset('images/logo.png') }}">
+
     <link rel="icon" href="{{ asset('images/logo.png') }}" type="image/png">
     <link rel="shortcut icon" href="{{ asset('images/logo.png') }}" type="image/png">
 
@@ -200,7 +210,7 @@
         <div class="row justify-content-center g-4">
             <div class="col-md-6 col-lg-3" data-aos="fade-up" data-aos-delay="100">
                 <div class="glass-card text-center h-100 p-4">
-                    <div class="profile-img-container"><img src="https://ui-avatars.com/api/?name=Hizqia&background=111827&color=60A5FA&size=200&bold=true" alt="Hizqia" class="profile-img"></div>
+                    <div class="profile-img-container"><img src="images/hizqia.jpg" alt="Hizqia" class="profile-img"></div>
                     <h4 class="fw-bold text-white mb-1">Ka Hizqia</h4>
                     <p class="small text-info mb-0 fw-bold"><i class="fa-solid fa-crown me-1"></i> Ketua Dept</p>
                 </div>

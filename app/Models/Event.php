@@ -9,12 +9,12 @@ class Event extends Model
 {
     use HasFactory;
 
-    // Tambahkan baris ini untuk membuka gembok keamanan Laravel
     protected $fillable = [
-        'title',
-        'event_date',
-        'event_time',
-        'location',
-        'image'
+    'title', 
+    'description', 
+    'event_date', 
+    'event_waktu',
+    'location', 
+    'image'
     ];
 }

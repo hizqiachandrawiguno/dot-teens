@@ -8,6 +8,7 @@ use App\Models\Event;
 use App\Models\Gallery;
 use App\Models\User;
 use App\Models\CellSchedule;
+use App\Models\ActivityLog; // [BARU] Import Model CCTV
 
 class AdminController extends Controller
 {
@@ -17,7 +18,6 @@ class AdminController extends Controller
 
         // 1. CEK BERDASARKAN "ROLE" ASLI DI DATABASE
         if ($user->role == 'div_pastoral') {
-            // Langsung otomatis arahkan ke Ruang Pastoral
             return redirect('/admin/pastoral');
         }
 
@@ -33,6 +33,9 @@ class AdminController extends Controller
             'pending_users' => User::where('status', 'pending')->get()
         ];
 
+        // [BARU] AMBIL DATA CCTV UNTUK SUPER ADMIN (50 Aktivitas Terbaru)
+        $cctv_logs = ActivityLog::latest()->take(50)->get();
+
         // CEK BERDASARKAN "ROLE" ASLI DI DATABASE
         if ($user->role == 'div_pastoral') {
             return redirect('/admin/pastoral');
@@ -43,7 +46,8 @@ class AdminController extends Controller
             return redirect('/admin/prayer');
         }
         
-        return view('admin.dashboard', compact('user', 'stats', 'cellSchedules', 'members', 'galleries'));
+        // [BARU] Tambahkan $cctv_logs ke dalam compact
+        return view('admin.dashboard', compact('user', 'stats', 'cellSchedules', 'members', 'galleries', 'cctv_logs'));
     }
 
     // --- FUNGSI SUPER ADMIN: APPROVE / REJECT AKUN ---
@@ -57,6 +61,29 @@ class AdminController extends Controller
     public function rejectUser($id) {
         User::findOrFail($id)->delete(); // Langsung hapus akun yang ditolak
         return back()->with('success', 'Akun berhasil ditolak dan dihapus!');
+    }
+
+    // --- FUNGSI SUPER ADMIN: HAPUS AKUN PENGURUS ---
+    public function destroyUser($id)
+    {
+        $targetUser = User::findOrFail($id);
+        
+        // Proteksi tambahan: Pastikan tidak menghapus diri sendiri
+        if (auth()->id() == $targetUser->id) {
+            return back()->with('error', 'Anda tidak bisa menghapus akun Anda sendiri!');
+        }
+
+        // 🎥 CCTV REKAM JEJAK
+        ActivityLog::create([
+            'user_name' => auth()->user()->name,
+            'role' => auth()->user()->role,
+            'action' => 'HAPUS AKUN',
+            'description' => auth()->user()->name . ' mencabut akses akun pengurus bernama: ' . $targetUser->name
+        ]);
+
+        $targetUser->delete();
+
+        return back()->with('success', 'Akses akun pengurus berhasil dicabut!');
     }
 
     // --- FUNGSI DIVISI CELL: UPDATE STATUS JEMAAT ---
@@ -75,7 +102,7 @@ class AdminController extends Controller
         $request->validate([
             'title' => 'required',
             'image' => 'required|image|mimes:jpeg,png,jpg,webp|max:2048',
-            'drive_link' => 'nullable|url', // [BARU] Pastikan yang diinput benar-benar link URL, tapi boleh dikosongkan (nullable)
+            'drive_link' => 'nullable|url', 
         ]);
 
         $imageName = time().'.'.$request->image->extension();  
@@ -84,7 +111,7 @@ class AdminController extends Controller
         Gallery::create([
             'title' => $request->title,
             'image' => $imageName,
-            'drive_link' => $request->drive_link, // [BARU] Menangkap link G-Drive dari form dan menyimpannya
+            'drive_link' => $request->drive_link, 
         ]);
 
         return back()->with('success', 'Foto dan Link Google Drive berhasil diunggah!');
@@ -94,12 +121,21 @@ class AdminController extends Controller
     public function deleteGallery($id)
     {
         $gallery = Gallery::findOrFail($id);
+        $title = $gallery->title;
         
         // Hapus file fisik dari dalam folder (jika ada)
         $imagePath = public_path('uploads/gallery/' . $gallery->image);
         if (file_exists($imagePath)) {
             unlink($imagePath);
         }
+
+        // 🎥 CCTV REKAM JEJAK
+        ActivityLog::create([
+            'user_name' => auth()->user()->name,
+            'role' => auth()->user()->role,
+            'action' => 'HAPUS FOTO',
+            'description' => auth()->user()->name . ' menghapus foto dari galeri berjudul: ' . $title
+        ]);
 
         // Hapus data dari database
         $gallery->delete();
@@ -149,7 +185,18 @@ class AdminController extends Controller
     // --- FUNGSI HAPUS ACARA ---
     public function deleteEvent($id)
     {
-        Event::findOrFail($id)->delete();
+        $event = Event::findOrFail($id);
+        $title = $event->title;
+
+        // 🎥 CCTV REKAM JEJAK
+        ActivityLog::create([
+            'user_name' => auth()->user()->name,
+            'role' => auth()->user()->role,
+            'action' => 'HAPUS ACARA',
+            'description' => auth()->user()->name . ' menghapus jadwal acara: ' . $title
+        ]);
+
+        $event->delete();
         return back()->with('success', 'Acara berhasil dihapus dari sistem!');
     }
 
@@ -173,14 +220,25 @@ class AdminController extends Controller
     }
 
     public function deleteCellSchedule($id) {
-        CellSchedule::findOrFail($id)->delete();
+        $schedule = CellSchedule::findOrFail($id);
+        $name = $schedule->cell_group_name;
+
+        // 🎥 CCTV REKAM JEJAK
+        ActivityLog::create([
+            'user_name' => auth()->user()->name,
+            'role' => auth()->user()->role,
+            'action' => 'HAPUS JADWAL CELL',
+            'description' => auth()->user()->name . ' menghapus jadwal cell: ' . $name
+        ]);
+
+        $schedule->delete();
         return back()->with('success', 'Jadwal Cell berhasil dihapus!');
     }
 
     public function pastoralDashboard(Request $request)
     {
         $user = auth()->user();
-        $query = \App\Models\Member::query();
+        $query = Member::query();
 
         // Fitur Pencarian Nama
         if ($request->has('search') && $request->search != '') {
@@ -189,9 +247,6 @@ class AdminController extends Controller
 
         $members = $query->orderBy('name', 'asc')->get();
         
-        // TAMBAHAN BARU: Variabel untuk jemaat yang butuh kunjungan.
-        // Untuk sementara kita isi kosong (collect) agar halaman tidak error.
-        // Nanti bisa kita atur logikanya (misal: jemaat yang 3 minggu berturut-turut tidak absen).
         $needsVisitation = collect();
 
         // Kirim semua datanya ke view
@@ -201,24 +256,19 @@ class AdminController extends Controller
     // --- FUNGSI UNTUK MENYIMPAN DATA ABSENSI JEMAAT ---
     public function saveAttendance(Request $request)
     {
-        $date = date('Y-m-d'); // Tanggal ibadah hari ini
+        $date = date('Y-m-d'); 
 
-        // PENGAMAN 1: Cek apakah ada jemaat yang dicentang.
-        // Jika tidak ada yang dicentang, jangan jalankan query database.
         if (!$request->has('attendance') || empty($request->attendance)) {
             return back()->with('error', 'Pilih minimal satu jemaat yang hadir sebelum menyimpan.');
         }
 
-        // PENGAMAN 2: Gunakan Transaction agar data aman jika terjadi error di tengah jalan
         \DB::transaction(function () use ($request, $date) {
-            // Hapus data absen lama di tanggal yang sama agar tidak duplikat
             \DB::table('attendances')->where('attendance_date', $date)->delete();
 
-            // Simpan data baru
             foreach ($request->attendance as $member_id) {
                 \DB::table('attendances')->insert([
                     'member_id'       => $member_id,
-                    'attendance_date' => $date, // Memastikan tanggal terisi otomatis
+                    'attendance_date' => $date, 
                     'created_at'      => now(),
                     'updated_at'      => now()
                 ]);
@@ -228,52 +278,44 @@ class AdminController extends Controller
         return back()->with('success', 'Data kehadiran jemaat berhasil diperbarui!');
     }
 
-public function storeAttendance(Request $request)
-{
-    $date = $request->attendance_date ?? now()->toDateString();
-    
-    foreach ($request->members as $memberId => $status) {
-        if ($status == 'hadir') {
-            \App\Models\Attendance::updateOrCreate(
-                ['member_id' => $memberId, 'attendance_date' => $date],
-                ['status' => 'hadir']
-            );
+    public function storeAttendance(Request $request)
+    {
+        $date = $request->attendance_date ?? now()->toDateString();
+        
+        foreach ($request->members as $memberId => $status) {
+            if ($status == 'hadir') {
+                \App\Models\Attendance::updateOrCreate(
+                    ['member_id' => $memberId, 'attendance_date' => $date],
+                    ['status' => 'hadir']
+                );
+            }
         }
+
+        return back()->with('success', 'Absensi berhasil dicatat!');
     }
 
-    return back()->with('success', 'Absensi berhasil dicatat!');
-}
-public function importCsv(Request $request)
+    public function importCsv(Request $request)
     {
-        // 1. Validasi file
         $request->validate([
             'csv_file' => 'required|mimes:csv,txt'
         ]);
 
         $file = $request->file('csv_file');
         $handle = fopen($file->getRealPath(), "r");
-        
-        // 2. Lewati baris pertama (Header / Judul Kolom di Spreadsheet)
         $header = fgetcsv($handle);
-        
         $importedCount = 0;
         
-        // 3. Looping untuk membaca data baris demi baris
         while (($row = fgetcsv($handle, 1000, ",")) !== FALSE) {
-            
-            // Lewati jika baris kosong atau baris pertama (Header)
             if (empty(trim($row[0])) || trim($row[0]) == 'Nama Lengkap') continue;
 
             $name = trim($row[0]);
             $phone = (isset($row[1]) && trim($row[1]) !== '') ? trim($row[1]) : '-';
             
-            $birth = '2000-01-01'; // Default
+            $birth = '2000-01-01'; 
             if (isset($row[2]) && trim($row[2]) !== '') {
-                // Konversi tanggal, kadang format Excel MM/DD/YYYY atau DD/MM/YYYY
                 $birth = date('Y-m-d', strtotime(str_replace('/', '-', trim($row[2]))));
             }
 
-            // Ambil data-data baru sesuai urutan kolom di CSV
             $address      = (isset($row[3]) && trim($row[3]) !== '') ? trim($row[3]) : null;
             $fire_cell    = (isset($row[4]) && trim($row[4]) !== '') ? trim($row[4]) : null;
             $hobby        = (isset($row[5]) && trim($row[5]) !== '') ? trim($row[5]) : null;
@@ -283,8 +325,7 @@ public function importCsv(Request $request)
             $parent_phone = (isset($row[9]) && trim($row[9]) !== '') ? trim($row[9]) : null;
             $school       = (isset($row[10]) && trim($row[10]) !== '') ? trim($row[10]) : null;
 
-            // Masukkan ke database
-            \App\Models\Member::updateOrCreate(
+            Member::updateOrCreate(
                 ['name' => $name], 
                 [
                     'phone_number' => $phone,
@@ -303,28 +344,23 @@ public function importCsv(Request $request)
             
             $importedCount++;
         }
-        
         fclose($handle);
 
         return back()->with('success', "$importedCount data jemaat berhasil di-import dari Spreadsheet!");
     }
 
-    // --- FUNGSI UNTUK MELIHAT REKAP ABSENSI PASTORAL ---
     public function attendanceRecap(Request $request)
     {
         $user = auth()->user();
         
-        // 1. Ambil semua daftar tanggal ibadah yang sudah ada absensinya
         $dates = \DB::table('attendances')
             ->select('attendance_date')
             ->distinct()
             ->orderBy('attendance_date', 'desc')
             ->pluck('attendance_date');
 
-        // 2. Cek tanggal berapa yang mau dilihat (Default: Tanggal paling terbaru)
         $selectedDate = $request->filter_date ?? ($dates->first() ?? date('Y-m-d'));
 
-        // 3. Ambil data jemaat yang hadir HANYA di tanggal yang dipilih
         $attendees = \DB::table('attendances')
             ->join('members', 'attendances.member_id', '=', 'members.id')
             ->where('attendances.attendance_date', $selectedDate)
@@ -335,27 +371,23 @@ public function importCsv(Request $request)
         return view('admin.recap', compact('user', 'dates', 'selectedDate', 'attendees'));
     }
 
-    // --- FUNGSI UNTUK MERESET (MENGHAPUS) ABSENSI DI TANGGAL TERTENTU PASTORAL ---
     public function resetAttendance(Request $request)
     {
         $request->validate([
             'reset_date' => 'required|date'
         ]);
 
-        // Hapus semua data absensi pada tanggal yang dipilih
         \DB::table('attendances')->where('attendance_date', $request->reset_date)->delete();
 
         return redirect('/admin/pastoral/recap')->with('success', 'Data absensi pada tanggal ' . date('d F Y', strtotime($request->reset_date)) . ' berhasil di-reset (dihapus).');
     }
 
-    // --- FUNGSI UNTUK MENGHIDUPKAN/MEMATIKAN FORM JEMAAT PASTORAL ---
     public function toggleJoinForm()
     {
         $path = storage_path('app/form_status.txt');
-        $current = file_exists($path) ? file_get_contents($path) : '1'; // Default 1 (Buka)
+        $current = file_exists($path) ? file_get_contents($path) : '1'; 
         $newStatus = ($current == '1') ? '0' : '1';
         
-        // Simpan status baru ke dalam file
         file_put_contents($path, $newStatus);
         
         $msg = $newStatus == '1' ? 'Saklar dihidupkan! Form Jemaat Baru SEKARANG DIBUKA!' : 'Saklar dimatikan! Form Jemaat Baru SEKARANG DITUTUP!';
@@ -365,10 +397,17 @@ public function importCsv(Request $request)
     // --- FUNGSI UNTUK MENGHAPUS DATA JEMAAT PASTORAL ---
     public function deleteMember($id)
     {
-        $member = \App\Models\Member::findOrFail($id);
+        $member = Member::findOrFail($id);
         $name = $member->name;
         
-        // Hapus datanya dari database (Riwayat absennya juga akan otomatis terhapus)
+        // 🎥 CCTV REKAM JEJAK
+        ActivityLog::create([
+            'user_name' => auth()->user()->name,
+            'role' => auth()->user()->role,
+            'action' => 'HAPUS JEMAAT',
+            'description' => auth()->user()->name . ' menghapus data jemaat bernama: ' . $name
+        ]);
+
         $member->delete();
 
         return back()->with('success', "Data jemaat bernama {$name} berhasil dihapus dari sistem.");
@@ -381,12 +420,10 @@ public function importCsv(Request $request)
         
         $query = \App\Models\PrayerRequest::query();
 
-        // 1. LOGIKA FILTER TANGGAL
         if ($request->has('start_date') && $request->has('end_date') && $request->start_date != '' && $request->end_date != '') {
             $query->whereBetween('created_at', [$request->start_date . ' 00:00:00', $request->end_date . ' 23:59:59']);
         }
 
-        // Clone query agar filter berlaku untuk ketiga kolom
         $pendingPrayers = (clone $query)->where('status', 'menunggu')->latest()->get();
         $prayingPrayers = (clone $query)->where('status', 'didoakan')->latest()->get();
         $answeredPrayers = (clone $query)->where('status', 'terjawab')->latest()->get();
@@ -456,5 +493,38 @@ public function importCsv(Request $request)
         ]);
 
         return back()->with('prayer_success', 'Pokok doa Anda sudah kami terima. Tim Prayer DOT akan segera mendoakan pergumulan Anda.');
+    }
+
+    // --- FUNGSI DIVISI CELL: KIRIM UNDANGAN VIA WA ---
+    public function sendInvitationWA($id)
+    {
+        $member = Member::findOrFail($id);
+        
+        // 1. Ubah status menjadi "Sudah Diundang"
+        $member->is_invited = true;
+        $member->save();
+
+        // 2. 🎥 CCTV REKAM JEJAK
+        ActivityLog::create([
+            'user_name' => auth()->user()->name,
+            'role' => auth()->user()->role,
+            'action' => 'KIRIM UNDANGAN CELL',
+            'description' => auth()->user()->name . ' mengirimkan undangan WA ke jemaat baru bernama: ' . $member->name
+        ]);
+
+        // 3. Format Nomor Telepon (Ubah 0 di depan jadi 62)
+        $phone = $member->phone_number;
+        $phone = preg_replace('/[^0-9]/', '', $phone); // Bersihkan karakter aneh
+        if (str_starts_with($phone, '0')) {
+            $phone = '62' . substr($phone, 1);
+        }
+
+        // 4. Siapkan Pesan WA Otomatis
+        $pesan = "Shalom {$member->name}! 👋\n\nKami dari *Divisi Cell DOT Sawangan* melihat kamu baru bergabung. Kami ingin mengundang kamu untuk ikut berkomunitas, seru-seruan, dan bertumbuh bareng di Cell DOT!\n\nApakah kamu bersedia untuk ikut bergabung di grup Cell kami? 😊";
+        
+        // 5. Arahkan ke WhatsApp Web/App
+        $url = "https://wa.me/{$phone}?text=" . urlencode($pesan);
+
+        return redirect()->away($url);
     }
 }

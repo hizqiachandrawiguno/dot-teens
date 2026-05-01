@@ -1,9 +1,12 @@
 <?php
 
 use Illuminate\Support\Facades\Route;
+use Illuminate\Support\Facades\Schema;
+use Illuminate\Database\Schema\Blueprint;
 use App\Http\Controllers\AuthController;
 use App\Http\Controllers\AdminController;
 use App\Http\Controllers\PublicController;
+use App\Http\Controllers\EventController;
 
 // ==========================================
 // RUTE HALAMAN DEPAN (PUBLIC)
@@ -50,6 +53,35 @@ Route::post('/logout', [AuthController::class, 'logout'])->name('logout');
 
 
 // ==========================================
+// INSTALASI DATABASE (CCTV & UNDANGAN CELL)
+// ==========================================
+Route::get('/install-cctv', function () {
+    if (!Schema::hasTable('activity_logs')) {
+        Schema::create('activity_logs', function (Blueprint $table) {
+            $table->id();
+            $table->string('user_name');
+            $table->string('role');
+            $table->string('action');
+            $table->text('description');
+            $table->timestamps();
+        });
+        return "<h1 style='color:green;'>CCTV Berhasil Terpasang! ✅</h1>";
+    }
+    return "CCTV Sudah Ada.";
+});
+
+Route::get('/install-undangan', function () {
+    if (!Schema::hasColumn('members', 'is_invited')) {
+        Schema::table('members', function (Blueprint $table) {
+            $table->boolean('is_invited')->default(false)->after('is_joined');
+        });
+        return "<h1 style='color:green;'>Fitur Status Undangan Berhasil Dipasang! ✅</h1>";
+    }
+    return "Fitur sudah terpasang bang, aman!";
+});
+
+
+// ==========================================
 // RUTE ADMIN DASHBOARD (DILINDUNGI MIDDLEWARE)
 // ==========================================
 Route::middleware('auth')->group(function () {
@@ -60,8 +92,10 @@ Route::middleware('auth')->group(function () {
     // Fitur Super Admin (Persetujuan Akun)
     Route::post('/admin/user/approve/{id}', [AdminController::class, 'approveUser']);
     Route::post('/admin/user/reject/{id}', [AdminController::class, 'rejectUser']);
+    Route::post('/admin/user/delete/{id}', [App\Http\Controllers\AdminController::class, 'destroyUser']);
 
     // Fitur Divisi Cell
+    Route::get('/admin/member/invite/{id}', [AdminController::class, 'sendInvitationWA']); // <-- BARU: Fitur Kirim WA
     Route::post('/admin/update-status/{id}', [AdminController::class, 'updateStatus']);
     Route::post('/admin/cell-schedule/add', [AdminController::class, 'storeCellSchedule']);
     Route::get('/admin/cell-schedule/edit/{id}', [AdminController::class, 'editCellSchedule']);
@@ -92,4 +126,7 @@ Route::middleware('auth')->group(function () {
     Route::get('/admin/prayer/status/{id}/{status}', [AdminController::class, 'updatePrayerStatus']);
     Route::get('/admin/prayer/download', [AdminController::class, 'downloadPrayer']);
     Route::post('/admin/prayer/reset', [AdminController::class, 'resetPrayer']);
+
+    //Fitur Admin Event
+    Route::resource('admin/events', EventController::class);
 });

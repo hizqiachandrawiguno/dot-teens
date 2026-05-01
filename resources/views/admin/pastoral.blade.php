@@ -153,45 +153,50 @@
                                 <tr>
                                     <th>Nama Jemaat</th>
                                     <th>No. Handphone</th>
-                                    <th>Kehadiran Terakhir</th>
-                                    <th class="text-center">Aksi</th> <th class="text-center">Absen Hadir</th>
+                                    <th>Alamat Lengkap</th> <th>Kehadiran Terakhir</th>
+                                    <th>Aksi</th>
+                                    <th>Absen Hadir</th>
                                 </tr>
                             </thead>
                             <tbody>
-                                @forelse($members as $m)
-                                <tr>
-                                    <td>
-                                        <span class="fw-bold text-white">{{ $m->name }}</span>
-                                        @if(isset($m->needs_visitation) && $m->needs_visitation)
-                                            <span class="badge bg-danger ms-2 rounded-pill"><i class="fa-solid fa-triangle-exclamation me-1"></i>Visitation</span>
-                                        @endif
-                                    </td>
-                                    <td class="text-white">{{ $m->phone_number ?? '-' }}</td>
-                                    <td>
-                                        @if(isset($m->attendances) && $m->attendances->isNotEmpty())
-                                            {{ date('d M Y', strtotime($m->attendances->last()->attendance_date)) }}
-                                        @else
-                                            <span class="text-secondary fst-italic">Belum ada data</span>
-                                        @endif
-                                    </td>
-                                    
-                                    <td class="text-center">
-                                        <a href="/admin/pastoral/member/delete/{{ $m->id }}" class="btn btn-sm btn-outline-danger rounded-circle" onclick="return confirm('Yakin ingin menghapus jemaat bernama {{ $m->name }}?');" title="Hapus Jemaat">
-                                            <i class="fa-solid fa-trash-can"></i>
-                                        </a>
-                                    </td>
-                                    <td class="text-center">
-                                        <div class="form-check form-switch d-flex justify-content-center">
-                                            <input class="form-check-input" type="checkbox" name="attendance[]" value="{{ $m->id }}" style="transform: scale(1.5); cursor: pointer;">
-                                        </div>
-                                    </td>
-                                </tr>
-                                @empty
-                                <tr>
-                                    <td colspan="5" class="text-center py-4 text-secondary">Data jemaat masih kosong. Silakan Import file CSV di atas.</td>
-                                </tr>
-                                @endforelse
-                            </tbody>
+    @forelse($members as $m)
+    <tr>
+        <td>
+            <span class="fw-bold text-white">{{ $m->name }}</span>
+            @if(isset($m->needs_visitation) && $m->needs_visitation)
+                <span class="badge bg-danger ms-2 rounded-pill"><i class="fa-solid fa-triangle-exclamation me-1"></i>Visitation</span>
+            @endif
+        </td>
+        <td class="text-white">{{ $m->phone_number ?? '-' }}</td>
+        
+        <td>
+            <span class="small text-secondary">{{ $m->address ? $m->address : 'Belum ada data' }}</span>
+        </td>
+        <td>
+            @if(isset($m->attendances) && $m->attendances->isNotEmpty())
+                {{ date('d M Y', strtotime($m->attendances->last()->attendance_date)) }}
+            @else
+                <span class="text-secondary fst-italic">Belum ada data</span>
+            @endif
+        </td>
+        
+        <td class="text-center">
+            <a href="/admin/pastoral/member/delete/{{ $m->id }}" class="btn btn-sm btn-outline-danger rounded-circle" onclick="return confirm('Yakin ingin menghapus jemaat bernama {{ $m->name }}?');" title="Hapus Jemaat">
+                <i class="fa-solid fa-trash-can"></i>
+            </a>
+        </td>
+        <td class="text-center">
+            <div class="form-check form-switch d-flex justify-content-center">
+                <input class="form-check-input" type="checkbox" name="attendance[]" value="{{ $m->id }}" style="transform: scale(1.5); cursor: pointer;">
+            </div>
+        </td>
+    </tr>
+    @empty
+    <tr>
+        <td colspan="6" class="text-center py-4 text-secondary">Data jemaat masih kosong. Silakan Import file CSV di atas.</td>
+    </tr>
+    @endforelse
+</tbody>
                         </table>
                     </div>
                     

@@ -20,7 +20,6 @@
             color: #F3F4F6; 
             font-family: 'Poppins', sans-serif; 
             overflow-x: hidden;
-            /* Tambahan background pattern samar biar ga polos banget */
             background-image: radial-gradient(circle at top right, rgba(139, 92, 246, 0.1), transparent 40%),
                               radial-gradient(circle at bottom left, rgba(96, 165, 250, 0.1), transparent 40%);
         }
@@ -31,7 +30,6 @@
             border-bottom: 1px solid rgba(255,255,255,0.05); 
         }
 
-        /* Teks Gradasi Bergerak Khas Gen Z */
         .text-gradient-animated {
             background: linear-gradient(270deg, #60A5FA, #8B5CF6, #EC4899, #60A5FA);
             background-size: 300% 300%;
@@ -46,15 +44,14 @@
             100% { background-position: 0% 50%; }
         }
 
-        /* Glass Card Keren dengan efek Bouncy */
         .glass-card { 
             background: rgba(255, 255, 255, 0.03); 
             border: 1px solid rgba(255, 255, 255, 0.05); 
-            border-radius: 24px; /* Lebih bulat biar friendly */
+            border-radius: 24px; 
             padding: 25px; 
             margin-bottom: 30px; 
             backdrop-filter: blur(10px);
-            transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275); /* Efek membal */
+            transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275); 
         }
         .glass-card:hover { 
             transform: translateY(-8px); 
@@ -62,7 +59,6 @@
             box-shadow: 0 15px 30px rgba(0, 0, 0, 0.4); 
         }
 
-        /* Efek nyala pada kartu statistik */
         .card-stat-info:hover { box-shadow: 0 10px 25px rgba(96, 165, 250, 0.2); border-color: #60A5FA; }
         .card-stat-success:hover { box-shadow: 0 10px 25px rgba(16, 185, 129, 0.2); border-color: #10B981; }
         .card-stat-pink:hover { box-shadow: 0 10px 25px rgba(236, 72, 153, 0.2); border-color: #EC4899; }
@@ -75,11 +71,9 @@
         .form-control, .form-select { background: rgba(255,255,255,0.05); border: 1px solid rgba(255,255,255,0.1); color: #fff; border-radius: 12px; }
         .form-control:focus, .form-select:focus { background: rgba(255,255,255,0.1); color: #fff; box-shadow: 0 0 15px rgba(139, 92, 246, 0.3); border-color: #8B5CF6; }
 
-        /* Tombol bulat kekinian */
         .btn { transition: 0.3s ease; }
         .btn:hover { transform: scale(1.05); }
         
-        /* Floating Icon Animasi */
         .icon-float { animation: floating 3s ease-in-out infinite; }
         @keyframes floating {
             0% { transform: translateY(0px); }
@@ -92,7 +86,7 @@
 
     <nav class="navbar navbar-expand-lg navbar-dark navbar-custom py-3 fixed-top" data-aos="fade-down">
         <div class="container-fluid px-4">
-            <a class="navbar-brand fw-bold fs-4" href="/">DOT <span class="text-gradient-animated">Dashboard</span> 🚀</a>
+            <a class="navbar-brand fw-bold fs-4" href="/">DOT <span class="text-gradient-animated">Dashboard</span></a>
             <div class="d-flex align-items-center gap-3">
                 <span class="text-secondary small d-none d-md-block">
                     Halo, <strong class="text-white">{{ $user->name }}</strong> 
@@ -130,35 +124,116 @@
             </div>
         @endif
 
-        @if($user->role == 'super_admin')
-
+        @if($user->role == 'div_acara')
         <div class="row g-4 mb-4">
-            <div class="col-md-6" data-aos="fade-right" data-aos-delay="100">
-                <div class="glass-card h-100 mb-0" style="border-left: 5px solid #8B5CF6; background: linear-gradient(135deg, rgba(139, 92, 246, 0.1) 0%, transparent 100%);">
+            <div class="col-12" data-aos="fade-up">
+                <h4 class="fw-bold mb-4" style="color: #10B981;"><i class="fa-solid fa-calendar-days me-2 icon-float"></i> Dashboard Divisi Acara</h4>
+                
+                <div class="glass-card h-100 mb-0" style="border-left: 5px solid #10B981; background: linear-gradient(135deg, rgba(16, 185, 129, 0.1) 0%, transparent 100%); transition: 0.4s;">
                     <div class="d-flex flex-column flex-md-row justify-content-between align-items-md-center gap-3">
                         <div>
-                            <h4 class="text-white fw-bold mb-1"><i class="fa-solid fa-church me-2 icon-float" style="color: #8B5CF6;"></i> Ruang Pastoral</h4>
-                            <p class="text-secondary mb-0 small">Absensi ibadah, import CSV, & jemaat.</p>
+                            <h5 class="text-white fw-bold mb-2"><i class="fa-solid fa-calendar-plus me-2" style="color: #10B981;"></i> Kelola Jadwal & Event</h5>
+                            <p class="text-secondary mb-0">Masuk ke Ruang Acara untuk memposting jadwal ibadah, event spesial DOT, dan mengunggah poster terbaru.</p>
                         </div>
-                        <a href="/admin/pastoral" class="btn rounded-pill px-4 py-2 text-white fw-bold shadow" style="white-space: nowrap; background-color: #8B5CF6; border: none;">Buka Panel <i class="fa-solid fa-arrow-right ms-2"></i></a>
-                    </div>
-                </div>
-            </div>
-            
-            <div class="col-md-6" data-aos="fade-left" data-aos-delay="200">
-                <div class="glass-card h-100 mb-0" style="border-left: 5px solid #F59E0B; background: linear-gradient(135deg, rgba(245, 158, 11, 0.1) 0%, transparent 100%);">
-                    <div class="d-flex flex-column flex-md-row justify-content-between align-items-md-center gap-3">
-                        <div>
-                            <h4 class="text-white fw-bold mb-1"><i class="fa-solid fa-hands-praying me-2 icon-float" style="color: #F59E0B;"></i> Ruang Prayer</h4>
-                            <p class="text-secondary mb-0 small">Kelola pokok doa jemaat & filter data.</p>
-                        </div>
-                        <a href="/admin/prayer" class="btn btn-warning rounded-pill px-4 py-2 text-dark fw-bold shadow" style="white-space: nowrap;">Buka Panel <i class="fa-solid fa-arrow-right ms-2"></i></a>
+                        <a href="/admin/events" class="btn rounded-pill px-5 py-3 text-white fw-bold shadow-lg" style="white-space: nowrap; background-color: #10B981; border: none; font-size: 1.1rem;">
+                            Buka Panel Acara <i class="fa-solid fa-arrow-right ms-2"></i>
+                        </a>
                     </div>
                 </div>
             </div>
         </div>
-        
-            <h3 class="fw-bold mb-4" data-aos="fade-up">Highlight <span class="text-gradient-animated">Statistik</span> 📊</h3>
+        @endif
+
+        @if($user->role == 'super_admin')
+
+            <div class="row g-4 mb-4">
+                <div class="col-lg-4 col-md-6" data-aos="fade-right" data-aos-delay="100">
+                    <div class="glass-card h-100 mb-0" style="border-left: 5px solid #8B5CF6; background: linear-gradient(135deg, rgba(139, 92, 246, 0.1) 0%, transparent 100%);">
+                        <div class="d-flex flex-column flex-xl-row justify-content-between align-items-xl-center gap-3">
+                            <div>
+                                <h5 class="text-white fw-bold mb-1"><i class="fa-solid fa-church me-2 icon-float" style="color: #8B5CF6;"></i> Ruang Pastoral</h5>
+                                <p class="text-secondary mb-0" style="font-size: 0.8rem;">Absensi, import CSV & jemaat.</p>
+                            </div>
+                            <a href="/admin/pastoral" class="btn rounded-pill px-3 py-2 text-white fw-bold shadow" style="white-space: nowrap; background-color: #8B5CF6; border: none; font-size: 0.85rem;">Buka Panel <i class="fa-solid fa-arrow-right ms-1"></i></a>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="col-lg-4 col-md-6" data-aos="fade-up" data-aos-delay="200">
+                    <div class="glass-card h-100 mb-0" style="border-left: 5px solid #F59E0B; background: linear-gradient(135deg, rgba(245, 158, 11, 0.1) 0%, transparent 100%);">
+                        <div class="d-flex flex-column flex-xl-row justify-content-between align-items-xl-center gap-3">
+                            <div>
+                                <h5 class="text-white fw-bold mb-1"><i class="fa-solid fa-hands-praying me-2 icon-float" style="color: #F59E0B;"></i> Ruang Prayer</h5>
+                                <p class="text-secondary mb-0" style="font-size: 0.8rem;">Kelola doa jemaat & filter.</p>
+                            </div>
+                            <a href="/admin/prayer" class="btn btn-warning rounded-pill px-3 py-2 text-dark fw-bold shadow" style="white-space: nowrap; font-size: 0.85rem;">Buka Panel <i class="fa-solid fa-arrow-right ms-1"></i></a>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="col-lg-4 col-md-12" data-aos="fade-left" data-aos-delay="300">
+                    <div class="glass-card h-100 mb-0" style="border-left: 5px solid #10B981; background: linear-gradient(135deg, rgba(16, 185, 129, 0.1) 0%, transparent 100%);">
+                        <div class="d-flex flex-column flex-xl-row justify-content-between align-items-xl-center gap-3">
+                            <div>
+                                <h5 class="text-white fw-bold mb-1"><i class="fa-solid fa-calendar-days me-2 icon-float" style="color: #10B981;"></i> Ruang Acara</h5>
+                                <p class="text-secondary mb-0" style="font-size: 0.8rem;">Kelola jadwal & posting acara.</p>
+                            </div>
+                            <a href="/admin/events" class="btn rounded-pill px-3 py-2 text-white fw-bold shadow" style="white-space: nowrap; background-color: #10B981; border: none; font-size: 0.85rem;">Buka Panel <i class="fa-solid fa-arrow-right ms-1"></i></a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="glass-card mt-4" data-aos="fade-up">
+                
+                <div class="d-flex flex-column flex-sm-row justify-content-between align-items-sm-center mb-4">
+                    <h5 class="fw-bold mb-3 mb-sm-0 text-white">
+                        <i class="fa-solid fa-video text-danger me-2 icon-float"></i> Log Aktivitas Admin (CCTV)
+                    </h5>
+                    
+                    <div class="input-group shadow-sm" style="max-width: 300px;">
+                        <span class="input-group-text border-0" style="background: rgba(255,255,255,0.9); border-radius: 50px 0 0 50px;">
+                            <i class="fa-solid fa-magnifying-glass text-dark"></i>
+                        </span>
+                        <input type="text" id="searchCctv" class="form-control border-0 shadow-none px-2" placeholder="Cari aktivitas..." style="background: rgba(255,255,255,0.9); color: #000; border-radius: 0 50px 50px 0; font-weight: 500;">
+                    </div>
+                </div>
+
+                <div class="table-responsive" style="max-height: 350px; overflow-y: auto;">
+                    <table class="table table-custom align-middle mb-0">
+                        <thead style="position: sticky; top: 0; z-index: 10; background: rgba(15, 23, 42, 0.95); backdrop-filter: blur(5px);">
+                            <tr>
+                                <th style="border-bottom: 2px solid rgba(239, 68, 68, 0.5);">Waktu</th>
+                                <th style="border-bottom: 2px solid rgba(239, 68, 68, 0.5);">Admin</th>
+                                <th style="border-bottom: 2px solid rgba(239, 68, 68, 0.5);">Aksi</th>
+                                <th style="border-bottom: 2px solid rgba(239, 68, 68, 0.5);">Detail Lengkap</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            @forelse($cctv_logs as $log)
+                            <tr class="baris-cctv hover-row">
+                                <td class="text-secondary small">{{ $log->created_at->format('d/m H:i') }}</td>
+                                <td class="text-white"><strong>{{ $log->user_name }}</strong> <br><small class="text-secondary">{{ $log->role }}</small></td>
+                                <td>
+                                    <span class="badge bg-danger bg-opacity-25 text-danger border border-danger rounded-pill px-3 py-1">
+                                        {{ $log->action }}
+                                    </span>
+                                </td>
+                                <td class="text-secondary small">{{ $log->description }}</td>
+                            </tr>
+                            @empty
+                            <tr>
+                                <td colspan="4" class="text-center py-5 text-secondary">
+                                    <i class="fa-solid fa-shield-halved fs-3 mb-2 d-block opacity-50"></i>Sistem CCTV aktif. Belum ada aktivitas terekam.
+                                </td>
+                            </tr>
+                            @endforelse
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+
+            <h3 class="fw-bold mb-4 mt-5" data-aos="fade-up">Highlight <span class="text-gradient-animated">Statistik</span> 📊</h3>
             <div class="row g-4 mb-5">
                 <div class="col-md-3" data-aos="zoom-in" data-aos-delay="100">
                     <div class="glass-card card-stat-info text-center h-100 p-4">
@@ -210,6 +285,76 @@
                             </tr>
                             @empty
                             <tr><td colspan="4" class="text-center py-5 text-secondary"><i class="fa-solid fa-mug-hot fs-2 mb-3 d-block opacity-50"></i>Woohoo! Tidak ada permintaan akun baru. Waktunya santai! ☕</td></tr>
+                            @endforelse
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+
+            <div class="d-flex flex-column flex-sm-row justify-content-between align-items-sm-center mt-5 mb-4" data-aos="fade-up">
+                <h3 class="fw-bold mb-3 mb-sm-0">Daftar <span class="text-info">Pengurus Website</span></h3>
+                
+                <select id="filterDivisi" class="form-select form-select-sm w-auto rounded-pill px-4 py-2 text-white shadow-sm" style="background: rgba(255,255,255,0.05); border: 1px solid rgba(96, 165, 250, 0.5); cursor: pointer;">
+                    <option value="all" class="text-dark">⚡ Semua Divisi</option>
+                    <option value="super_admin" class="text-dark">Super Admin</option>
+                    <option value="div_acara" class="text-dark">Divisi Acara</option>
+                    <option value="div_cell" class="text-dark">Divisi Cell</option>
+                    <option value="div_pastoral" class="text-dark">Divisi Pastoral</option>
+                    <option value="div_prayer" class="text-dark">Divisi Prayer</option>
+                    <option value="div_sosmed" class="text-dark">Divisi Sosmed</option>
+                </select>
+            </div>
+
+            <div class="glass-card mb-5" data-aos="fade-up" data-aos-delay="150">
+                <div class="table-responsive">
+                    <table class="table table-custom mb-0 align-middle">
+                        <thead>
+                            <tr>
+                                <th>Nama Pengurus</th>
+                                <th>Email</th>
+                                <th>Divisi / Jabatan</th>
+                                <th class="text-center">Aksi</th> </tr>
+                        </thead>
+                        <tbody>
+                            @php
+                                $pendingIds = isset($stats['pending_users']) ? $stats['pending_users']->pluck('id')->toArray() : [];
+                                $allAdmins = \App\Models\User::whereNotIn('id', $pendingIds)->orderBy('role', 'asc')->get();
+                            @endphp
+
+                            @forelse($allAdmins as $admin)
+                            <tr class="hover-row baris-admin" data-divisi="{{ $admin->role }}">
+                                <td class="fw-bold text-white">
+                                    <i class="fa-solid fa-user-shield me-2 text-secondary"></i>
+                                    {{ $admin->name }} 
+                                    @if($admin->id == $user->id) 
+                                        <span class="badge bg-success ms-2" style="font-size: 0.6rem;">(Kamu)</span> 
+                                    @endif
+                                </td>
+                                <td>{{ $admin->email }}</td>
+                                <td>
+                                    <span class="badge rounded-pill px-3 py-2 border" 
+                                          style="background: rgba(96, 165, 250, 0.1); color:#60A5FA; border-color: rgba(96, 165, 250, 0.5) !important;">
+                                        <i class="fa-solid fa-bolt me-1 text-warning"></i> 
+                                        {{ ucwords(str_replace('_', ' ', $admin->role)) }}
+                                    </span>
+                                </td>
+                                <td class="text-center">
+                                    @if($admin->id != $user->id)
+                                        <form action="/admin/user/delete/{{ $admin->id }}" method="POST">
+                                            @csrf
+                                            <button type="submit" class="btn btn-sm btn-outline-danger rounded-pill px-3 fw-bold" onclick="return confirm('Yakin ingin mencabut akses website untuk {{ $admin->name }}?')">
+                                                <i class="fa-solid fa-trash-can me-1"></i> Hapus
+                                            </button>
+                                        </form>
+                                    @else
+                                        <span class="text-secondary small fst-italic">Akun Anda</span>
+                                    @endif
+                                </td>
+                            </tr>
+                            @empty
+                            <tr>
+                                <td colspan="4" class="text-center py-5 text-secondary" id="pesanKosong">Belum ada pengurus lain yang terdaftar.</td>
+                            </tr>
                             @endforelse
                         </tbody>
                     </table>
@@ -283,7 +428,7 @@
                     </div>
                 </div>
             </div>
-            @endif
+        @endif
 
         <div class="row">
             @if($user->role == 'super_admin' || $user->role == 'div_cell')
@@ -349,25 +494,45 @@
                 </div>
 
                 <div class="glass-card mt-4" data-aos="fade-up">
-                    <h5 class="text-warning mb-4 fw-bold"><i class="fa-solid fa-user-astronaut me-2 icon-float"></i> Jemaat Baru Menunggu Cell</h5>
+                    <div class="d-flex flex-column flex-sm-row justify-content-between align-items-sm-center mb-4">
+                        <h5 class="text-warning fw-bold mb-3 mb-sm-0"><i class="fa-solid fa-user-astronaut me-2 icon-float"></i> Jemaat Baru Menunggu Cell</h5>
+                        
+                        <select id="filterUndangan" class="form-select form-select-sm w-auto rounded-pill px-4 py-2 text-white shadow-sm" style="background: rgba(255,255,255,0.05); border: 1px solid rgba(245, 158, 11, 0.5); cursor: pointer;">
+                            <option value="all" class="text-dark">⚡ Semua Status</option>
+                            <option value="belum" class="text-dark">⏳ Belum Diundang</option>
+                            <option value="sudah" class="text-dark">✅ Sudah Diundang</option>
+                        </select>
+                    </div>
+
                     <div class="table-responsive">
                         <table class="table table-custom align-middle">
-                            <thead><tr><th>Nama</th><th>WhatsApp</th><th>Tahun Lahir</th><th>Aksi</th></tr></thead>
+                            <thead><tr><th>Nama</th><th>WhatsApp</th><th>Tahun Lahir</th><th class="text-center">Status & Aksi</th></tr></thead>
                             <tbody>
                                 @forelse($members->where('is_joined', false) as $member)
-                                <tr>
+                                <tr class="hover-row baris-jemaat" data-status="{{ $member->is_invited ? 'sudah' : 'belum' }}">
                                     <td class="text-white fw-semibold">{{ $member->name }}</td>
                                     <td>
-                                        <a href="https://wa.me/{{ $member->phone_number }}" target="_blank" class="btn btn-sm rounded-pill" style="background: rgba(37, 211, 102, 0.1); color: #25D366; border: 1px solid #25D366;">
-                                            <i class="fa-brands fa-whatsapp me-1"></i> {{ $member->phone_number }}
-                                        </a>
+                                        <span class="text-secondary"><i class="fa-brands fa-whatsapp me-1 text-success"></i> {{ $member->phone_number }}</span>
                                     </td>
                                     <td>{{ date('Y', strtotime($member->birth_date)) }}</td>
                                     <td>
-                                        <form action="/admin/update-status/{{ $member->id }}" method="POST">
-                                            @csrf
-                                            <button type="submit" class="btn btn-sm btn-success rounded-pill px-4 fw-bold shadow-sm">Sudah Masuk Cell</button>
-                                        </form>
+                                        <div class="text-center mb-2">
+                                            @if($member->is_invited)
+                                                <span class="badge bg-success bg-opacity-25 text-success border border-success rounded-pill px-3 py-1"><i class="fa-solid fa-check-double me-1"></i> Sudah Diundang</span>
+                                            @else
+                                                <span class="badge bg-secondary bg-opacity-25 text-secondary border border-secondary rounded-pill px-3 py-1"><i class="fa-solid fa-hourglass-half me-1"></i> Belum Diundang</span>
+                                            @endif
+                                        </div>
+
+                                        <div class="d-flex flex-column gap-2">
+                                            <a href="/admin/member/invite/{{ $member->id }}" target="_blank" class="btn btn-sm text-dark fw-bold rounded-pill shadow-sm" style="background-color: #25D366; border: none;">
+                                                <i class="fa-brands fa-whatsapp me-1"></i> Kirim Undangan WA
+                                            </a>
+                                            <form action="/admin/update-status/{{ $member->id }}" method="POST">
+                                                @csrf
+                                                <button type="submit" class="btn btn-sm btn-outline-info w-100 rounded-pill fw-bold">Tandai Sudah Join</button>
+                                            </form>
+                                        </div>
                                     </td>
                                 </tr>
                                 @empty
@@ -379,7 +544,6 @@
                 </div>
             </div>
             @endif
-
         </div>
     </div>
 
@@ -387,11 +551,76 @@
     
     <script src="https://unpkg.com/aos@2.3.1/dist/aos.js"></script>
     <script>
-        // Mengaktifkan sistem animasi
+        // 1. Script Animasi Bawaan
         AOS.init({
-            duration: 800, // Durasi animasi (ms)
-            once: true, // Animasi hanya jalan sekali saat di-scroll
-            offset: 50 // Jarak scroll sebelum animasi mulai
+            duration: 800, 
+            once: true, 
+            offset: 50 
+        });
+
+        // 2. SCRIPT FILTER DIVISI KILAT
+        document.addEventListener("DOMContentLoaded", function() {
+            const filterDropdown = document.getElementById('filterDivisi');
+            const barisAdmin = document.querySelectorAll('.baris-admin');
+
+            if (filterDropdown) {
+                filterDropdown.addEventListener('change', function() {
+                    const divisiPilihan = this.value;
+
+                    barisAdmin.forEach(function(baris) {
+                        // Jika pilih "all" ATAU data-divisi di baris sama dengan pilihan dropdown
+                        if (divisiPilihan === 'all' || baris.getAttribute('data-divisi') === divisiPilihan) {
+                            baris.style.display = ''; // Munculkan
+                        } else {
+                            baris.style.display = 'none'; // Sembunyikan
+                        }
+                    });
+                });
+            }
+        });
+        // 3. SCRIPT FILTER STATUS UNDANGAN JEMAAT CELL
+        document.addEventListener("DOMContentLoaded", function() {
+            const filterUndangan = document.getElementById('filterUndangan');
+            const barisJemaat = document.querySelectorAll('.baris-jemaat');
+
+            if (filterUndangan) {
+                filterUndangan.addEventListener('change', function() {
+                    const statusPilihan = this.value;
+
+                    barisJemaat.forEach(function(baris) {
+                        if (statusPilihan === 'all' || baris.getAttribute('data-status') === statusPilihan) {
+                            baris.style.display = ''; 
+                        } else {
+                            baris.style.display = 'none'; 
+                        }
+                    });
+                });
+            }
+        });
+
+        // 4. SCRIPT PENCARIAN LIVE CCTV
+        document.addEventListener("DOMContentLoaded", function() {
+            const searchCctv = document.getElementById('searchCctv');
+            const barisCctv = document.querySelectorAll('.baris-cctv');
+
+            if (searchCctv) {
+                searchCctv.addEventListener('keyup', function() {
+                    // Ambil teks yang diketik lalu ubah jadi huruf kecil semua
+                    const keyword = this.value.toLowerCase();
+
+                    barisCctv.forEach(function(baris) {
+                        // Ambil seluruh teks di dalam satu baris tabel
+                        const teksBaris = baris.textContent.toLowerCase();
+                        
+                        // Cek apakah teks yang diketik ada di dalam baris tersebut
+                        if (teksBaris.includes(keyword)) {
+                            baris.style.display = ''; // Tampilkan
+                        } else {
+                            baris.style.display = 'none'; // Sembunyikan
+                        }
+                    });
+                });
+            }
         });
     </script>
 </body>

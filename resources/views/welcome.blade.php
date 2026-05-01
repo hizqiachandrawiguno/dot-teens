@@ -4,9 +4,22 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>DOT Teens | GBI ERC Sawangan</title>
+    
+    <meta name="description" content="Website resmi DOT (Department of Teens) Sawangan. Temukan jadwal ibadah, info komunitas cell, galeri kegiatan, dan mari bertumbuh bersama komunitas youth kami!">
+    <meta name="keywords" content="DOT Sawangan, Youth Sawangan, Pemuda Kristen Sawangan, Ibadah Youth Sawangan, Gereja Sawangan, Komunitas Pemuda, Cell DOT">
+    <meta name="author" content="DOT Sawangan">
 
+    <meta property="og:type" content="website">
+    <meta property="og:url" content="https://dotsawangan.com/">
+    <meta property="og:title" content="DOT Teens | GBI ERC Sawangan">
+    <meta property="og:description" content="Temukan jadwal ibadah, info komunitas cell, dan mari bertumbuh bersama komunitas youth DOT Sawangan!">
+    <meta property="og:image" content="{{ asset('images/logo.png') }}">
+    
+    <meta name="theme-color" content="#121212">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
     <link rel="icon" href="{{ asset('images/logo.png') }}" type="image/png">
     <link rel="shortcut icon" href="{{ asset('images/logo.png') }}" type="image/png">
+    <link rel="apple-touch-icon" href="{{ asset('images/logo.png') }}">
 
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
     <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600;700&display=swap" rel="stylesheet">
@@ -63,6 +76,14 @@
 
         /* STYLING UTAMA */
         .text-gradient { background: linear-gradient(90deg, #60A5FA, #8B5CF6, #EC4899); -webkit-background-clip: text; -webkit-text-fill-color: transparent; font-weight: 700; }
+        .text-gradient-animated {
+            background: linear-gradient(270deg, #60A5FA, #8B5CF6, #EC4899, #60A5FA);
+            background-size: 300% 300%;
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            animation: gradientMove 5s ease infinite;
+            font-weight: 800;
+        }
         .navbar-custom { background: rgba(15, 23, 42, 0.95); backdrop-filter: blur(10px); border-bottom: 1px solid rgba(255, 255, 255, 0.05); transition: all 0.3s ease; }
         .navbar-nav .nav-link { position: relative; transition: color 0.3s ease; color: #D1D5DB !important; }
         .navbar-nav .nav-link:hover { color: #fff !important; }
@@ -83,31 +104,10 @@
         .floating-wa:hover { transform: scale(1.1) rotate(10deg); color: white; }
         section { padding: 140px 0; position: relative; z-index: 1; }
 
-        /* --- KARTU DOA GLOWING (Selaras dengan Palette) --- */
-        .prayer-board-card:hover {
-            border-color: rgba(139, 92, 246, 0.5) !important;
-            box-shadow: 0 10px 40px rgba(139, 92, 246, 0.2), 0 0 60px rgba(236, 72, 153, 0.1) !important;
-            transform: translateY(-8px) scale(1.01);
-        }
-
-        /* Hover efek untuk tombol Kirim Doa */
-        .btn-kirim-doa:hover {
-            transform: scale(1.05);
-            box-shadow: 0 0 25px rgba(139, 92, 246, 0.4) !important;
-        }
-
-        /* Ganti style input form modal biar teens */
-        #modalDoa .form-control {
-            background: rgba(255,255,255,0.03) !important;
-            border: 1px solid rgba(255,255,255,0.08) !important;
-            color: #fff !important;
-        }
-        #modalDoa .form-control:focus {
-            background: rgba(255,255,255,0.08) !important;
-            border-color: #8B5CF6 !important;
-            box-shadow: 0 0 15px rgba(139, 92, 246, 0.3) !important;
-        }
-
+        .prayer-board-card:hover { border-color: rgba(139, 92, 246, 0.5) !important; box-shadow: 0 10px 40px rgba(139, 92, 246, 0.2), 0 0 60px rgba(236, 72, 153, 0.1) !important; transform: translateY(-8px) scale(1.01); }
+        .btn-kirim-doa:hover { transform: scale(1.05); box-shadow: 0 0 25px rgba(139, 92, 246, 0.4) !important; }
+        #modalDoa .form-control { background: rgba(255,255,255,0.03) !important; border: 1px solid rgba(255,255,255,0.08) !important; color: #fff !important; }
+        #modalDoa .form-control:focus { background: rgba(255,255,255,0.08) !important; border-color: #8B5CF6 !important; box-shadow: 0 0 15px rgba(139, 92, 246, 0.3) !important; }
     </style>
 </head>
 <body data-bs-spy="scroll" data-bs-target="#navbarMain" data-bs-offset="150">
@@ -131,7 +131,6 @@
                     <li class="nav-item"><a class="nav-link" href="/gallery">Gallery</a></li>
                     <li class="nav-item"><a class="nav-link" href="#faq">FAQ</a></li>
 
-                {{-- CEK APAKAH USER SUDAH LOGIN --}}
                 @auth
                     <li class="nav-item">
                         <a class="btn btn-outline-info rounded-pill px-4 ms-lg-2" href="/admin/dashboard">
@@ -159,7 +158,7 @@
     <header id="home" class="container" style="padding-top: 180px; padding-bottom: 140px; position: relative; z-index: 1;">
         <div class="row align-items-center text-center text-lg-start">
             <div class="col-lg-7 mb-5 mb-lg-0" data-aos="fade-right" data-aos-duration="1000">
-                <span class="badge bg-purple text-uppercase px-3 py-2 rounded-pill mb-3" style="background-color: rgba(139, 92, 246, 0.2); color: #8B5CF6; border: 1px solid #8B5CF6;">DRP Outstanding Teens</span>
+                <span class="badge bg-purple text-uppercase px-3 py-2 rounded-pill mb-3" style="background: rgba(139, 92, 246, 0.2); color: #8B5CF6; border: 1px solid #8B5CF6;">DRP Outstanding Teens</span>
                 <h1 class="display-3 fw-bold mb-4" style="line-height: 1.2;">
                     Fun Disciples, <br> 
                     <span class="text-gradient">Fun Community</span>
@@ -174,13 +173,40 @@
             </div>
             
             <div class="col-lg-5 text-center" data-aos="zoom-in" data-aos-duration="1200">
-                <div style="#">
+                <div>
                     <img src="{{ asset('images/header.svg') }}" alt="Ilustrasi DOT" style="width: 100%; max-width: 400px; filter: drop-shadow(0 20px 30px rgba(139, 92, 246, 0.4));">
                 </div>
             </div>
-            
         </div>
     </header>
+
+    <section id="morning-devotion" class="py-5">
+        <div class="container">
+            <div class="row align-items-center rounded-4 shadow-lg overflow-hidden border border-secondary" data-aos="fade-up" style="background: rgba(255, 255, 255, 0.03);">
+                
+                <div class="col-md-5 p-0">
+                    <img src="{{ asset('images/md.png') }}" alt="Promo Morning Devotion" class="img-fluid w-100 h-100" style="object-fit: cover; min-height: 300px;">
+                </div>
+
+                <div class="col-md-7 p-4 p-md-5">
+                    <span class="badge bg-warning text-dark mb-3 px-3 py-2 rounded-pill fw-bold shadow-sm">
+                        <i class="fa-solid fa-sun me-1"></i> Awali Harimu Dengan Tuhan
+                    </span>
+                    <h2 class="fw-bold text-white mb-3">Morning Devotion (MD) </h2>
+                    
+                    <div class="d-flex flex-column flex-sm-row align-items-sm-center gap-3">
+                        <a href="https://meet.google.com/zny-jonm-etv" target="_blank" class="btn rounded-pill px-4 py-3 fw-bold text-white shadow" style="background-color: #2563EB; border: none; transition: 0.3s;">
+                            <i class="fa-solid fa-video me-2"></i> Join Google Meet
+                        </a>
+                        <span class="text-secondary fw-bold px-2">
+                            <i class="fa-regular fa-clock me-1 text-info"></i> Setiap Hari Senin, Rabu, Jumat | 04.30
+                        </span>
+                    </div>
+                </div>
+
+            </div>
+        </div>
+    </section>
 
     <section id="about-highlight" class="container">
         <div class="row align-items-center g-5">
@@ -228,40 +254,52 @@
     </section>
 
     <section id="events" class="container">
-        <div class="text-center mb-5" data-aos="fade-up">
-            <h2 class="fw-bold mb-3">Kegiatan & <span class="text-gradient">Acara Mendatang</span></h2>
-            <p class="text-secondary">Jangan sampai ketinggalan event seru DOT bulan ini!</p>
-        </div>
+    <div class="text-center mb-5" data-aos="fade-up">
+        <h2 class="fw-bold mb-3">Kegiatan & <span class="text-gradient">Acara Mendatang</span></h2>
+        <p class="text-secondary">Jangan sampai ketinggalan event seru DOT bulan ini!</p>
+    </div>
 
-        <div class="row justify-content-center g-4">
-            @forelse($events as $event)
-            <div class="col-md-4" data-aos="fade-up" data-aos-delay="100">
-                <div class="glass-card h-100 p-4" style="border-left: 4px solid #10B981; transition: 0.3s;">
-                    <div class="d-flex align-items-center gap-3 mb-4">
-                        <div class="bg-success text-white rounded p-3 text-center" style="min-width: 85px;">
-                            <span class="d-block fw-bold fs-3" style="line-height: 1;">{{ date('d', strtotime($event->event_date)) }}</span>
-                            <span class="d-block small text-uppercase fw-semibold mt-1">{{ date('M Y', strtotime($event->event_date)) }}</span>
-                        </div>
-                        <div>
-                            <h5 class="fw-bold text-white mb-1">{{ $event->title }}</h5>
-                            <span class="badge bg-secondary mb-2" style="background-color: rgba(16, 185, 129, 0.2)!important; color: #10B981!important;">Acara Spesial DOT</span>
-                        </div>
+    <div class="row justify-content-center g-4">
+        @forelse($events as $event)
+        <div class="col-md-4" data-aos="fade-up" data-aos-delay="100">
+            <div class="glass-card h-100 p-4 d-flex flex-column" style="border-left: 4px solid #10B981; transition: 0.3s;">
+                
+                @if($event->image)
+                <div class="mb-4">
+                    <img src="{{ asset('uploads/events/' . $event->image) }}" alt="Poster" class="img-fluid rounded-3 shadow" style="width: 100%; height: 200px; object-fit: cover; border: 1px solid rgba(255,255,255,0.1);">
+                </div>
+                @endif
+
+                <div class="d-flex align-items-center gap-3 mb-4">
+                    <div class="bg-success text-white rounded p-3 text-center" style="min-width: 85px;">
+                        <span class="d-block fw-bold fs-3" style="line-height: 1;">{{ date('d', strtotime($event->event_date)) }}</span>
+                        <span class="d-block small text-uppercase fw-semibold mt-1">{{ date('M Y', strtotime($event->event_date)) }}</span>
                     </div>
-                    <p class="text-secondary small mb-2"><i class="fa-solid fa-clock me-2 text-success"></i> Pukul {{ date('H:i', strtotime($event->event_time)) }} WIB</p>
+                    <div>
+                        <h5 class="fw-bold text-white mb-1">{{ $event->title }}</h5>
+                        <span class="badge bg-secondary mb-2" style="background-color: rgba(16, 185, 129, 0.2)!important; color: #10B981!important;">Acara Spesial DOT</span>
+                    </div>
+                </div>
+                
+                <p class="text-secondary small mb-4 flex-grow-1">{{ Str::limit($event->description, 70) }}</p>
+
+                <div class="mt-auto">
+                    <p class="text-secondary small mb-2"><i class="fa-solid fa-clock me-2 text-success"></i> Pukul {{ date('H:i', strtotime($event->event_waktu)) }} WIB</p>
                     <p class="text-secondary small mb-0"><i class="fa-solid fa-location-dot me-2 text-success"></i> {{ $event->location }}</p>
                 </div>
             </div>
-            @empty
-            <div class="col-12 text-center" data-aos="fade-up">
-                <div class="glass-card p-5">
-                    <i class="fa-solid fa-calendar-xmark fs-1 text-secondary mb-3"></i>
-                    <h5 class="text-white fw-bold">Belum ada acara dalam waktu dekat</h5>
-                    <p class="text-secondary mb-0">Stay tuned terus di website dan Instagram kita ya untuk info event selanjutnya!</p>
-                </div>
-            </div>
-            @endforelse
         </div>
-    </section>
+        @empty
+        <div class="col-12 text-center" data-aos="fade-up">
+            <div class="glass-card p-5">
+                <i class="fa-solid fa-calendar-xmark fs-1 text-secondary mb-3"></i>
+                <h5 class="text-white fw-bold">Belum ada acara dalam waktu dekat</h5>
+                <p class="text-secondary mb-0">Stay tuned terus di website dan Instagram kita ya untuk info event selanjutnya!</p>
+            </div>
+        </div>
+        @endforelse
+    </div>
+</section>
 
     <section id="gallery-highlight" class="container">
         <div class="text-center mb-5" data-aos="fade-up">
@@ -404,20 +442,13 @@
             <div class="col-lg-6" data-aos="fade-left">
                 <div class="glass-card p-2" style="border-radius: 20px; overflow: hidden;">
                     <iframe 
-
-    src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3964.9078405950004!2d106.74111851139088!3d-6.405873162625553!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x2e69e895a4248df7%3A0x2c11ce4bbad8f048!2sGbi%20Sawangan!5e0!3m2!1sid!2sid!4v1775558282012!5m2!1sid!2sid"
-
-    width="100%" 
-
-    height="450" 
-
-    style="border:0;" 
-
-    allowfullscreen="" 
-
-    loading="lazy"   referrerpolicy="no-referrer-when-downgrade">
-
-</iframe>
+                        src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3964.9078405950004!2d106.74111851139088!3d-6.405873162625553!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x2e69e895a4248df7%3A0x2c11ce4bbad8f048!2sGbi%20Sawangan!5e0!3m2!1sid!2sid!4v1775558282012!5m2!1sid!2sid"
+                        width="100%" 
+                        height="450" 
+                        style="border:0;" 
+                        allowfullscreen="" 
+                        loading="lazy"   referrerpolicy="no-referrer-when-downgrade">
+                    </iframe>
                 </div>
             </div>
         </div>
@@ -437,99 +468,103 @@
         </div>
     </section>
 
-    @if($isJoinFormActive == '1')
     <section id="join" class="py-5 position-relative" style="background: transparent;">
-    </section>
-    @endif
-    <div class="container py-5">
-        <div class="row justify-content-center">
-            
-            <div class="col-lg-8 text-center mb-5" data-aos="fade-up">
-                <span class="badge text-uppercase px-3 py-2 rounded-pill mb-2" style="background: rgba(96, 165, 250, 0.1); color: #60A5FA; border: 1px solid rgba(96, 165, 250, 0.5);">Join the Family</span>
-                <h2 class="fw-bold text-white mb-3">Jadilah Bagian dari <span class="text-gradient-animated">Keluarga Kami!</span> 🚀</h2>
-                <p class="text-secondary">Isi form di bawah ini dan mari bertumbuh bersama di DOT Teens.</p>
+        <div class="container py-5">
+            <div class="row justify-content-center">
                 
-                @if(session('join_success'))
-                    <div class="alert alert-success d-inline-block rounded-pill px-4 mt-3 border-0 shadow" data-aos="zoom-in" style="background: rgba(16, 185, 129, 0.2)!important; color:#10B981!important;">
-                        <i class="fa-solid fa-party-horn me-2"></i>{{ session('join_success') }}
-                    </div>
-                @endif
-                @if(session('error'))
-                    <div class="alert alert-danger d-inline-block rounded-pill px-4 mt-3 border-0 shadow" data-aos="zoom-in" style="background: rgba(239, 68, 68, 0.2)!important; color:#EF4444!important;">
-                        <i class="fa-solid fa-triangle-exclamation me-2"></i>{{ session('error') }}
-                    </div>
-                @endif
-            </div>
-
-            <div class="col-lg-8" data-aos="fade-up" data-aos-delay="100">
-                <div class="glass-card p-4 p-md-5 rounded-5 shadow-lg" style="background: rgba(255, 255, 255, 0.02); border: 1px solid rgba(255, 255, 255, 0.06); transition: 0.4s;">
-                    <form action="{{ route('join.submit') }}" method="POST">
-                        @csrf
-                        <div class="row g-4 text-start">
-                            <h6 class="text-info fw-bold border-bottom border-secondary pb-2 mb-0">A. Data Pribadi</h6>
-                            <div class="col-md-6">
-                                <label class="text-secondary small fw-bold mb-1">Nama Lengkap *</label>
-                                <input type="text" name="name" class="form-control rounded-3 bg-dark text-white border-secondary" required>
-                            </div>
-                            <div class="col-md-6">
-                                <label class="text-secondary small fw-bold mb-1">No. WhatsApp *</label>
-                                <input type="number" name="phone_number" class="form-control rounded-3 bg-dark text-white border-secondary" required>
-                            </div>
-                            <div class="col-md-6">
-                                <label class="text-secondary small fw-bold mb-1">Tanggal Lahir *</label>
-                                <input type="date" name="birth_date" class="form-control rounded-3 bg-dark text-white border-secondary" style="color-scheme: dark;" required>
-                            </div>
-                            <div class="col-md-6">
-                                <label class="text-secondary small fw-bold mb-1">Email</label>
-                                <input type="email" name="email" class="form-control rounded-3 bg-dark text-white border-secondary">
-                            </div>
-                            <div class="col-md-6">
-                                <label class="text-secondary small fw-bold mb-1">Instagram (@username)</label>
-                                <input type="text" name="instagram" class="form-control rounded-3 bg-dark text-white border-secondary">
-                            </div>
-                            <div class="col-md-6">
-                                <label class="text-secondary small fw-bold mb-1">Hobi</label>
-                                <input type="text" name="hobby" class="form-control rounded-3 bg-dark text-white border-secondary">
-                            </div>
-                            <div class="col-12">
-                                <label class="text-secondary small fw-bold mb-1">Alamat Lengkap</label>
-                                <textarea name="address" rows="2" class="form-control rounded-3 bg-dark text-white border-secondary"></textarea>
-                            </div>
-
-                            <h6 class="text-warning fw-bold border-bottom border-secondary pb-2 mb-0 mt-4">B. Data Tambahan</h6>
-                            <div class="col-md-6">
-                                <label class="text-secondary small fw-bold mb-1">Nama Orang Tua</label>
-                                <input type="text" name="parent_name" class="form-control rounded-3 bg-dark text-white border-secondary">
-                            </div>
-                            <div class="col-md-6">
-                                <label class="text-secondary small fw-bold mb-1">No. Telp Orang Tua</label>
-                                <input type="number" name="parent_phone" class="form-control rounded-3 bg-dark text-white border-secondary">
-                            </div>
-                            <div class="col-md-6">
-                                <label class="text-secondary small fw-bold mb-1">Asal Sekolah</label>
-                                <input type="text" name="school" class="form-control rounded-3 bg-dark text-white border-secondary">
-                            </div>
-                            <div class="col-md-6">
-                                <label class="text-secondary small fw-bold mb-1">Sudah tergabung di Fire Cell?</label>
-                                <input type="text" name="fire_cell" class="form-control rounded-3 bg-dark text-white border-secondary" placeholder="Kosongkan jika belum ada">
-                            </div>
-
-                            <div class="col-12 mt-4 text-center">
-                                <button type="submit" class="btn btn-lg w-100 rounded-pill fw-bold py-3 shadow-lg fs-5 text-white btn-kirim-doa" style="background: linear-gradient(90deg, #60A5FA, #8B5CF6); border: none; transition: 0.3s;">
-                                    <i class="fa-solid fa-user-plus me-2"></i> Submit & Join DOT!
-                                </button>
-                            </div>
+                <div class="col-lg-8 text-center mb-5" data-aos="fade-up">
+                    <span class="badge text-uppercase px-3 py-2 rounded-pill mb-2" style="background: rgba(96, 165, 250, 0.1); color: #60A5FA; border: 1px solid rgba(96, 165, 250, 0.5);">Join the Family</span>
+                    <h2 class="fw-bold text-white mb-3">Jadilah Bagian dari <span class="text-gradient-animated">Keluarga Kami!</span> 🚀</h2>
+                    <p class="text-secondary">Isi form di bawah ini dan mari bertumbuh bersama di DOT Teens.</p>
+                    
+                    @if(session('join_success'))
+                        <div class="alert alert-success d-inline-block rounded-pill px-4 mt-3 border-0 shadow" data-aos="zoom-in" style="background: rgba(16, 185, 129, 0.2)!important; color:#10B981!important;">
+                            <i class="fa-solid fa-party-horn me-2"></i>{{ session('join_success') }}
                         </div>
-                    </form>
+                    @endif
+                    @if(session('error'))
+                        <div class="alert alert-danger d-inline-block rounded-pill px-4 mt-3 border-0 shadow" data-aos="zoom-in" style="background: rgba(239, 68, 68, 0.2)!important; color:#EF4444!important;">
+                            <i class="fa-solid fa-triangle-exclamation me-2"></i>{{ session('error') }}
+                        </div>
+                    @endif
+                </div>
+
+                <div class="col-lg-8" data-aos="fade-up" data-aos-delay="100">
+                    
+                    @if($isJoinFormActive == '1')
+                        <div class="glass-card p-4 p-md-5 rounded-5 shadow-lg" style="background: rgba(255, 255, 255, 0.02); border: 1px solid rgba(255, 255, 255, 0.06); transition: 0.4s;">
+                            <form action="{{ route('join.submit') }}" method="POST">
+                                @csrf
+                                <div class="row g-4 text-start">
+                                    <h6 class="text-info fw-bold border-bottom border-secondary pb-2 mb-0">A. Data Pribadi</h6>
+                                    <div class="col-md-6">
+                                        <label class="text-secondary small fw-bold mb-1">Nama Lengkap *</label>
+                                        <input type="text" name="name" class="form-control rounded-3 bg-dark text-white border-secondary" required>
+                                    </div>
+                                    <div class="col-md-6">
+                                        <label class="text-secondary small fw-bold mb-1">No. WhatsApp *</label>
+                                        <input type="number" name="phone_number" class="form-control rounded-3 bg-dark text-white border-secondary" required>
+                                    </div>
+                                    <div class="col-md-6">
+                                        <label class="text-secondary small fw-bold mb-1">Tanggal Lahir *</label>
+                                        <input type="date" name="birth_date" class="form-control rounded-3 bg-dark text-white border-secondary" style="color-scheme: dark;" required>
+                                    </div>
+                                    <div class="col-md-6">
+                                        <label class="text-secondary small fw-bold mb-1">Email</label>
+                                        <input type="email" name="email" class="form-control rounded-3 bg-dark text-white border-secondary">
+                                    </div>
+                                    <div class="col-md-6">
+                                        <label class="text-secondary small fw-bold mb-1">Instagram (@username)</label>
+                                        <input type="text" name="instagram" class="form-control rounded-3 bg-dark text-white border-secondary">
+                                    </div>
+                                    <div class="col-md-6">
+                                        <label class="text-secondary small fw-bold mb-1">Hobi</label>
+                                        <input type="text" name="hobby" class="form-control rounded-3 bg-dark text-white border-secondary">
+                                    </div>
+                                    <div class="col-12">
+                                        <label class="text-secondary small fw-bold mb-1">Alamat Lengkap *</label>
+                                        <textarea name="address" rows="2" class="form-control rounded-3 bg-dark text-white border-secondary" required></textarea>
+                                    </div>
+
+                                    <h6 class="text-warning fw-bold border-bottom border-secondary pb-2 mb-0 mt-4">B. Data Tambahan</h6>
+                                    <div class="col-md-6">
+                                        <label class="text-secondary small fw-bold mb-1">Nama Orang Tua</label>
+                                        <input type="text" name="parent_name" class="form-control rounded-3 bg-dark text-white border-secondary">
+                                    </div>
+                                    <div class="col-md-6">
+                                        <label class="text-secondary small fw-bold mb-1">No. Telp Orang Tua</label>
+                                        <input type="number" name="parent_phone" class="form-control rounded-3 bg-dark text-white border-secondary">
+                                    </div>
+                                    <div class="col-md-6">
+                                        <label class="text-secondary small fw-bold mb-1">Asal Sekolah</label>
+                                        <input type="text" name="school" class="form-control rounded-3 bg-dark text-white border-secondary">
+                                    </div>
+                                    <div class="col-md-6">
+                                        <label class="text-secondary small fw-bold mb-1">Sudah tergabung di Fire Cell?</label>
+                                        <input type="text" name="fire_cell" class="form-control rounded-3 bg-dark text-white border-secondary" placeholder="Kosongkan jika belum ada">
+                                    </div>
+
+                                    <div class="col-12 mt-4 text-center">
+                                        <button type="submit" class="btn btn-lg w-100 rounded-pill fw-bold py-3 shadow-lg fs-5 text-white btn-kirim-doa" style="background: linear-gradient(90deg, #60A5FA, #8B5CF6); border: none; transition: 0.3s;">
+                                            <i class="fa-solid fa-user-plus me-2"></i> Submit & Join DOT!
+                                        </button>
+                                    </div>
+                                </div>
+                            </form>
+                        </div>
+                    @else
+                        <div class="glass-card text-center p-5 rounded-5 shadow-lg" style="background: rgba(255, 255, 255, 0.02); border: 1px solid rgba(245, 158, 11, 0.3);">
+                            <i class="fa-solid fa-lock fs-1 text-warning mb-4" style="filter: drop-shadow(0 0 15px rgba(245,158,11,0.5));"></i>
+                            <h3 class="fw-bold text-white mb-2">Pendaftaran Sedang Ditutup</h3>
+                            <p class="text-secondary mb-0">Maaf, form pendaftaran DOT Teens saat ini sedang dikunci oleh Admin. Silakan hubungi kami via WhatsApp atau Instagram untuk info lebih lanjut.</p>
+                        </div>
+                    @endif
+
                 </div>
             </div>
-
         </div>
-    </div>
-</section>
-
+    </section>
     <section class="py-5 position-relative overflow-hidden" style="background: transparent;"> 
-
     <div class="position-absolute rounded-circle" style="width: 300px; height: 300px; background: rgba(139, 92, 246, 0.1); filter: blur(100px); top: -100px; left: -100px; z-index: 0;"></div>
     
     <div class="container py-5 text-center position-relative" style="z-index: 1;">
@@ -556,39 +591,40 @@
             </div>
         </div>
     </div>
-</section>
+    </section>
 
-<div class="modal fade" id="modalDoa" tabindex="-1" aria-hidden="true">
-    <div class="modal-dialog modal-dialog-centered">
-        <div class="modal-content border-secondary rounded-5 shadow-lg" style="background: rgba(15, 23, 42, 0.95); backdrop-filter: blur(15px); border: 1px solid rgba(255, 255, 255, 0.08);">
-            <div class="modal-header border-0 pb-0 pt-4 px-4">
-                <h5 class="modal-title text-white fw-bold"><i class="fa-solid fa-hands-praying me-2 text-warning"></i>Kirim Pergumulan Anda</h5>
-                <button type="button" class="btn-close btn-close-white shadow-none" data-bs-dismiss="modal"></button>
+    <div class="modal fade" id="modalDoa" tabindex="-1" aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered">
+            <div class="modal-content border-secondary rounded-5 shadow-lg" style="background: rgba(15, 23, 42, 0.95); backdrop-filter: blur(15px); border: 1px solid rgba(255, 255, 255, 0.08);">
+                <div class="modal-header border-0 pb-0 pt-4 px-4">
+                    <h5 class="modal-title text-white fw-bold"><i class="fa-solid fa-hands-praying me-2 text-warning"></i>Kirim Pergumulan Anda</h5>
+                    <button type="button" class="btn-close btn-close-white shadow-none" data-bs-dismiss="modal"></button>
+                </div>
+                <form action="{{ route('prayer.submit') }}" method="POST">
+                    @csrf
+                    <div class="modal-body px-4 pt-4">
+                        <div class="mb-3 p-3 rounded-4" style="background: rgba(96, 165, 250, 0.05); border-left: 3px solid #60A5FA;">
+                            <p class="text-secondary small mb-0" style="line-height: 1.6;"><i class="fa-solid fa-info-circle me-1 text-info"></i> Pokok doa Anda akan dijaga kerahasiaannya dan hanya dilihat oleh Tim Prayer DOT.</p>
+                        </div>
+                        <div class="mb-3">
+                            <label class="text-secondary small fw-bold mb-1">Nama (Opsional / Kosongkan jika ingin Anonim)</label>
+                            <input type="text" name="name" class="form-control rounded-3 bg-dark text-white border-secondary" placeholder="Nama Anda...">
+                        </div>
+                        <div class="mb-3">
+                            <label class="text-secondary small fw-bold mb-1">Pokok Doa / Pergumulan</label>
+                            <textarea name="topic" rows="4" class="form-control rounded-3 bg-dark text-white border-secondary" placeholder="Ceritakan apa yang ingin didoakan..." required></textarea>
+                        </div>
+                    </div>
+                    <div class="modal-footer border-0 pt-0 pb-4 px-4">
+                        <button type="submit" class="btn btn-gradient w-100 rounded-pill fw-bold py-2 shadow"><i class="fa-solid fa-check me-2"></i>Kirim ke Tim Doa</button>
+                    </div>
+                </form>
             </div>
-            <form action="{{ route('prayer.submit') }}" method="POST">
-                @csrf
-                <div class="modal-body px-4 pt-4">
-                    <div class="mb-3 p-3 rounded-4" style="background: rgba(96, 165, 250, 0.05); border-left: 3px solid #60A5FA;">
-                        <p class="text-secondary small mb-0" style="line-height: 1.6;"><i class="fa-solid fa-info-circle me-1 text-info"></i> Pokok doa Anda akan dijaga kerahasiaannya dan hanya dilihat oleh Tim Prayer DOT.</p>
-                    </div>
-                    <div class="mb-3">
-                        <label class="text-secondary small fw-bold mb-1">Nama (Opsional / Kosongkan jika ingin Anonim)</label>
-                        <input type="text" name="name" class="form-control rounded-3 bg-dark text-white border-secondary" placeholder="Nama Anda...">
-                    </div>
-                    <div class="mb-3">
-                        <label class="text-secondary small fw-bold mb-1">Pokok Doa / Pergumulan</label>
-                        <textarea name="topic" rows="4" class="form-control rounded-3 bg-dark text-white border-secondary" placeholder="Ceritakan apa yang ingin didoakan..." required></textarea>
-                    </div>
-                </div>
-                <div class="modal-footer border-0 pt-0 pb-4 px-4">
-                    <button type="submit" class="btn btn-gradient w-100 rounded-pill fw-bold py-2 shadow"><i class="fa-solid fa-check me-2"></i>Kirim ke Tim Doa</button>
-                </div>
-            </form>
         </div>
     </div>
-</div>
 
-    <a href="https://wa.me/6285173280626?text=Halo%20kak,%20aku%20jemaat%20baru%20mau%20tanya%20jadwal%20ibadah%20Teens%20DOT!" target="_blank" class="floating-wa">        <i class="fa-brands fa-whatsapp"></i>
+    <a href="https://wa.me/6285173280626?text=Halo%20kak,%20aku%20jemaat%20baru%20mau%20tanya%20jadwal%20ibadah%20Teens%20DOT!" target="_blank" class="floating-wa">        
+        <i class="fa-brands fa-whatsapp"></i>
     </a>
     <a href="/admin" style="position: fixed; bottom: 0; right: 0; width: 40px; height: 40px; opacity: 0; z-index: 9999;">Admin</a>
 
@@ -606,7 +642,6 @@
                 let current = "";
                 sections.forEach((section) => {
                     const sectionTop = section.offsetTop;
-                    // Hanya deteksi jika section memiliki ID (dan lewati highlight yang non-hash)
                     if (section.getAttribute("id") && pageYOffset >= (sectionTop - 300)) {
                         current = section.getAttribute("id");
                     }
@@ -614,7 +649,6 @@
 
                 navLinks.forEach((link) => {
                     link.classList.remove("active");
-                    // Pastikan hanya menyorot link yang diawali dengan '#'
                     const href = link.getAttribute("href");
                     if (href.startsWith("#") && href === "#" + current) {
                         link.classList.add("active");
@@ -625,11 +659,11 @@
     </script>
 
     <footer class="text-center py-4 mt-5" style="border-top: 1px solid rgba(255,255,255,0.05);">
-    <p class="small mb-0">
-        <a href="/login" class="text-secondary" style="text-decoration: none; cursor: default;">
-            &copy; 2026 Department Teens GBI Sawangan.
-        </a>
-    </p>
-</footer>
+        <p class="small mb-0">
+            <a href="/login" class="text-secondary" style="text-decoration: none; cursor: default;">
+                © 2026 Department Teens GBI Sawangan.
+            </a>
+        </p>
+    </footer>
 </body>
 </html>

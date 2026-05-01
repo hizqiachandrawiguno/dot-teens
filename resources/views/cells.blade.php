@@ -5,6 +5,16 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>DOT GBI Sawangan - Department Teens</title>
 
+    <meta name="description" content="Website resmi DOT (Department of Teens) Sawangan. Temukan jadwal ibadah, info komunitas cell, galeri kegiatan, dan mari bertumbuh bersama komunitas youth kami!">
+    <meta name="keywords" content="DOT Sawangan, Youth Sawangan, Pemuda Kristen Sawangan, Ibadah Youth Sawangan, Gereja Sawangan, Komunitas Pemuda, Cell DOT">
+    <meta name="author" content="DOT Sawangan">
+
+    <meta property="og:type" content="website">
+    <meta property="og:url" content="https://dotsawangan.com/">
+    <meta property="og:title" content="DOT Sawangan - Teens & Youth Community">
+    <meta property="og:description" content="Website resmi DOT Sawangan. Temukan jadwal ibadah dan bergabunglah dengan komunitas kami!">
+    <meta property="og:image" content="{{ asset('images/logo.png') }}">
+
     <link rel="icon" href="{{ asset('images/logo.png') }}" type="image/png">
     <link rel="shortcut icon" href="{{ asset('images/logo.png') }}" type="image/png">
 
