@@ -1087,7 +1087,6 @@
             }
         }
 
-        let isTorchActive = false;
         function toggleTorch() {
             if (!html5QrCode || !html5QrCode.isScanning) return;
             isTorchActive = !isTorchActive;
