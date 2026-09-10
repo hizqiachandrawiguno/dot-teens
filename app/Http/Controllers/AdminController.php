@@ -9,6 +9,8 @@ use App\Models\Gallery;
 use App\Models\User;
 use App\Models\CellSchedule;
 use App\Models\ActivityLog; // [BARU] Import Model CCTV
+use Illuminate\Support\Facades\Schema;
+use Illuminate\Database\Schema\Blueprint;
 
 class AdminController extends Controller
 {
@@ -32,6 +34,18 @@ class AdminController extends Controller
             'total_foto' => $galleries->count(),
             'pending_users' => User::where('status', 'pending')->get()
         ];
+
+        // Pastikan tabel activity_logs sudah ada agar tidak error di server live
+        if (!Schema::hasTable('activity_logs')) {
+            Schema::create('activity_logs', function (Blueprint $table) {
+                $table->id();
+                $table->string('user_name');
+                $table->string('role');
+                $table->string('action');
+                $table->text('description');
+                $table->timestamps();
+            });
+        }
 
         // [BARU] AMBIL DATA CCTV UNTUK SUPER ADMIN (50 Aktivitas Terbaru)
         $cctv_logs = ActivityLog::latest()->take(50)->get();

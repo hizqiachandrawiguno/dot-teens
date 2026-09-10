@@ -8,14 +8,41 @@ use App\Models\ActivityLog;
 use Illuminate\Http\Request;
 use Illuminate\Support\Str;
 use Illuminate\Support\Facades\Schema;
+use Illuminate\Database\Schema\Blueprint;
 
 class EventRegistrationController extends Controller
 {
+    /**
+     * Pastikan tabel event_registrations tersedia di database server live
+     */
+    private function ensureTableExists()
+    {
+        if (!Schema::hasTable('event_registrations')) {
+            Schema::create('event_registrations', function (Blueprint $table) {
+                $table->id();
+                $table->foreignId('event_id')->constrained('events')->onDelete('cascade');
+                $table->string('ticket_code', 30)->unique()->index();
+                $table->string('name');
+                $table->string('phone');
+                $table->string('email')->nullable();
+                $table->string('category')->default('SMP');
+                $table->string('origin')->nullable();
+                $table->string('status', 20)->default('registered');
+                $table->timestamp('attended_at')->nullable();
+                $table->string('scanned_by')->nullable();
+                $table->text('notes')->nullable();
+                $table->timestamps();
+            });
+        }
+    }
+
     /**
      * Pendaftaran Peserta Event (Public via Website)
      */
     public function register(Request $request)
     {
+        $this->ensureTableExists();
+
         $request->validate([
             'event_id' => 'required|exists:events,id',
             'name' => 'required|string|max:150',
@@ -122,6 +149,8 @@ class EventRegistrationController extends Controller
      */
     public function showTicket($ticket_code)
     {
+        $this->ensureTableExists();
+
         $registration = EventRegistration::with('event')
             ->where('ticket_code', $ticket_code)
             ->firstOrFail();
@@ -134,6 +163,8 @@ class EventRegistrationController extends Controller
      */
     public function scannerPage(Request $request, $event_id = null)
     {
+        $this->ensureTableExists();
+
         $events = Event::orderBy('event_date', 'desc')->get();
 
         if (!$event_id) {
@@ -175,6 +206,8 @@ class EventRegistrationController extends Controller
      */
     public function processScan(Request $request)
     {
+        $this->ensureTableExists();
+
         $request->validate([
             'ticket_code' => 'required|string',
             'event_id' => 'nullable|exists:events,id',
@@ -271,6 +304,8 @@ class EventRegistrationController extends Controller
      */
     public function participantsList(Request $request, $event_id)
     {
+        $this->ensureTableExists();
+
         $event = Event::findOrFail($event_id);
         
         $query = EventRegistration::where('event_id', $event_id);
@@ -351,6 +386,8 @@ class EventRegistrationController extends Controller
      */
     public function exportCsv($event_id)
     {
+        $this->ensureTableExists();
+
         $event = Event::findOrFail($event_id);
         $participants = EventRegistration::where('event_id', $event_id)
             ->orderBy('created_at', 'asc')
