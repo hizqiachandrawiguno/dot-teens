@@ -181,9 +181,124 @@
         </td>
         
         <td class="text-center">
-            <a href="/admin/pastoral/member/delete/{{ $m->id }}" class="btn btn-sm btn-outline-danger rounded-circle" onclick="return confirm('Yakin ingin menghapus jemaat bernama {{ $m->name }}?');" title="Hapus Jemaat">
-                <i class="fa-solid fa-trash-can"></i>
-            </a>
+            <div class="d-inline-flex gap-2">
+                <button type="button" class="btn btn-sm btn-outline-info rounded-circle" data-bs-toggle="modal" data-bs-target="#detailPastoral{{ $m->id }}" title="Lihat Profil Lengkap">
+                    <i class="fa-solid fa-eye"></i>
+                </button>
+                <a href="/admin/pastoral/member/delete/{{ $m->id }}" class="btn btn-sm btn-outline-danger rounded-circle" onclick="return confirm('Yakin ingin menghapus jemaat bernama {{ $m->name }}?');" title="Hapus Jemaat">
+                    <i class="fa-solid fa-trash-can"></i>
+                </a>
+            </div>
+
+            <!-- MODAL DETAIL JEMAAT PASTORAL -->
+            <div class="modal fade text-start" id="detailPastoral{{ $m->id }}" tabindex="-1" aria-hidden="true">
+                <div class="modal-dialog modal-dialog-centered modal-lg">
+                    <div class="modal-content rounded-4 shadow-lg border-secondary" style="background: #0F172A; border: 1px solid rgba(255, 255, 255, 0.1);">
+                        <div class="modal-header border-bottom border-secondary border-opacity-25 pb-3 pt-4 px-4">
+                            <div>
+                                <span class="badge bg-primary bg-opacity-20 text-info border border-info border-opacity-25 rounded-pill px-3 py-1 mb-1">
+                                    Profil Lengkap Jemaat
+                                </span>
+                                <h5 class="modal-title text-white fw-bold mb-0">
+                                    <i class="fa-solid fa-user me-2 text-info"></i> {{ $m->name }}
+                                </h5>
+                            </div>
+                            <button type="button" class="btn-close btn-close-white shadow-none" data-bs-dismiss="modal"></button>
+                        </div>
+                        <div class="modal-body p-4">
+                            <div class="row g-4">
+                                <div class="col-12">
+                                    <h6 class="text-info fw-bold mb-3 border-bottom border-secondary border-opacity-25 pb-2">
+                                        <i class="fa-solid fa-id-card me-2"></i> Data Pribadi
+                                    </h6>
+                                    <div class="row g-3">
+                                        <div class="col-sm-6">
+                                            <small class="text-secondary d-block">Nama Lengkap</small>
+                                            <span class="text-white fw-semibold fs-6">{{ $m->name }}</span>
+                                        </div>
+                                        <div class="col-sm-6">
+                                            <small class="text-secondary d-block">No. WhatsApp</small>
+                                            @if($m->phone_number)
+                                                <a href="https://wa.me/{{ preg_replace('/^0/', '62', preg_replace('/[^0-9]/', '', $m->phone_number)) }}" target="_blank" class="text-success fw-bold text-decoration-none">
+                                                    <i class="fa-brands fa-whatsapp me-1"></i> {{ $m->phone_number }}
+                                                </a>
+                                            @else
+                                                <span class="text-secondary">-</span>
+                                            @endif
+                                        </div>
+                                        <div class="col-sm-6">
+                                            <small class="text-secondary d-block">Tanggal Lahir</small>
+                                            <span class="text-white">{{ $m->birth_date ? date('d F Y', strtotime($m->birth_date)) : '-' }}</span>
+                                        </div>
+                                        <div class="col-sm-6">
+                                            <small class="text-secondary d-block">Email</small>
+                                            <span class="text-white">{{ $m->email ?: '-' }}</span>
+                                        </div>
+                                        <div class="col-sm-6">
+                                            <small class="text-secondary d-block">Instagram</small>
+                                            @if($m->instagram)
+                                                <a href="https://instagram.com/{{ ltrim($m->instagram, '@') }}" target="_blank" class="text-info text-decoration-none">
+                                                    <i class="fa-brands fa-instagram me-1"></i> {{ $m->instagram }}
+                                                </a>
+                                            @else
+                                                <span class="text-secondary">-</span>
+                                            @endif
+                                        </div>
+                                        <div class="col-sm-6">
+                                            <small class="text-secondary d-block">Hobi / Minat</small>
+                                            <span class="text-white">{{ $m->hobby ?: '-' }}</span>
+                                        </div>
+                                        <div class="col-12">
+                                            <small class="text-secondary d-block">Alamat Lengkap</small>
+                                            <span class="text-white">{{ $m->address ?: '-' }}</span>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <div class="col-12">
+                                    <h6 class="text-warning fw-bold mb-3 border-bottom border-secondary border-opacity-25 pb-2">
+                                        <i class="fa-solid fa-circle-info me-2"></i> Data Tambahan & Keluarga
+                                    </h6>
+                                    <div class="row g-3">
+                                        <div class="col-sm-6">
+                                            <small class="text-secondary d-block">Asal Sekolah</small>
+                                            <span class="text-white">{{ $m->school ?: '-' }}</span>
+                                        </div>
+                                        <div class="col-sm-6">
+                                            <small class="text-secondary d-block">Fire Cell Terdaftar</small>
+                                            <span class="text-white">{{ $m->fire_cell ?: 'Belum Terdaftar' }}</span>
+                                        </div>
+                                        <div class="col-sm-6">
+                                            <small class="text-secondary d-block">Nama Orang Tua</small>
+                                            <span class="text-white">{{ $m->parent_name ?: '-' }}</span>
+                                        </div>
+                                        <div class="col-sm-6">
+                                            <small class="text-secondary d-block">No. Telp Orang Tua</small>
+                                            @if($m->parent_phone)
+                                                <a href="https://wa.me/{{ preg_replace('/^0/', '62', preg_replace('/[^0-9]/', '', $m->parent_phone)) }}" target="_blank" class="text-success text-decoration-none">
+                                                    <i class="fa-brands fa-whatsapp me-1"></i> {{ $m->parent_phone }}
+                                                </a>
+                                            @else
+                                                <span class="text-secondary">-</span>
+                                            @endif
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="modal-footer border-top border-secondary border-opacity-25 p-3 px-4 d-flex justify-content-between">
+                            @if($m->phone_number)
+                                <a href="https://wa.me/{{ preg_replace('/^0/', '62', preg_replace('/[^0-9]/', '', $m->phone_number)) }}" target="_blank" class="btn btn-success rounded-pill px-4 fw-bold">
+                                    <i class="fa-brands fa-whatsapp me-2"></i> Chat WhatsApp
+                                </a>
+                            @else
+                                <span></span>
+                            @endif
+                            <button type="button" class="btn btn-secondary rounded-pill px-4" data-bs-dismiss="modal">Tutup</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
         </td>
         <td class="text-center">
             <div class="form-check form-switch d-flex justify-content-center">

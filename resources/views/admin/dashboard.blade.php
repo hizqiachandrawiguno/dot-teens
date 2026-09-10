@@ -774,6 +774,9 @@
                                         </td>
                                         <td class="text-center">
                                             <div class="d-inline-flex gap-2">
+                                                <button type="button" class="btn btn-sm btn-outline-light rounded-pill px-3 fw-semibold" data-bs-toggle="modal" data-bs-target="#detailMember{{ $member->id }}" title="Lihat Data Lengkap Form">
+                                                    <i class="fa-solid fa-address-card me-1 text-info"></i> Detail
+                                                </button>
                                                 <a href="/admin/member/invite/{{ $member->id }}" target="_blank" class="btn btn-sm btn-success rounded-pill px-3 fw-bold" style="background:#25D366; border:none; color:#000;">
                                                     <i class="fa-brands fa-whatsapp me-1"></i> Kirim WA
                                                 </a>
@@ -783,6 +786,114 @@
                                                         Tandai Join
                                                     </button>
                                                 </form>
+                                            </div>
+
+                                            <!-- MODAL DETAIL DATA JEMAAT BARU -->
+                                            <div class="modal fade text-start" id="detailMember{{ $member->id }}" tabindex="-1" aria-hidden="true">
+                                                <div class="modal-dialog modal-dialog-centered modal-lg">
+                                                    <div class="modal-content rounded-4 shadow-lg border-secondary" style="background: rgba(15, 23, 42, 0.98); backdrop-filter: blur(20px); border: 1px solid rgba(255, 255, 255, 0.1);">
+                                                        <div class="modal-header border-bottom border-secondary border-opacity-25 pb-3 pt-4 px-4">
+                                                            <div>
+                                                                <span class="badge bg-info bg-opacity-20 text-info border border-info border-opacity-25 rounded-pill px-3 py-1 mb-1">
+                                                                    Data Pendaftaran Jemaat Baru
+                                                                </span>
+                                                                <h5 class="modal-title text-white fw-bold mb-0">
+                                                                    <i class="fa-solid fa-user me-2 text-info"></i> {{ $member->name }}
+                                                                </h5>
+                                                            </div>
+                                                            <button type="button" class="btn-close btn-close-white shadow-none" data-bs-dismiss="modal"></button>
+                                                        </div>
+                                                        <div class="modal-body p-4">
+                                                            <div class="row g-4">
+                                                                <!-- Bagian A: Data Pribadi -->
+                                                                <div class="col-12">
+                                                                    <h6 class="text-info fw-bold mb-3 border-bottom border-secondary border-opacity-25 pb-2">
+                                                                        <i class="fa-solid fa-id-card me-2"></i> A. Data Pribadi
+                                                                    </h6>
+                                                                    <div class="row g-3">
+                                                                        <div class="col-sm-6">
+                                                                            <small class="text-secondary d-block">Nama Lengkap</small>
+                                                                            <span class="text-white fw-semibold fs-6">{{ $member->name }}</span>
+                                                                        </div>
+                                                                        <div class="col-sm-6">
+                                                                            <small class="text-secondary d-block">No. WhatsApp</small>
+                                                                            <a href="https://wa.me/{{ preg_replace('/^0/', '62', preg_replace('/[^0-9]/', '', $member->phone_number)) }}" target="_blank" class="text-success fw-bold text-decoration-none">
+                                                                                <i class="fa-brands fa-whatsapp me-1"></i> {{ $member->phone_number }}
+                                                                            </a>
+                                                                        </div>
+                                                                        <div class="col-sm-6">
+                                                                            <small class="text-secondary d-block">Tanggal Lahir</small>
+                                                                            <span class="text-white">{{ date('d F Y', strtotime($member->birth_date)) }} ({{ \Carbon\Carbon::parse($member->birth_date)->age }} Tahun)</span>
+                                                                        </div>
+                                                                        <div class="col-sm-6">
+                                                                            <small class="text-secondary d-block">Email</small>
+                                                                            <span class="text-white">{{ $member->email ?: '-' }}</span>
+                                                                        </div>
+                                                                        <div class="col-sm-6">
+                                                                            <small class="text-secondary d-block">Instagram</small>
+                                                                            @if($member->instagram)
+                                                                                <a href="https://instagram.com/{{ ltrim($member->instagram, '@') }}" target="_blank" class="text-info text-decoration-none">
+                                                                                    <i class="fa-brands fa-instagram me-1"></i> {{ $member->instagram }}
+                                                                                </a>
+                                                                            @else
+                                                                                <span class="text-secondary">-</span>
+                                                                            @endif
+                                                                        </div>
+                                                                        <div class="col-sm-6">
+                                                                            <small class="text-secondary d-block">Hobi / Minat</small>
+                                                                            <span class="text-white">{{ $member->hobby ?: '-' }}</span>
+                                                                        </div>
+                                                                        <div class="col-12">
+                                                                            <small class="text-secondary d-block">Alamat Lengkap</small>
+                                                                            <span class="text-white">{{ $member->address ?: '-' }}</span>
+                                                                        </div>
+                                                                    </div>
+                                                                </div>
+
+                                                                <!-- Bagian B: Data Tambahan -->
+                                                                <div class="col-12">
+                                                                    <h6 class="text-warning fw-bold mb-3 border-bottom border-secondary border-opacity-25 pb-2">
+                                                                        <i class="fa-solid fa-circle-info me-2"></i> B. Data Tambahan
+                                                                    </h6>
+                                                                    <div class="row g-3">
+                                                                        <div class="col-sm-6">
+                                                                            <small class="text-secondary d-block">Asal Sekolah</small>
+                                                                            <span class="text-white">{{ $member->school ?: '-' }}</span>
+                                                                        </div>
+                                                                        <div class="col-sm-6">
+                                                                            <small class="text-secondary d-block">Sudah Gabung Cell/Cool?</small>
+                                                                            <span class="text-white">{{ $member->fire_cell ?: 'Belum Tergabung' }}</span>
+                                                                        </div>
+                                                                        <div class="col-sm-6">
+                                                                            <small class="text-secondary d-block">Nama Orang Tua</small>
+                                                                            <span class="text-white">{{ $member->parent_name ?: '-' }}</span>
+                                                                        </div>
+                                                                        <div class="col-sm-6">
+                                                                            <small class="text-secondary d-block">No. Telp Orang Tua</small>
+                                                                            @if($member->parent_phone)
+                                                                                <a href="https://wa.me/{{ preg_replace('/^0/', '62', preg_replace('/[^0-9]/', '', $member->parent_phone)) }}" target="_blank" class="text-success text-decoration-none">
+                                                                                    <i class="fa-brands fa-whatsapp me-1"></i> {{ $member->parent_phone }}
+                                                                                </a>
+                                                                            @else
+                                                                                <span class="text-secondary">-</span>
+                                                                            @endif
+                                                                        </div>
+                                                                        <div class="col-sm-12">
+                                                                            <small class="text-secondary d-block">Waktu Mendaftar</small>
+                                                                            <span class="text-secondary small">{{ date('d M Y, H:i', strtotime($member->created_at)) }} WIB</span>
+                                                                        </div>
+                                                                    </div>
+                                                                </div>
+                                                            </div>
+                                                        </div>
+                                                        <div class="modal-footer border-top border-secondary border-opacity-25 p-3 px-4 d-flex justify-content-between">
+                                                            <a href="https://wa.me/{{ preg_replace('/^0/', '62', preg_replace('/[^0-9]/', '', $member->phone_number)) }}" target="_blank" class="btn btn-success rounded-pill px-4 fw-bold">
+                                                                <i class="fa-brands fa-whatsapp me-2"></i> Chat WhatsApp
+                                                            </a>
+                                                            <button type="button" class="btn btn-secondary rounded-pill px-4" data-bs-dismiss="modal">Tutup</button>
+                                                        </div>
+                                                    </div>
+                                                </div>
                                             </div>
                                         </td>
                                     </tr>
