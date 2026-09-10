@@ -327,11 +327,11 @@
             const ticketCode = "{{ $registration->ticket_code }}";
             new QRCode(document.getElementById("qrcode"), {
                 text: ticketCode,
-                width: 170,
-                height: 170,
+                width: 210,
+                height: 210,
                 colorDark : "#0A1628",
                 colorLight : "#FFFFFF",
-                correctLevel : QRCode.CorrectLevel.H
+                correctLevel : QRCode.CorrectLevel.M
             });
         });
     </script>

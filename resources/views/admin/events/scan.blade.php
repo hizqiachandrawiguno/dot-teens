@@ -82,20 +82,42 @@
             overflow: hidden;
             background: #060D18;
             border: 2px dashed rgba(56, 189, 248, 0.3);
-            min-height: 320px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
+            width: 100%;
+            min-height: 280px;
         }
 
         #qr-reader {
             width: 100% !important;
+            max-width: 100% !important;
             border: none !important;
+            margin: 0 auto !important;
+            padding: 0 !important;
+            background: transparent !important;
         }
 
-        #qr-reader__scan_region video {
-            border-radius: 14px;
-            object-fit: cover;
+        #qr-reader video {
+            width: 100% !important;
+            height: auto !important;
+            max-height: 65vh !important;
+            border-radius: 14px !important;
+            display: block !important;
+            margin: 0 auto !important;
+        }
+
+        #qr-reader__scan_region {
+            width: 100% !important;
+            min-height: 260px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+
+        #scannerLoading, #scannerPlaceholder {
+            min-height: 280px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
         }
 
         .stat-card {
@@ -600,15 +622,44 @@
                 }
             }
 
+            const qrboxFunction = function(viewfinderWidth, viewfinderHeight) {
+                const minEdge = Math.min(viewfinderWidth, viewfinderHeight);
+                const size = Math.floor(minEdge * 0.72);
+                const safeSize = Math.min(size, minEdge - 20);
+                return {
+                    width: Math.max(160, safeSize),
+                    height: Math.max(160, safeSize)
+                };
+            };
+
             const config = { 
                 fps: 15, 
-                qrbox: (viewfinderWidth, viewfinderHeight) => {
-                    const minEdge = Math.min(viewfinderWidth, viewfinderHeight);
-                    const qrboxSize = Math.floor(minEdge * 0.75);
-                    return { width: qrboxSize, height: qrboxSize };
-                },
-                aspectRatio: 1.0
+                qrbox: qrboxFunction,
+                experimentalFeatures: {
+                    useBarCodeDetectorIfSupported: true
+                }
             };
+
+            function fixVideoLayout() {
+                const reader = document.getElementById('qr-reader');
+                if (reader) {
+                    reader.style.width = '100%';
+                    reader.style.maxWidth = '100%';
+                }
+                const scanRegion = document.getElementById('qr-reader__scan_region');
+                if (scanRegion) {
+                    scanRegion.style.width = '100%';
+                }
+                const videoEl = document.querySelector('#qr-reader video');
+                if (videoEl) {
+                    videoEl.style.width = '100%';
+                    videoEl.style.height = 'auto';
+                    videoEl.style.maxHeight = '65vh';
+                    videoEl.style.display = 'block';
+                    videoEl.style.margin = '0 auto';
+                    videoEl.style.borderRadius = '14px';
+                }
+            }
 
             function onCameraStarted() {
                 if (loading) loading.classList.add('d-none');
@@ -618,6 +669,11 @@
                     btnStart.innerHTML = '<i class="fa-solid fa-play me-1"></i> Buka Kamera';
                 }
                 if (btnStop) btnStop.classList.remove('d-none');
+
+                fixVideoLayout();
+                setTimeout(fixVideoLayout, 150);
+                setTimeout(fixVideoLayout, 400);
+                setTimeout(fixVideoLayout, 800);
 
                 // Izin sudah aktif, ambil daftar kamera untuk opsi ganti kamera
                 QrClass.getCameras().then(devices => {
@@ -658,6 +714,8 @@
                 showCameraError(userMsg);
             }
 
+            const isMobile = /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent);
+
             // Jika user secara manual memilih kamera tertentu
             if (currentCameraId) {
                 html5QrCode.start(currentCameraId, config, onScanSuccess, () => {})
@@ -666,17 +724,37 @@
                 return;
             }
 
-            // Di smartphone / browser, prioritaskan kamera belakang (facingMode: "environment")
-            html5QrCode.start({ facingMode: "environment" }, config, onScanSuccess, () => {})
-                .then(onCameraStarted)
-                .catch(errEnv => {
-                    console.warn("Kamera belakang tidak tersedia, mencoba kamera depan...", errEnv);
+            if (isMobile) {
+                // Di smartphone / tablet, prioritaskan kamera belakang (environment)
+                html5QrCode.start({ facingMode: "environment" }, config, onScanSuccess, () => {})
+                    .then(onCameraStarted)
+                    .catch(errEnv => {
+                        console.warn("Kamera belakang tidak tersedia, mencoba kamera depan...", errEnv);
+                        html5QrCode.start({ facingMode: "user" }, config, onScanSuccess, () => {})
+                            .then(onCameraStarted)
+                            .catch(errUser => {
+                                handleCameraError(errEnv.name === 'NotAllowedError' ? errEnv : errUser);
+                            });
+                    });
+            } else {
+                // Di Laptop / Desktop: ambil daftar webcam
+                QrClass.getCameras().then(devices => {
+                    if (devices && devices.length > 0) {
+                        currentCameraId = devices[0].id;
+                        html5QrCode.start(currentCameraId, config, onScanSuccess, () => {})
+                            .then(onCameraStarted)
+                            .catch(handleCameraError);
+                    } else {
+                        html5QrCode.start({ facingMode: "user" }, config, onScanSuccess, () => {})
+                            .then(onCameraStarted)
+                            .catch(handleCameraError);
+                    }
+                }).catch(() => {
                     html5QrCode.start({ facingMode: "user" }, config, onScanSuccess, () => {})
                         .then(onCameraStarted)
-                        .catch(errUser => {
-                            handleCameraError(errEnv.name === 'NotAllowedError' ? errEnv : errUser);
-                        });
+                        .catch(handleCameraError);
                 });
+            }
         }
 
         function onCameraChange(cameraId) {
