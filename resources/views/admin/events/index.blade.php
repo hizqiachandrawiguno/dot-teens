@@ -18,8 +18,14 @@
         .navbar-custom { background: rgba(15, 23, 42, 0.8); backdrop-filter: blur(15px); border-bottom: 1px solid rgba(255,255,255,0.05); }
         .glass-card { background: rgba(255, 255, 255, 0.03); border: 1px solid rgba(255, 255, 255, 0.05); border-radius: 20px; backdrop-filter: blur(10px); padding: 25px; transition: 0.3s; }
         .glass-card:hover { border-color: rgba(96, 165, 250, 0.3); transform: translateY(-5px); }
-        .form-control { background: rgba(255,255,255,0.05); border: 1px solid rgba(255,255,255,0.1); color: #fff; border-radius: 12px; }
-        .form-control:focus { background: rgba(255,255,255,0.1); color: #fff; border-color: #60A5FA; box-shadow: none; }
+        .form-control { background: rgba(255,255,255,0.07); border: 1px solid rgba(255,255,255,0.15); color: #fff; border-radius: 12px; padding: 10px 14px; }
+        .form-control:focus { background: rgba(255,255,255,0.12); color: #fff; border-color: #60A5FA; box-shadow: 0 0 0 3px rgba(96, 165, 250, 0.25); }
+        .form-control::placeholder,
+        .form-control::-webkit-input-placeholder,
+        .form-control::-moz-placeholder {
+            color: #94A3B8 !important;
+            opacity: 1 !important;
+        }
         .btn-primary-gradient { background: linear-gradient(90deg, #60A5FA, #8B5CF6); border: none; border-radius: 12px; font-weight: 600; }
         
         /* FIX: Membasmi background putih Bootstrap di tabel */
@@ -78,7 +84,10 @@
                     </div>
                     <div class="mb-4">
                         <label class="small text-secondary mb-1">Poster Acara (Opsional)</label>
-                        <input type="file" name="image" class="form-control" accept="image/*">
+                        <input type="file" name="image" class="form-control" accept="image/jpeg,image/png,image/jpg,image/webp">
+                        <div class="form-text small" style="color: #94A3B8; font-size: 11.5px; margin-top: 5px;">
+                            <i class="fa-solid fa-circle-info me-1 text-info"></i> Format: JPG, PNG, WEBP. Maksimal 10 MB.
+                        </div>
                     </div>
                     <button type="submit" class="btn btn-primary-gradient w-100 py-2 text-white shadow">Posting Acara Sekarang</button>
                 </form>

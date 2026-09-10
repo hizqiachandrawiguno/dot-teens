@@ -115,8 +115,12 @@ class AdminController extends Controller
     {
         $request->validate([
             'title' => 'required',
-            'image' => 'required|image|mimes:jpeg,png,jpg,webp|max:2048',
+            'image' => 'required|image|mimes:jpeg,png,jpg,webp|max:10240', // Maksimal 10 MB
             'drive_link' => 'nullable|url', 
+        ], [
+            'image.max' => 'Ukuran file foto galeri terlalu besar, maksimal 10 MB.',
+            'image.image' => 'File yang diunggah harus berupa file gambar.',
+            'image.mimes' => 'Format gambar yang didukung: JPEG, PNG, JPG, atau WEBP.',
         ]);
 
         $imageName = time().'.'.$request->image->extension();  
