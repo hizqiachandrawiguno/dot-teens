@@ -592,14 +592,50 @@
                 });
         }
 
+        let isStarting = false;
+
         async function startScanner() {
+            if (isStarting) return;
+            isStarting = true;
+
             const btnStart = document.getElementById('btnStartScan');
             const placeholder = document.getElementById('scannerPlaceholder');
             const loading = document.getElementById('scannerLoading');
             const btnStop = document.getElementById('btnStopScan');
+            const controlsBar = document.getElementById('cameraControlsBar');
 
-            // Cek protokol HTTPS / secure context di browser Chrome/Safari
+            // Reset UI
+            if (placeholder) placeholder.classList.add('d-none');
+            if (controlsBar) controlsBar.classList.add('d-none');
+            if (loading) loading.classList.remove('d-none');
+            if (btnStart) {
+                btnStart.disabled = true;
+                btnStart.innerHTML = '<span class="spinner-border spinner-border-sm me-1"></span> Menghubungkan Kamera...';
+            }
+
+            function resetLoadingUI() {
+                isStarting = false;
+                if (loading) loading.classList.add('d-none');
+                if (btnStart) {
+                    btnStart.disabled = false;
+                    btnStart.classList.remove('d-none');
+                    btnStart.innerHTML = '<i class="fa-solid fa-play me-1"></i> Buka Kamera';
+                }
+            }
+
+            // Safety timeout 12 detik agar tidak macet di status loading
+            const startTimeout = setTimeout(() => {
+                if (isStarting) {
+                    console.warn("Camera start timeout reached");
+                    resetLoadingUI();
+                    showCameraError("Kamera membutuhkan waktu terlalu lama untuk merespons. Silakan coba lagi atau gunakan opsi 'Scan dari Foto QR'.");
+                }
+            }, 12000);
+
+            // Cek protokol HTTPS / secure context
             if (location.protocol !== 'https:' && location.hostname !== 'localhost' && location.hostname !== '127.0.0.1') {
+                clearTimeout(startTimeout);
+                resetLoadingUI();
                 const httpsUrl = 'https://' + location.host + location.pathname + location.search;
                 showCameraError(
                     "Browser HP mewajibkan koneksi <strong>HTTPS aman</strong> untuk mengakses kamera.<br><br>" +
@@ -611,6 +647,8 @@
 
             // Cek navigator mediaDevices
             if (!navigator.mediaDevices || !navigator.mediaDevices.getUserMedia) {
+                clearTimeout(startTimeout);
+                resetLoadingUI();
                 showCameraError(
                     "Browser pada perangkat ini tidak mengizinkan akses kamera langsung.<br><br>" +
                     "Pastikan Anda menggunakan Google Chrome atau Safari versi terbaru dan situs dibuka via <strong>HTTPS</strong>.<br>" +
@@ -619,31 +657,39 @@
                 return;
             }
 
-            // Tampilkan status loading
-            if (placeholder) placeholder.classList.add('d-none');
-            if (loading) loading.classList.remove('d-none');
-            if (btnStart) {
-                btnStart.disabled = true;
-                btnStart.innerHTML = '<span class="spinner-border spinner-border-sm me-1"></span> Menghubungkan Kamera...';
-            }
-
             let QrClass;
             try {
                 QrClass = await ensureQrLibrary();
             } catch (err) {
+                clearTimeout(startTimeout);
+                resetLoadingUI();
                 console.error("Gagal memuat library:", err);
                 showCameraError("Library scanner belum termuat sempurna. Silakan periksa koneksi internet Anda dan tekan 'Coba Lagi'.");
                 return;
             }
 
-            if (!html5QrCode) {
+            // Bersihkan instance lama jika ada
+            if (html5QrCode) {
                 try {
-                    html5QrCode = new QrClass("qr-reader");
+                    if (html5QrCode.isScanning) {
+                        await html5QrCode.stop();
+                    }
+                    html5QrCode.clear();
                 } catch (e) {
-                    console.error("Init scanner error:", e);
-                    showCameraError("Gagal menginisialisasi scanner: " + e.message);
-                    return;
+                    console.log("Cleanup previous scanner:", e);
                 }
+                html5QrCode = null;
+            }
+
+            // Inisialisasi instance baru yang bersih
+            try {
+                html5QrCode = new QrClass("qr-reader", { verbose: false });
+            } catch (e) {
+                clearTimeout(startTimeout);
+                resetLoadingUI();
+                console.error("Init scanner error:", e);
+                showCameraError("Gagal menginisialisasi scanner: " + e.message);
+                return;
             }
 
             const qrboxFunction = function(viewfinderWidth, viewfinderHeight) {
@@ -658,10 +704,7 @@
 
             const config = { 
                 fps: 15, 
-                qrbox: qrboxFunction,
-                experimentalFeatures: {
-                    useBarCodeDetectorIfSupported: true
-                }
+                qrbox: qrboxFunction
             };
 
             function fixVideoLayout() {
@@ -686,6 +729,9 @@
             }
 
             function onCameraStarted() {
+                clearTimeout(startTimeout);
+                isStarting = false;
+
                 if (loading) loading.classList.add('d-none');
                 if (btnStart) {
                     btnStart.classList.add('d-none');
@@ -701,9 +747,8 @@
                 fixVideoLayout();
                 setTimeout(fixVideoLayout, 150);
                 setTimeout(fixVideoLayout, 400);
-                setTimeout(fixVideoLayout, 800);
 
-                // Deteksi kapabilitas kamera (Torch / Senter)
+                // Deteksi kapabilitas Torch / Senter
                 try {
                     const caps = html5QrCode.getRunningTrackCameraCapabilities();
                     if (caps && caps.torch) {
@@ -712,7 +757,7 @@
                     }
                 } catch (e) {}
 
-                // Terapkan autofocus continuous otomatis setelah stream stabil
+                // Terapkan autofocus continuous otomatis setelah stream aktif
                 setTimeout(() => {
                     if (html5QrCode && html5QrCode.isScanning) {
                         html5QrCode.applyVideoConstraints({
@@ -720,9 +765,9 @@
                             advanced: [{ focusMode: "continuous" }]
                         }).catch(() => {});
                     }
-                }, 800);
+                }, 1000);
 
-                // Izin sudah aktif, ambil daftar kamera untuk opsi ganti kamera
+                // Ambil daftar kamera untuk switcher jika lebih dari 1
                 QrClass.getCameras().then(devices => {
                     if (devices && devices.length > 1) {
                         availableCameras = devices;
@@ -744,6 +789,9 @@
             }
 
             function handleCameraError(err) {
+                clearTimeout(startTimeout);
+                resetLoadingUI();
+
                 console.error("Gagal start kamera:", err);
                 let userMsg = "Tidak dapat mengakses kamera.";
                 if (err.name === 'NotAllowedError' || err.name === 'PermissionDeniedError') {
@@ -763,7 +811,7 @@
 
             const isMobile = /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent);
 
-            // Jika user secara manual memilih kamera tertentu
+            // Jika user memilih kamera manual dari dropdown
             if (currentCameraId) {
                 html5QrCode.start(currentCameraId, config, onScanSuccess, () => {})
                     .then(onCameraStarted)
@@ -772,29 +820,21 @@
             }
 
             if (isMobile) {
-                // Di smartphone / tablet, prioritaskan kamera belakang (environment) dengan HD & Continuous Autofocus
-                const mobileConstraints = {
-                    facingMode: "environment",
-                    width: { ideal: 1280 },
-                    height: { ideal: 720 },
-                    focusMode: "continuous"
-                };
-                html5QrCode.start(mobileConstraints, config, onScanSuccess, () => {})
+                // Di smartphone: Gunakan facingMode standar murni "environment"
+                html5QrCode.start({ facingMode: "environment" }, config, onScanSuccess, () => {})
                     .then(onCameraStarted)
                     .catch(errEnv => {
-                        console.warn("Kamera belakang HD gagal, mencoba fallback standar...", errEnv);
-                        html5QrCode.start({ facingMode: "environment" }, config, onScanSuccess, () => {})
+                        console.warn("Gagal kamera environment, fallback ke user...", errEnv);
+                        if (errEnv.name === 'NotAllowedError' || errEnv.name === 'PermissionDeniedError') {
+                            handleCameraError(errEnv);
+                            return;
+                        }
+                        html5QrCode.start({ facingMode: "user" }, config, onScanSuccess, () => {})
                             .then(onCameraStarted)
-                            .catch(() => {
-                                html5QrCode.start({ facingMode: "user" }, config, onScanSuccess, () => {})
-                                    .then(onCameraStarted)
-                                    .catch(errUser => {
-                                        handleCameraError(errEnv.name === 'NotAllowedError' ? errEnv : errUser);
-                                    });
-                            });
+                            .catch(handleCameraError);
                     });
             } else {
-                // Di Laptop / Desktop: ambil daftar webcam
+                // Di Laptop / Desktop
                 QrClass.getCameras().then(devices => {
                     if (devices && devices.length > 0) {
                         currentCameraId = devices[0].id;
@@ -932,7 +972,8 @@
             }
         }
 
-        function stopScanner() {
+        async function stopScanner() {
+            isStarting = false;
             const ph = document.getElementById('scannerPlaceholder');
             const loading = document.getElementById('scannerLoading');
             const btnStart = document.getElementById('btnStartScan');
@@ -948,17 +989,18 @@
             }
             if (btnStop) btnStop.classList.add('d-none');
 
-            if (html5QrCode && html5QrCode.isScanning) {
-                html5QrCode.stop().then(() => {
+            if (html5QrCode) {
+                try {
+                    if (html5QrCode.isScanning) {
+                        await html5QrCode.stop();
+                    }
                     html5QrCode.clear();
-                    if (ph) ph.classList.remove('d-none');
-                }).catch(err => {
-                    console.log(err);
-                    if (ph) ph.classList.remove('d-none');
-                });
-            } else {
-                if (ph) ph.classList.remove('d-none');
+                } catch (err) {
+                    console.log("Stop scanner error:", err);
+                }
+                html5QrCode = null;
             }
+            if (ph) ph.classList.remove('d-none');
         }
 
         function onScanSuccess(decodedText) {
