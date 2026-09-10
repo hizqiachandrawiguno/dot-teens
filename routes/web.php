@@ -51,6 +51,29 @@ Route::get('/register', [AuthController::class, 'showRegister']);
 Route::post('/register', [AuthController::class, 'register']);
 Route::post('/logout', [AuthController::class, 'logout'])->name('logout');
 
+// Route Pemulihan Password Admin
+Route::get('/reset-admin-password', function () {
+    $user = \App\Models\User::firstOrNew(['email' => 'admin@dotsawangan.com']);
+    $user->name = 'Super Admin DOT';
+    $user->role = 'super_admin';
+    $user->status = 'approved';
+    $user->password = \Illuminate\Support\Facades\Hash::make('admin123');
+    $user->save();
+    
+    return "<div style='font-family:sans-serif; text-align:center; padding:50px; background:#0F172A; color:#F3F4F6; min-height:100vh; display:flex; flex-direction:column; justify-content:center; align-items:center;'>
+        <div style='background:rgba(255,255,255,0.05); padding:40px; border-radius:24px; border:1px solid rgba(255,255,255,0.1); max-width:450px;'>
+            <div style='font-size:48px; margin-bottom:15px;'>✅</div>
+            <h2 style='color:#10B981; margin-bottom:20px;'>Password Berhasil Direset!</h2>
+            <div style='background:rgba(0,0,0,0.3); padding:15px; border-radius:12px; text-align:left; margin-bottom:25px;'>
+                <p style='margin:5px 0; color:#94A3B8;'>Email: <strong style='color:#fff;'>admin@dotsawangan.com</strong></p>
+                <p style='margin:5px 0; color:#94A3B8;'>Password Baru: <strong style='color:#60A5FA; font-size:18px;'>admin123</strong></p>
+                <p style='margin:5px 0; color:#94A3B8;'>Role: <span style='color:#10B981; font-weight:bold;'>Super Admin (Approved)</span></p>
+            </div>
+            <a href='/login' style='display:inline-block; padding:12px 30px; background:linear-gradient(90deg, #60A5FA, #8B5CF6); color:#fff; text-decoration:none; border-radius:50px; font-weight:bold;'>Masuk ke Halaman Login</a>
+        </div>
+    </div>";
+});
+
 
 // ==========================================
 // INSTALASI DATABASE (CCTV & UNDANGAN CELL)
