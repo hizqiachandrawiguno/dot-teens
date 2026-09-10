@@ -1,0 +1,10 @@
+---
+deployment:
+  tasks:
+    - export DEPLOYPATH=/home/dotsawan/public_html/
+    - /bin/cp -R app $DEPLOYPATH
+    - /bin/cp -R routes $DEPLOYPATH
+    - /bin/cp -R resources $DEPLOYPATH
+    - /bin/cp -R database $DEPLOYPATH
+    - /bin/cp -R public/images/header.* $DEPLOYPATH/public/images/
+    - /bin/cp .htaccess $DEPLOYPATH
