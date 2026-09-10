@@ -3,6 +3,8 @@ deployment:
   tasks:
     - export DEPLOYPATH=/home/dotsawan/public_html/
     - /bin/cp -R app $DEPLOYPATH
+    - /bin/cp -R bootstrap $DEPLOYPATH
+    - /bin/cp -R config $DEPLOYPATH
     - /bin/cp -R routes $DEPLOYPATH
     - /bin/cp -R resources $DEPLOYPATH
     - /bin/cp -R database $DEPLOYPATH
