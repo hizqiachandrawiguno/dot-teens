@@ -93,15 +93,15 @@
                             <tbody>
                                 @forelse($attendees as $index => $attendee)
                                 <tr>
-                                    <td class="text-dark">{{ $index + 1 }}</td>
-                                    <td class="fw-bold text-dark">{{ $attendee->name }}</td>
+                                    <td class="text-muted">{{ $index + 1 }}</td>
+                                    <td class="fw-bold text-white">{{ $attendee->name }}</td>
                                     <td>
                                         @if($attendee->phone_number)
-                                            <span class="badge bg-dark fw-normal px-3 py-2 rounded-pill shadow-sm" style="color: #ffffff !important; letter-spacing: 1px;">
-                                                <i class="fa-solid fa-phone fa-xs me-2" style="color: #9ca3af;"></i>{{ $attendee->phone_number }}
+                                            <span class="badge px-3 py-2 rounded-pill shadow-sm" style="background: rgba(56, 189, 248, 0.15); color: #38BDF8 !important; border: 1px solid rgba(56, 189, 248, 0.3); letter-spacing: 1px;">
+                                                <i class="fa-solid fa-phone fa-xs me-2"></i>{{ $attendee->phone_number }}
                                             </span>
                                         @else
-                                            <span class="text-secondary fw-bold">-</span>
+                                            <span class="text-muted fw-bold">-</span>
                                         @endif
                                     </td>
                                     <td>
@@ -114,7 +114,7 @@
                                 </tr>
                                 @empty
                                 <tr>
-                                    <td colspan="4" class="text-center py-4 text-dark fst-italic">Tidak ada data kehadiran di tanggal ini.</td>
+                                    <td colspan="4" class="text-center py-4 text-muted fst-italic">Tidak ada data kehadiran di tanggal ini.</td>
                                 </tr>
                                 @endforelse
                             </tbody>

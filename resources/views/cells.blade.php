@@ -79,6 +79,7 @@
         .floating-wa:hover { transform: scale(1.1) rotate(10deg); color: white; }
 
         section { padding: 100px 0; position: relative; z-index: 1; }
+        .text-secondary, .text-muted { color: #94A3B8 !important; }
     </style>
 </head>
 <body>

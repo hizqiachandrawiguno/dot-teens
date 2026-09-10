@@ -96,8 +96,8 @@
         .gallery-item:hover img { transform: scale(1.1); filter: brightness(0.6) blur(2px); }
         .overlay { position: absolute; top: 0; left: 0; right: 0; bottom: 0; display: flex; flex-direction: column; justify-content: center; align-items: center; background: rgba(139, 92, 246, 0.4); opacity: 0; transition: opacity 0.4s ease; }
         .gallery-item:hover .overlay { opacity: 1; }
-        .overlay h4 { color: white; font-weight: 700; transform: translateY(20px); transition: transform 0.4s ease; text-shadow: 0 2px 10px rgba(0,0,0,0.5);}
         .gallery-item:hover .overlay h4 { transform: translateY(0); }
+        .text-secondary, .text-muted { color: #94A3B8 !important; }
     </style>
 </head>
 <body data-bs-spy="scroll" data-bs-target="#navbarMain" data-bs-offset="150">

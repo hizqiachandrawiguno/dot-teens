@@ -37,11 +37,10 @@
             padding: 25px; 
             box-shadow: 0 8px 30px rgba(0, 0, 0, 0.3);
         }
-        .glass-card .text-white,
-        .modal-content .text-white {
+        .text-white {
             color: #FFFFFF !important;
         }
-        .glass-card .text-secondary {
+        .text-secondary, .text-muted {
             color: #94A3B8 !important;
         }
         .btn-gradient { 
@@ -205,17 +204,17 @@
             <!-- MODAL DETAIL JEMAAT PASTORAL -->
             <div class="modal fade text-start" id="detailPastoral{{ $m->id }}" tabindex="-1" aria-hidden="true">
                 <div class="modal-dialog modal-dialog-centered modal-lg">
-                    <div class="modal-content rounded-4 shadow-lg" style="background: #FFFFFF; border: 1px solid #BAE6FD;">
-                        <div class="modal-header border-bottom pb-3 pt-4 px-4" style="border-color: #E0F2FE !important;">
+                    <div class="modal-content rounded-4 shadow-lg" style="background: #112340; border: 1px solid rgba(56, 189, 248, 0.25);">
+                        <div class="modal-header border-bottom pb-3 pt-4 px-4" style="border-color: rgba(56, 189, 248, 0.15) !important;">
                             <div>
-                                <span class="badge rounded-pill px-3 py-1 mb-1" style="background: #E0F2FE; color: #0284C7; border: 1px solid #BAE6FD;">
+                                <span class="badge rounded-pill px-3 py-1 mb-1" style="background: rgba(56, 189, 248, 0.15); color: #38BDF8; border: 1px solid rgba(56, 189, 248, 0.3);">
                                     Profil Lengkap Jemaat
                                 </span>
-                                <h5 class="modal-title fw-bold mb-0" style="color: #0F2A44;">
-                                    <i class="fa-solid fa-user me-2 text-primary"></i> {{ $m->name }}
+                                <h5 class="modal-title fw-bold mb-0 text-white">
+                                    <i class="fa-solid fa-user me-2" style="color: #38BDF8;"></i> {{ $m->name }}
                                 </h5>
                             </div>
-                            <button type="button" class="btn-close shadow-none" data-bs-dismiss="modal"></button>
+                            <button type="button" class="btn-close btn-close-white shadow-none" data-bs-dismiss="modal"></button>
                         </div>
                         <div class="modal-body p-4">
                             <div class="row g-4">

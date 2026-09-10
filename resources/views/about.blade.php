@@ -113,6 +113,7 @@
         @keyframes floatingIcon { 0% { transform: translateY(0px); } 50% { transform: translateY(-6px); } 100% { transform: translateY(0px); } }
 
         section { padding: 80px 0; position: relative; z-index: 1; }
+        .text-secondary, .text-muted { color: #94A3B8 !important; }
     </style>
 </head>
 <body>

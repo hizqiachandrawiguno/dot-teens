@@ -215,6 +215,18 @@
             border: 1px solid var(--card-border);
         }
 
+        /* TEXT CONTRAST OVERRIDES */
+        .text-secondary, .text-muted {
+            color: #94A3B8 !important;
+        }
+        .text-white {
+            color: #FFFFFF !important;
+        }
+        select option {
+            background-color: #0D1C33 !important;
+            color: #FFFFFF !important;
+        }
+
         /* SCROLLBAR */
         ::-webkit-scrollbar { width: 6px; height: 6px; }
         ::-webkit-scrollbar-track { background: #0A1628; }
@@ -516,13 +528,13 @@
                             <h5 class="fw-bold text-white mb-0"><i class="fa-solid fa-id-badge text-info me-2"></i> Daftar Seluruh Pengurus Website</h5>
                             
                             <select id="filterDivisi" class="form-select form-select-sm w-auto rounded-pill px-3 py-1 text-white" style="cursor: pointer;">
-                                <option value="all" class="text-dark">⚡ Semua Divisi</option>
-                                <option value="super_admin" class="text-dark">Super Admin</option>
-                                <option value="div_acara" class="text-dark">Divisi Acara</option>
-                                <option value="div_cell" class="text-dark">Divisi Cell</option>
-                                <option value="div_pastoral" class="text-dark">Divisi Pastoral</option>
-                                <option value="div_prayer" class="text-dark">Divisi Prayer</option>
-                                <option value="div_sosmed" class="text-dark">Divisi Sosmed</option>
+                                <option value="all">⚡ Semua Divisi</option>
+                                <option value="super_admin">Super Admin</option>
+                                <option value="div_acara">Divisi Acara</option>
+                                <option value="div_cell">Divisi Cell</option>
+                                <option value="div_pastoral">Divisi Pastoral</option>
+                                <option value="div_prayer">Divisi Prayer</option>
+                                <option value="div_sosmed">Divisi Sosmed</option>
                             </select>
                         </div>
 
@@ -755,9 +767,9 @@
                             </div>
                             
                             <select id="filterUndangan" class="form-select form-select-sm w-auto rounded-pill px-3 py-1 text-white" style="cursor: pointer;">
-                                <option value="all" class="text-dark">⚡ Semua Status</option>
-                                <option value="belum" class="text-dark">⏳ Belum Diundang</option>
-                                <option value="sudah" class="text-dark">✅ Sudah Diundang</option>
+                                <option value="all">⚡ Semua Status</option>
+                                <option value="belum">⏳ Belum Diundang</option>
+                                <option value="sudah">✅ Sudah Diundang</option>
                             </select>
                         </div>
 
@@ -812,17 +824,17 @@
                                             <!-- MODAL DETAIL DATA JEMAAT BARU -->
                                             <div class="modal fade text-start" id="detailMember{{ $member->id }}" tabindex="-1" aria-hidden="true">
                                                 <div class="modal-dialog modal-dialog-centered modal-lg">
-                                                    <div class="modal-content rounded-4 shadow-lg" style="background: #FFFFFF; border: 1px solid #BAE6FD;">
-                                                        <div class="modal-header border-bottom pb-3 pt-4 px-4" style="border-color: #E0F2FE !important;">
+                                                    <div class="modal-content rounded-4 shadow-lg" style="background: #112340; border: 1px solid rgba(56, 189, 248, 0.25);">
+                                                        <div class="modal-header border-bottom pb-3 pt-4 px-4" style="border-color: rgba(56, 189, 248, 0.15) !important;">
                                                             <div>
-                                                                <span class="badge rounded-pill px-3 py-1 mb-1" style="background: #E0F2FE; color: #0284C7; border: 1px solid #BAE6FD;">
+                                                                <span class="badge rounded-pill px-3 py-1 mb-1" style="background: rgba(56, 189, 248, 0.15); color: #38BDF8; border: 1px solid rgba(56, 189, 248, 0.3);">
                                                                     Data Pendaftaran Jemaat Baru
                                                                 </span>
-                                                                <h5 class="modal-title fw-bold mb-0" style="color: #0F2A44;">
-                                                                    <i class="fa-solid fa-user me-2 text-primary"></i> {{ $member->name }}
+                                                                <h5 class="modal-title fw-bold mb-0 text-white">
+                                                                    <i class="fa-solid fa-user me-2" style="color: #38BDF8;"></i> {{ $member->name }}
                                                                 </h5>
                                                             </div>
-                                                            <button type="button" class="btn-close shadow-none" data-bs-dismiss="modal"></button>
+                                                            <button type="button" class="btn-close btn-close-white shadow-none" data-bs-dismiss="modal"></button>
                                                         </div>
                                                         <div class="modal-body p-4">
                                                             <div class="row g-4">

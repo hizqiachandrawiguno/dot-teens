@@ -80,6 +80,34 @@
             letter-spacing: -0.02em;
         }
 
+        p {
+            color: #CBD5E1;
+        }
+
+        /* GLOBAL TEXT CONTRAST & READABILITY */
+        .text-muted, .text-secondary {
+            color: #94A3B8 !important;
+        }
+        .text-dark {
+            color: #FFFFFF !important;
+        }
+        .text-white {
+            color: #FFFFFF !important;
+        }
+        .text-ice {
+            color: #E2E8F0 !important;
+        }
+        .text-light {
+            color: #F8FAFC !important;
+        }
+        label {
+            color: #CBD5E1 !important;
+        }
+        select option {
+            background-color: #0B182B !important;
+            color: #FFFFFF !important;
+        }
+
         /* VIBRANT GRADIENT TEXTS */
         .text-gradient-cyan {
             background: linear-gradient(135deg, #38BDF8 0%, #60A5FA 50%, #93C5FD 100%);
