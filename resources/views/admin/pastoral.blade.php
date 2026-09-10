@@ -196,6 +196,21 @@
                 <button type="button" class="btn btn-sm btn-outline-info rounded-circle" data-bs-toggle="modal" data-bs-target="#detailPastoral{{ $m->id }}" title="Lihat Profil Lengkap">
                     <i class="fa-solid fa-eye"></i>
                 </button>
+                <button type="button" class="btn btn-sm btn-outline-info rounded-circle" onclick="copyMemberWa(this)" title="Salin Data ke Format WhatsApp"
+                    data-name="{{ e($m->name) }}"
+                    data-phone="{{ e($m->phone_number) }}"
+                    data-birth="{{ $m->birth_date ? date('d F Y', strtotime($m->birth_date)) . ' (' . \Carbon\Carbon::parse($m->birth_date)->age . ' Tahun)' : '-' }}"
+                    data-email="{{ e($m->email ?: '-') }}"
+                    data-ig="{{ e($m->instagram ?: '-') }}"
+                    data-hobby="{{ e($m->hobby ?: '-') }}"
+                    data-address="{{ e($m->address ?: '-') }}"
+                    data-school="{{ e($m->school ?: '-') }}"
+                    data-cell="{{ e($m->fire_cell ?: 'Belum Terdaftar') }}"
+                    data-parent="{{ e($m->parent_name ?: '-') }}"
+                    data-parent-phone="{{ e($m->parent_phone ?: '-') }}"
+                    data-registered="{{ date('d M Y, H:i', strtotime($m->created_at)) }} WIB">
+                    <i class="fa-regular fa-copy"></i>
+                </button>
                 <a href="/admin/pastoral/member/delete/{{ $m->id }}" class="btn btn-sm btn-outline-danger rounded-circle" onclick="return confirm('Yakin ingin menghapus jemaat bernama {{ $m->name }}?');" title="Hapus Jemaat">
                     <i class="fa-solid fa-trash-can"></i>
                 </a>
@@ -297,14 +312,29 @@
                                 </div>
                             </div>
                         </div>
-                        <div class="modal-footer border-top border-secondary border-opacity-25 p-3 px-4 d-flex justify-content-between">
-                            @if($m->phone_number)
-                                <a href="https://wa.me/{{ preg_replace('/^0/', '62', preg_replace('/[^0-9]/', '', $m->phone_number)) }}" target="_blank" class="btn btn-success rounded-pill px-4 fw-bold">
-                                    <i class="fa-brands fa-whatsapp me-2"></i> Chat WhatsApp
-                                </a>
-                            @else
-                                <span></span>
-                            @endif
+                        <div class="modal-footer border-top border-secondary border-opacity-25 p-3 px-4 d-flex justify-content-between align-items-center flex-wrap gap-2">
+                            <div class="d-flex gap-2 flex-wrap">
+                                @if($m->phone_number)
+                                    <a href="https://wa.me/{{ preg_replace('/^0/', '62', preg_replace('/[^0-9]/', '', $m->phone_number)) }}" target="_blank" class="btn btn-success rounded-pill px-4 fw-bold">
+                                        <i class="fa-brands fa-whatsapp me-2"></i> Chat WhatsApp
+                                    </a>
+                                @endif
+                                <button type="button" class="btn btn-outline-info rounded-pill px-4 fw-bold" onclick="copyMemberWa(this)"
+                                    data-name="{{ e($m->name) }}"
+                                    data-phone="{{ e($m->phone_number) }}"
+                                    data-birth="{{ $m->birth_date ? date('d F Y', strtotime($m->birth_date)) . ' (' . \Carbon\Carbon::parse($m->birth_date)->age . ' Tahun)' : '-' }}"
+                                    data-email="{{ e($m->email ?: '-') }}"
+                                    data-ig="{{ e($m->instagram ?: '-') }}"
+                                    data-hobby="{{ e($m->hobby ?: '-') }}"
+                                    data-address="{{ e($m->address ?: '-') }}"
+                                    data-school="{{ e($m->school ?: '-') }}"
+                                    data-cell="{{ e($m->fire_cell ?: 'Belum Terdaftar') }}"
+                                    data-parent="{{ e($m->parent_name ?: '-') }}"
+                                    data-parent-phone="{{ e($m->parent_phone ?: '-') }}"
+                                    data-registered="{{ date('d M Y, H:i', strtotime($m->created_at)) }} WIB">
+                                    <i class="fa-regular fa-copy me-2"></i> Salin Data (WA)
+                                </button>
+                            </div>
                             <button type="button" class="btn btn-secondary rounded-pill px-4" data-bs-dismiss="modal">Tutup</button>
                         </div>
                     </div>
@@ -336,5 +366,104 @@
     </div>
 
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <script>
+        // FUNGSI COPY DATA JEMAAT KE FORMAT WHATSAPP
+        function copyMemberWa(btn) {
+            const d = btn.dataset;
+            const text = 
+`📋 *DATA PENDAFTARAN JEMAAT - DOT TEENS*
+━━━━━━━━━━━━━━━━━━━━
+👤 *Nama Lengkap:* ${d.name}
+📱 *No. WhatsApp:* ${d.phone}
+🎂 *Tanggal Lahir:* ${d.birth}
+📧 *Email:* ${d.email}
+📸 *Instagram:* ${d.ig}
+🎨 *Hobi / Minat:* ${d.hobby}
+🏠 *Alamat:* ${d.address}
+
+*Data Tambahan & Komunitas:*
+🏫 *Asal Sekolah:* ${d.school}
+🔥 *Status Cell/Cool:* ${d.cell}
+👨‍👩‍👦 *Nama Orang Tua:* ${d.parent}
+📞 *No. Telp Orang Tua:* ${d.parentPhone}
+⏰ *Waktu Terdaftar:* ${d.registered}
+━━━━━━━━━━━━━━━━━━━━
+_Tuhan Yesus Memberkati_ 🙏`;
+
+            copyTextToClipboard(text, btn);
+        }
+
+        function copyTextToClipboard(text, btn) {
+            const originalHtml = btn.innerHTML;
+            const originalClass = btn.className;
+
+            function showSuccess() {
+                btn.innerHTML = '<i class="fa-solid fa-check me-1 text-success"></i> Berhasil Disalin!';
+                btn.classList.add('border-success', 'text-success');
+                
+                let toast = document.getElementById('copyToast');
+                if (!toast) {
+                    toast = document.createElement('div');
+                    toast.id = 'copyToast';
+                    toast.style.position = 'fixed';
+                    toast.style.bottom = '30px';
+                    toast.style.right = '30px';
+                    toast.style.background = '#0F172A';
+                    toast.style.color = '#38BDF8';
+                    toast.style.border = '1px solid rgba(56, 189, 248, 0.4)';
+                    toast.style.padding = '12px 20px';
+                    toast.style.borderRadius = '30px';
+                    toast.style.boxShadow = '0 10px 25px rgba(0,0,0,0.5)';
+                    toast.style.zIndex = '9999';
+                    toast.style.fontSize = '14px';
+                    toast.style.fontWeight = '600';
+                    toast.style.transition = 'all 0.3s ease';
+                    document.body.appendChild(toast);
+                }
+                toast.innerHTML = '<i class="fa-solid fa-circle-check text-success me-2"></i> Data jemaat berhasil disalin! Siap dishare ke WhatsApp Group.';
+                toast.style.opacity = '1';
+                toast.style.transform = 'translateY(0)';
+
+                setTimeout(() => {
+                    btn.innerHTML = originalHtml;
+                    btn.className = originalClass;
+                }, 2500);
+
+                setTimeout(() => {
+                    if (toast) {
+                        toast.style.opacity = '0';
+                        toast.style.transform = 'translateY(10px)';
+                    }
+                }, 3500);
+            }
+
+            if (navigator.clipboard && window.isSecureContext) {
+                navigator.clipboard.writeText(text).then(showSuccess).catch(err => {
+                    fallbackCopy(text, showSuccess);
+                });
+            } else {
+                fallbackCopy(text, showSuccess);
+            }
+        }
+
+        function fallbackCopy(text, onSuccess) {
+            const textArea = document.createElement("textarea");
+            textArea.value = text;
+            textArea.style.position = "fixed";
+            textArea.style.left = "-999999px";
+            textArea.style.top = "-999999px";
+            document.body.appendChild(textArea);
+            textArea.focus();
+            textArea.select();
+            try {
+                document.execCommand('copy');
+                if (onSuccess) onSuccess();
+            } catch (err) {
+                console.error('Fallback copy error', err);
+                prompt("Salin data berikut untuk WhatsApp:", text);
+            }
+            textArea.remove();
+        }
+    </script>
 </body>
 </html>
