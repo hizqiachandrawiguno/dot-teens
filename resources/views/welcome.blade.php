@@ -418,20 +418,51 @@
             background: var(--navy-card);
             border: 1px solid var(--navy-border);
             border-radius: 18px;
-            padding: 20px;
+            padding: 20px 16px;
             text-align: center;
-            transition: all 0.25s ease;
+            transition: all 0.28s cubic-bezier(0.2, 0.8, 0.2, 1);
             height: 100%;
             display: flex;
             flex-direction: column;
             justify-content: center;
+            cursor: pointer;
+            position: relative;
+            user-select: none;
         }
 
         .cell-group-chip:hover {
             border-color: var(--cyan-electric);
-            transform: translateY(-3px);
+            transform: translateY(-4px);
             background: var(--navy-card-hover);
-            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.3);
+            box-shadow: 0 14px 30px rgba(0, 0, 0, 0.4), 0 0 20px rgba(56, 189, 248, 0.25);
+        }
+
+        .cell-group-chip .chip-click-hint {
+            opacity: 0.8;
+            transition: opacity 0.2s ease, transform 0.2s ease;
+        }
+
+        .cell-group-chip:hover .chip-click-hint {
+            opacity: 1;
+            transform: scale(1.04);
+        }
+
+        /* COOL MODAL STYLES */
+        .cool-gallery-thumb {
+            width: 100%;
+            height: 120px;
+            object-fit: cover;
+            border-radius: 14px;
+            border: 1px solid var(--navy-border);
+            transition: transform 0.3s ease, border-color 0.3s ease, box-shadow 0.3s ease;
+            cursor: pointer;
+            background: #060D18;
+        }
+
+        .cool-gallery-thumb:hover {
+            transform: scale(1.05);
+            border-color: var(--cyan-electric);
+            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.5), 0 0 15px rgba(56, 189, 248, 0.3);
         }
 
         /* GALLERY CARDS */
@@ -847,7 +878,7 @@
             <div class="row align-items-center g-5">
                 <div class="col-lg-7 text-center text-lg-start" data-aos="fade-right" data-aos-duration="800">
                     <span class="pill-badge pill-badge-hero mb-3">
-                        <i class="fa-solid fa-cross me-1"></i> GBI ERC SAWANGAN &bull; DRP OUTSTANDING TEENS
+                        GBI ERC SAWANGAN &bull; DRP OUTSTANDING TEENS
                     </span>
 
                     <h1 class="display-4 hero-title mb-4">
@@ -923,43 +954,6 @@
                 </p>
             </div>
 
-            <!-- 3 Core Pillars -->
-            <div class="row g-4 mb-5">
-                <div class="col-md-4" data-aos="fade-up" data-aos-delay="100">
-                    <div class="navy-card h-100 text-center p-4">
-                        <div class="d-inline-flex p-3 rounded-circle mb-3" style="background: rgba(56, 189, 248, 0.12); color: var(--cyan-electric);">
-                            <i class="fa-solid fa-heart-pulse fs-3"></i>
-                        </div>
-                        <h4 class="fw-bold mb-2">1. Faith (Iman Kuat)</h4>
-                        <p class="text-muted small mb-0" style="line-height: 1.75;">
-                            Mengenal kasih Tuhan Yesus secara nyata lewat firman yang relevan, aplikatif, dan tidak membosankan untuk kehidupan sekolahmu.
-                        </p>
-                    </div>
-                </div>
-                <div class="col-md-4" data-aos="fade-up" data-aos-delay="200">
-                    <div class="navy-card h-100 text-center p-4">
-                        <div class="d-inline-flex p-3 rounded-circle mb-3" style="background: rgba(37, 99, 235, 0.15); color: var(--blue-light);">
-                            <i class="fa-solid fa-users fs-3"></i>
-                        </div>
-                        <h4 class="fw-bold mb-2">2. Fellowship (Sahabat Sejati)</h4>
-                        <p class="text-muted small mb-0" style="line-height: 1.75;">
-                            Tempat kamu menemukan teman sebaya yang saling menguatkan, bebas dari pergaulan negatif, dan saling mendoakan.
-                        </p>
-                    </div>
-                </div>
-                <div class="col-md-4" data-aos="fade-up" data-aos-delay="300">
-                    <div class="navy-card h-100 text-center p-4">
-                        <div class="d-inline-flex p-3 rounded-circle mb-3" style="background: rgba(245, 158, 11, 0.12); color: var(--amber-gold);">
-                            <i class="fa-solid fa-rocket fs-3"></i>
-                        </div>
-                        <h4 class="fw-bold mb-2">3. Fun & Impact</h4>
-                        <p class="text-muted small mb-0" style="line-height: 1.75;">
-                            Kembangkan talenta musik, multimedia, event, dan kepemimpinan untuk memberkati sesama serta berdampak bagi gereja dan bangsa.
-                        </p>
-                    </div>
-                </div>
-            </div>
-
             <!-- Visi & Misi Box -->
             <div class="row g-4 mb-5 pt-2">
                 <div class="col-lg-6" data-aos="fade-right">
@@ -1017,16 +1011,6 @@
                         </div>
                         <h5 class="fw-bold mb-1">Ka Veli</h5>
                         <p class="small fw-semibold mb-0" style="color: var(--cyan-electric);">Sekretaris</p>
-                    </div>
-                </div>
-
-                <div class="col-6 col-md-3" data-aos="fade-up" data-aos-delay="400">
-                    <div class="navy-card text-center h-100 p-3 p-md-4">
-                        <div class="team-avatar-box" style="background: linear-gradient(135deg, #EA580C, #F59E0B);">
-                            <img src="https://ui-avatars.com/api/?name=Kezia&background=F59E0B&color=ffffff&size=200&bold=true" alt="Ka Kezia" class="team-avatar-img" loading="lazy">
-                        </div>
-                        <h5 class="fw-bold mb-1">Ka Kezia</h5>
-                        <p class="small fw-semibold text-warning mb-0">Bendahara</p>
                     </div>
                 </div>
             </div>
@@ -1205,79 +1189,106 @@
             <!-- 9 Cell Groups Grid -->
             <div class="text-center mb-4 pt-3" data-aos="fade-up">
                 <h4 class="fw-bold mb-1">Daftar 9 Cool Group DOT</h4>
-                <p class="text-muted small">Cari grup sesuai tahun kelahiranmu:</p>
+                <p class="text-muted small">Cari grup sesuai tahun kelahiranmu (klik salah satu untuk melihat info & galeri kegiatan):</p>
             </div>
 
             <div class="row g-3">
                 <div class="col-6 col-md-4 col-lg-4" data-aos="fade-up" data-aos-delay="50">
-                    <div class="cell-group-chip">
+                    <div class="cell-group-chip" onclick="openCoolModal('jireh')" role="button" tabindex="0" title="Klik untuk info & galeri Cool Jireh">
                         <h5 class="fw-bold mb-1">Jireh</h5>
                         <span class="badge mb-2" style="background: rgba(56, 189, 248, 0.15); color: var(--cyan-electric);">Kelahiran 2007</span>
                         <p class="small fw-bold mb-0" style="color: var(--cyan-electric);">Ketua: Ka Keren</p>
+                        <div class="chip-click-hint mt-2 pt-2 border-top border-secondary border-opacity-25 d-flex align-items-center justify-content-center gap-1 small" style="color: var(--cyan-electric); font-size: 11px;">
+                            <i class="fa-solid fa-images"></i> Info & Galeri <i class="fa-solid fa-arrow-right" style="font-size: 9px;"></i>
+                        </div>
                     </div>
                 </div>
 
                 <div class="col-6 col-md-4 col-lg-4" data-aos="fade-up" data-aos-delay="100">
-                    <div class="cell-group-chip">
+                    <div class="cell-group-chip" onclick="openCoolModal('growing-generation')" role="button" tabindex="0" title="Klik untuk info & galeri Cool Growing Generation">
                         <h5 class="fw-bold mb-1">Growing Generation</h5>
                         <span class="badge mb-2" style="background: rgba(56, 189, 248, 0.15); color: var(--cyan-electric);">Kelahiran 2008</span>
                         <p class="small fw-bold mb-0" style="color: var(--cyan-electric);">Ketua: Ka Kayla</p>
+                        <div class="chip-click-hint mt-2 pt-2 border-top border-secondary border-opacity-25 d-flex align-items-center justify-content-center gap-1 small" style="color: var(--cyan-electric); font-size: 11px;">
+                            <i class="fa-solid fa-images"></i> Info & Galeri <i class="fa-solid fa-arrow-right" style="font-size: 9px;"></i>
+                        </div>
                     </div>
                 </div>
 
                 <div class="col-6 col-md-4 col-lg-4" data-aos="fade-up" data-aos-delay="150">
-                    <div class="cell-group-chip">
+                    <div class="cell-group-chip" onclick="openCoolModal('the-lions')" role="button" tabindex="0" title="Klik untuk info & galeri Cool The Lions">
                         <h5 class="fw-bold mb-1">The Lions</h5>
                         <span class="badge mb-2" style="background: rgba(245, 158, 11, 0.15); color: var(--amber-gold);">Kelahiran 2009</span>
                         <p class="small fw-bold mb-0" style="color: var(--amber-gold);">Ketua: Ka Jayden</p>
+                        <div class="chip-click-hint mt-2 pt-2 border-top border-secondary border-opacity-25 d-flex align-items-center justify-content-center gap-1 small" style="color: var(--amber-gold); font-size: 11px;">
+                            <i class="fa-solid fa-images"></i> Info & Galeri <i class="fa-solid fa-arrow-right" style="font-size: 9px;"></i>
+                        </div>
                     </div>
                 </div>
 
                 <div class="col-6 col-md-4 col-lg-4" data-aos="fade-up" data-aos-delay="200">
-                    <div class="cell-group-chip">
+                    <div class="cell-group-chip" onclick="openCoolModal('posteros-shine')" role="button" tabindex="0" title="Klik untuk info & galeri Cool Posteros Shine (Gen 1)">
                         <h5 class="fw-bold mb-1">Posteros Shine (Gen 1)</h5>
                         <span class="badge mb-2" style="background: rgba(56, 189, 248, 0.15); color: var(--cyan-electric);">Kelahiran 2010 - 2011</span>
                         <p class="small fw-bold mb-0" style="color: var(--cyan-electric);">Ketua: Ka Melfi</p>
+                        <div class="chip-click-hint mt-2 pt-2 border-top border-secondary border-opacity-25 d-flex align-items-center justify-content-center gap-1 small" style="color: var(--cyan-electric); font-size: 11px;">
+                            <i class="fa-solid fa-images"></i> Info & Galeri <i class="fa-solid fa-arrow-right" style="font-size: 9px;"></i>
+                        </div>
                     </div>
                 </div>
 
                 <div class="col-6 col-md-4 col-lg-4" data-aos="fade-up" data-aos-delay="250">
-                    <div class="cell-group-chip">
+                    <div class="cell-group-chip" onclick="openCoolModal('awesome')" role="button" tabindex="0" title="Klik untuk info & galeri Cool Awesome (Gen 2)">
                         <h5 class="fw-bold mb-1">Awesome (Gen 2)</h5>
                         <span class="badge mb-2" style="background: rgba(56, 189, 248, 0.15); color: var(--cyan-electric);">Kelahiran 2010 - 2011</span>
                         <p class="small fw-bold mb-0" style="color: var(--cyan-electric);">Ketua: Ka Valen</p>
+                        <div class="chip-click-hint mt-2 pt-2 border-top border-secondary border-opacity-25 d-flex align-items-center justify-content-center gap-1 small" style="color: var(--cyan-electric); font-size: 11px;">
+                            <i class="fa-solid fa-images"></i> Info & Galeri <i class="fa-solid fa-arrow-right" style="font-size: 9px;"></i>
+                        </div>
                     </div>
                 </div>
 
                 <div class="col-6 col-md-4 col-lg-4" data-aos="fade-up" data-aos-delay="300">
-                    <div class="cell-group-chip">
+                    <div class="cell-group-chip" onclick="openCoolModal('the-miracle')" role="button" tabindex="0" title="Klik untuk info & galeri Cool The Miracle (Gen 3)">
                         <h5 class="fw-bold mb-1">The Miracle (Gen 3)</h5>
                         <span class="badge mb-2" style="background: rgba(245, 158, 11, 0.15); color: var(--amber-gold);">Kelahiran 2010 - 2011</span>
                         <p class="small fw-bold mb-0" style="color: var(--amber-gold);">Ketua: Ka Matias</p>
+                        <div class="chip-click-hint mt-2 pt-2 border-top border-secondary border-opacity-25 d-flex align-items-center justify-content-center gap-1 small" style="color: var(--amber-gold); font-size: 11px;">
+                            <i class="fa-solid fa-images"></i> Info & Galeri <i class="fa-solid fa-arrow-right" style="font-size: 9px;"></i>
+                        </div>
                     </div>
                 </div>
 
                 <div class="col-6 col-md-4 col-lg-4" data-aos="fade-up" data-aos-delay="350">
-                    <div class="cell-group-chip">
+                    <div class="cell-group-chip" onclick="openCoolModal('everlasting-joy')" role="button" tabindex="0" title="Klik untuk info & galeri Cool Everlasting Joy (Gen 4)">
                         <h5 class="fw-bold mb-1">Everlasting Joy (Gen 4)</h5>
                         <span class="badge mb-2" style="background: rgba(56, 189, 248, 0.15); color: var(--cyan-electric);">Kelahiran 2010 - 2011</span>
                         <p class="small fw-bold mb-0" style="color: var(--cyan-electric);">Ketua: Ka Esther</p>
+                        <div class="chip-click-hint mt-2 pt-2 border-top border-secondary border-opacity-25 d-flex align-items-center justify-content-center gap-1 small" style="color: var(--cyan-electric); font-size: 11px;">
+                            <i class="fa-solid fa-images"></i> Info & Galeri <i class="fa-solid fa-arrow-right" style="font-size: 9px;"></i>
+                        </div>
                     </div>
                 </div>
 
                 <div class="col-6 col-md-4 col-lg-4" data-aos="fade-up" data-aos-delay="400">
-                    <div class="cell-group-chip">
+                    <div class="cell-group-chip" onclick="openCoolModal('hoshiah-zion')" role="button" tabindex="0" title="Klik untuk info & galeri Cool Hoshiah Zion">
                         <h5 class="fw-bold mb-1">Hoshiah Zion</h5>
                         <span class="badge mb-2" style="background: rgba(56, 189, 248, 0.15); color: var(--cyan-electric);">Kelahiran 2012</span>
                         <p class="small fw-bold mb-0" style="color: var(--cyan-electric);">Ketua: Ka Dyto</p>
+                        <div class="chip-click-hint mt-2 pt-2 border-top border-secondary border-opacity-25 d-flex align-items-center justify-content-center gap-1 small" style="color: var(--cyan-electric); font-size: 11px;">
+                            <i class="fa-solid fa-images"></i> Info & Galeri <i class="fa-solid fa-arrow-right" style="font-size: 9px;"></i>
+                        </div>
                     </div>
                 </div>
 
                 <div class="col-6 col-md-4 col-lg-4" data-aos="fade-up" data-aos-delay="450">
-                    <div class="cell-group-chip">
+                    <div class="cell-group-chip" onclick="openCoolModal('salvation')" role="button" tabindex="0" title="Klik untuk info & galeri Cool Salvation">
                         <h5 class="fw-bold mb-1">Salvation</h5>
                         <span class="badge mb-2" style="background: rgba(245, 158, 11, 0.15); color: var(--amber-gold);">Kelahiran 2012 - 2013</span>
                         <p class="small fw-bold mb-0" style="color: var(--amber-gold);">Ketua: Ka Maureen</p>
+                        <div class="chip-click-hint mt-2 pt-2 border-top border-secondary border-opacity-25 d-flex align-items-center justify-content-center gap-1 small" style="color: var(--amber-gold); font-size: 11px;">
+                            <i class="fa-solid fa-images"></i> Info & Galeri <i class="fa-solid fa-arrow-right" style="font-size: 9px;"></i>
+                        </div>
                     </div>
                 </div>
             </div>
@@ -1343,7 +1354,7 @@
                         <h4 class="fw-bold mb-1">Ibadah Raya Teens</h4>
                         <p class="fw-semibold mb-2" style="color: var(--cyan-electric);">Setiap Hari Minggu &bull; Pukul 12.00 WIB</p>
                         <p class="small text-muted mb-0">
-                            Bertempat di <strong>DOT Room</strong> (Lantai 2), Gedung GBI ERC Sawangan. Ruangan ber-AC dan nyaman untuk jemaat baru.
+                            Bertempat di <strong>DOT Room</strong>Gedung GBI ERC Sawangan. Ruangan ber-AC dan nyaman untuk jemaat baru.
                         </p>
                     </div>
 
@@ -2008,6 +2019,88 @@
         </div>
     </div>
 
+    <!-- MODAL DETAIL COOL GROUP (#coolDetailModal) -->
+    <div class="modal fade" id="coolDetailModal" tabindex="-1" aria-hidden="true" style="z-index: 1060;">
+        <div class="modal-dialog modal-dialog-centered modal-lg">
+            <div class="modal-content border-0" style="background: #0B1629; border: 1px solid rgba(56, 189, 248, 0.35) !important; border-radius: 28px; box-shadow: 0 30px 80px rgba(0, 0, 0, 0.95), 0 0 40px rgba(56, 189, 248, 0.2); overflow: hidden;">
+                
+                <!-- MODAL HEADER -->
+                <div class="modal-header border-0 pb-0 pt-4 px-4 d-flex justify-content-between align-items-center">
+                    <div class="d-flex align-items-center gap-2 flex-wrap">
+                        <span id="coolModalBadge" class="badge rounded-pill px-3 py-1.5" style="background: rgba(56, 189, 248, 0.15); color: var(--cyan-electric); border: 1px solid rgba(56, 189, 248, 0.3); font-size: 12px;">
+                            Kelahiran 2007
+                        </span>
+                        <span class="badge bg-primary bg-opacity-25 text-info border border-info border-opacity-25 px-2.5 py-1 rounded-pill" style="font-size: 11px;">
+                            <i class="fa-solid fa-users me-1"></i> Komunitas Sel DOT
+                        </span>
+                    </div>
+                    <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+
+                <!-- MODAL BODY -->
+                <div class="modal-body p-4">
+                    <!-- COOL TITLE & MOTTO -->
+                    <div class="mb-4 text-center text-sm-start">
+                        <h2 id="coolModalTitle" class="display-6 fw-bold text-white mb-2">Nama Cool</h2>
+                        <p id="coolModalMotto" class="text-ice mb-0" style="font-size: 0.98rem; line-height: 1.6;"></p>
+                    </div>
+
+                    <!-- LEADER PROFILE CARD -->
+                    <div class="rounded-4 p-3 p-md-4 mb-4" style="background: rgba(18, 35, 63, 0.7); border: 1px solid var(--navy-border);">
+                        <div class="d-flex flex-column flex-sm-row align-items-center gap-3 text-center text-sm-start">
+                            <div class="position-relative">
+                                <img id="coolModalLeaderAvatar" src="" alt="Ketua Cool" class="rounded-circle shadow" style="width: 76px; height: 76px; object-fit: cover; border: 3px solid var(--cyan-electric); background: #0A1628;">
+                                <span class="position-absolute bottom-0 end-0 bg-success border border-dark rounded-circle" title="Aktif melayani" style="width: 16px; height: 16px;"></span>
+                            </div>
+                            <div class="flex-grow-1">
+                                <span class="badge mb-1 px-2.5 py-0.5 rounded-pill" style="background: rgba(245, 158, 11, 0.15); color: #FBBF24; border: 1px solid rgba(245, 158, 11, 0.3); font-size: 11px;">
+                                    <i class="fa-solid fa-crown me-1"></i> KETUA COOL
+                                </span>
+                                <h4 id="coolModalLeaderName" class="fw-bold text-white mb-1">Nama Ketua</h4>
+                                <p id="coolModalLeaderDesc" class="small text-muted mb-0">Siap mendampingi dan menyambut kamu bertumbuh bersama di Cool ini!</p>
+                            </div>
+                            <div>
+                                <a id="coolModalLeaderWa" href="#" target="_blank" class="btn btn-sm btn-outline-cyan rounded-pill px-3 py-2 text-nowrap">
+                                    <i class="fa-brands fa-whatsapp text-success me-1"></i> Chat WhatsApp
+                                </a>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- COOL ACTIVITY GALLERY -->
+                    <div>
+                        <div class="d-flex align-items-center justify-content-between mb-3">
+                            <h5 class="fw-bold text-white mb-0">
+                                <i class="fa-solid fa-camera-retro text-info me-2"></i> Galeri Kegiatan Cool
+                            </h5>
+                            <span class="small text-muted">Klik foto untuk perbesar</span>
+                        </div>
+
+                        <div class="row g-3" id="coolModalGalleryGrid">
+                            <!-- Injected dynamically via JS -->
+                        </div>
+                    </div>
+                </div>
+
+                <!-- MODAL FOOTER -->
+                <div class="modal-footer border-0 pt-0 pb-4 px-4 d-flex flex-column flex-sm-row justify-content-between align-items-center gap-3">
+                    <div class="small text-muted text-center text-sm-start">
+                        <i class="fa-solid fa-location-dot me-1 text-danger"></i> GBI ERC Sawangan &bull; DOT Room Lantai 2
+                    </div>
+                    <div class="d-flex align-items-center gap-2">
+                        <button type="button" class="btn btn-outline-secondary text-light btn-sm rounded-pill px-3" data-bs-dismiss="modal">
+                            Tutup
+                        </button>
+                        <button type="button" class="btn btn-cyan-pill btn-sm rounded-pill px-4" onclick="joinThisCool()">
+                            <i class="fa-solid fa-user-plus me-1"></i> Gabung Cool Ini
+                        </button>
+                    </div>
+                </div>
+
+            </div>
+        </div>
+    </div>
+
     <!-- SCRIPTS -->
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
     <script src="https://unpkg.com/aos@2.3.1/dist/aos.js"></script>
@@ -2023,8 +2116,11 @@
         let regModalInstance = null;
         let ticketModalInstance = null;
         let lightboxModalInstance = null;
+        let coolModalInstance = null;
         let openedFromUpcomingModal = false;
+        let openedFromCoolModal = false;
         let isNavigatingToRegister = false;
+        let currentActiveCoolName = '';
 
         document.addEventListener('DOMContentLoaded', function() {
             // Inisialisasi Modal
@@ -2037,6 +2133,9 @@
             const tickModalEl = document.getElementById('eventTicketModal');
             if (tickModalEl) ticketModalInstance = new bootstrap.Modal(tickModalEl);
 
+            const coolModalEl = document.getElementById('coolDetailModal');
+            if (coolModalEl) coolModalInstance = new bootstrap.Modal(coolModalEl);
+
             const lbModalEl = document.getElementById('lightboxModal');
             if (lbModalEl) {
                 lightboxModalInstance = new bootstrap.Modal(lbModalEl);
@@ -2045,6 +2144,11 @@
                         openedFromUpcomingModal = false;
                         if (upcomingModalInstance) {
                             upcomingModalInstance.show();
+                        }
+                    } else if (openedFromCoolModal) {
+                        openedFromCoolModal = false;
+                        if (coolModalInstance) {
+                            coolModalInstance.show();
                         }
                     }
                 });
@@ -2270,6 +2374,225 @@
                 @if(isset($featuredEvent) && $featuredEvent)
                     openEventRegistration({{ $featuredEvent->id }}, '{{ addslashes($featuredEvent->title) }}', '{{ date('d M Y', strtotime($featuredEvent->event_date)) }}', '{{ $featuredEvent->time_formatted }} WIB', '{{ addslashes($featuredEvent->location) }}');
                 @endif
+            }, 300);
+        }
+
+        // DATA 9 COOL GROUP DOT (Profil, Ketua, Motto & Galeri Kegiatan)
+        const coolGroupsData = {
+            'jireh': {
+                name: 'Jireh',
+                birth: 'Kelahiran 2007',
+                leader: 'Ka Keren',
+                avatar: 'https://ui-avatars.com/api/?name=Keren&background=0284C7&color=ffffff&size=200&bold=true',
+                desc: 'Kakak pembimbing yang hangat dan siap menemani langkahmu bertumbuh serta berakar kuat di dalam Tuhan.',
+                motto: '“Jehovah Jireh - Tuhan yang selalu mencukupi dan menyediakan yang terbaik dalam setiap musim hidup kita.”',
+                wa: 'https://wa.me/6285173280626?text=Halo%20Ka%20Keren,%20aku%20mau%20tanya%20info%20dan%20jadwal%20kumpul%20Cool%20Jireh%20dong!',
+                photos: [
+                    { src: '{{ asset("uploads/gallery/1776736617.jpg") }}', caption: 'Sharing Firman & Diskusi Santai Cool Jireh' },
+                    { src: '{{ asset("uploads/gallery/1776846904.jpg") }}', caption: 'Makan Bareng & Fellowship Penuh Sukacita' },
+                    { src: '{{ asset("uploads/gallery/1776846921.jpg") }}', caption: 'Kebersamaan & Foto Seru Bareng Cool Jireh' },
+                    { src: '{{ asset("images/ibadah.jpeg") }}', caption: 'Ibadah & Praise Worship Bersama' }
+                ]
+            },
+            'growing-generation': {
+                name: 'Growing Generation',
+                birth: 'Kelahiran 2008',
+                leader: 'Ka Kayla',
+                avatar: 'https://ui-avatars.com/api/?name=Kayla&background=38BDF8&color=0A1628&size=200&bold=true',
+                desc: 'Hangat, suportif, dan selalu terbuka menyambut teman-teman baru yang rindu bertumbuh dan berbuah lebat.',
+                motto: '“Generasi muda yang bertumbuh dalam karakter Kristus dan siap menjadi teladan bagi sesama.”',
+                wa: 'https://wa.me/6285173280626?text=Halo%20Ka%20Kayla,%20aku%20mau%20tanya%20info%20dan%20jadwal%20kumpul%20Cool%20Growing%20Generation%20dong!',
+                photos: [
+                    { src: '{{ asset("uploads/gallery/1776736607.jpg") }}', caption: 'Ice Breaking & Games Seru di Cool Growing Generation' },
+                    { src: '{{ asset("uploads/gallery/1776846879.jpg") }}', caption: 'Saat Teduh & Saling Mendoakan Bareng' },
+                    { src: '{{ asset("uploads/gallery/1776736574.jpg") }}', caption: 'Ibadah Raya & Kebersamaan DOT Teens' },
+                    { src: '{{ asset("images/1.jpg") }}', caption: 'Hangout Asik Setelah Cool' }
+                ]
+            },
+            'the-lions': {
+                name: 'The Lions',
+                birth: 'Kelahiran 2009',
+                leader: 'Ka Jayden',
+                avatar: 'https://ui-avatars.com/api/?name=Jayden&background=F59E0B&color=ffffff&size=200&bold=true',
+                desc: 'Penuh energi, solid, dan selalu siap membakar semangat iman teman-teman sebayanya.',
+                motto: '“Berani dan teguh seperti singa Yehezkiel, tidak mudah goyah di tengah arus pergaulan zaman now.”',
+                wa: 'https://wa.me/6285173280626?text=Halo%20Ka%20Jayden,%20aku%20mau%20tanya%20info%20dan%20jadwal%20kumpul%20Cool%20The%20Lions%20dong!',
+                photos: [
+                    { src: '{{ asset("uploads/gallery/1776846921.jpg") }}', caption: 'Momen Solidaritas & Kompaknya The Lions' },
+                    { src: '{{ asset("uploads/gallery/1776736617.jpg") }}', caption: 'Diskusi Firman Tuhan yang Relevan Buat Anak Muda' },
+                    { src: '{{ asset("uploads/gallery/1776846904.jpg") }}', caption: 'Keseruan Sesi Santai & Ngemil Bareng' },
+                    { src: '{{ asset("images/drn.jpeg") }}', caption: 'Antusiasme Menghadiri Acara Revival Night' }
+                ]
+            },
+            'posteros-shine': {
+                name: 'Posteros Shine (Gen 1)',
+                birth: 'Kelahiran 2010 - 2011',
+                leader: 'Ka Melfi',
+                avatar: 'https://ui-avatars.com/api/?name=Melfi&background=0284C7&color=ffffff&size=200&bold=true',
+                desc: 'Penuh perhatian dan kehangatan, tempat sharing cerita yang aman dan saling menguatkan.',
+                motto: '“Generasi penerus yang bersinar terang memancarkan kasih Kristus di sekolah dan lingkungan keluarga.”',
+                wa: 'https://wa.me/6285173280626?text=Halo%20Ka%20Melfi,%20aku%20mau%20tanya%20info%20dan%20jadwal%20kumpul%20Cool%20Posteros%20Shine%20dong!',
+                photos: [
+                    { src: '{{ asset("uploads/gallery/1776736574.jpg") }}', caption: 'Semangat Pujian & Penyembahan Posteros Shine' },
+                    { src: '{{ asset("uploads/gallery/1776736607.jpg") }}', caption: 'Games Kebersamaan & Tertawa Lepas' },
+                    { src: '{{ asset("uploads/gallery/1776846879.jpg") }}', caption: 'Doa Bersama Menguatkan Satu Sama Lain' },
+                    { src: '{{ asset("images/ibadah.jpeg") }}', caption: 'Ibadah Raya Mingguan DOT Room' }
+                ]
+            },
+            'awesome': {
+                name: 'Awesome (Gen 2)',
+                birth: 'Kelahiran 2010 - 2011',
+                leader: 'Ka Valen',
+                avatar: 'https://ui-avatars.com/api/?name=Valen&background=8B5CF6&color=ffffff&size=200&bold=true',
+                desc: 'Seru, kreatif, dan asik banget buat kamu yang suka sharing santai dan belajar firman Tuhan dengan cara seru.',
+                motto: '“Awesome in God! Menjalani masa remaja yang luar biasa bersama sahabat sejati di dalam Tuhan.”',
+                wa: 'https://wa.me/6285173280626?text=Halo%20Ka%20Valen,%20aku%20mau%20tanya%20info%20dan%20jadwal%20kumpul%20Cool%20Awesome%20dong!',
+                photos: [
+                    { src: '{{ asset("uploads/gallery/1776846904.jpg") }}', caption: 'Keseruan Hangout & Sharing Cool Awesome' },
+                    { src: '{{ asset("uploads/gallery/1776846921.jpg") }}', caption: 'Pose Kompak Sahabat Sejati Cool Awesome' },
+                    { src: '{{ asset("uploads/gallery/1776736617.jpg") }}', caption: 'Belajar Firman Tuhan dengan Cara Menyenangkan' },
+                    { src: '{{ asset("images/1.jpg") }}', caption: 'Momen Komunitas yang Hangat' }
+                ]
+            },
+            'the-miracle': {
+                name: 'The Miracle (Gen 3)',
+                birth: 'Kelahiran 2010 - 2011',
+                leader: 'Ka Matias',
+                avatar: 'https://ui-avatars.com/api/?name=Matias&background=F59E0B&color=ffffff&size=200&bold=true',
+                desc: 'Teman bertumbuh yang suportif, selalu siap mendengarkan dan saling mendoakan kebutuhan teman-teman.',
+                motto: '“Setiap hari adalah mukjizat, dan kita dipanggil untuk menjadi berkat nyata bagi sesama.”',
+                wa: 'https://wa.me/6285173280626?text=Halo%20Ka%20Matias,%20aku%20mau%20tanya%20info%20dan%20jadwal%20kumpul%20Cool%20The%20Miracle%20dong!',
+                photos: [
+                    { src: '{{ asset("uploads/gallery/1776846879.jpg") }}', caption: 'Waktu Bersaat Teduh & Berdoa Khusyuk' },
+                    { src: '{{ asset("uploads/gallery/1776736574.jpg") }}', caption: 'Ibadah Gabungan di Main Sanctuary' },
+                    { src: '{{ asset("uploads/gallery/1776736607.jpg") }}', caption: 'Games Tantangan & Kekompakan Tim' },
+                    { src: '{{ asset("images/drn.jpeg") }}', caption: 'Semangat Revival Generasi Muda' }
+                ]
+            },
+            'everlasting-joy': {
+                name: 'Everlasting Joy (Gen 4)',
+                birth: 'Kelahiran 2010 - 2011',
+                leader: 'Ka Esther',
+                avatar: 'https://ui-avatars.com/api/?name=Esther&background=EC4899&color=ffffff&size=200&bold=true',
+                desc: 'Ceria, hangat, dan selalu penuh senyuman yang menyegarkan suasana kumpul persekutuan.',
+                motto: '“Sukacita dari Tuhan adalah kekuatan kita yang tak pernah pudar oleh situasi apa pun.”',
+                wa: 'https://wa.me/6285173280626?text=Halo%20Ka%20Esther,%20aku%20mau%20tanya%20info%20dan%20jadwal%20kumpul%20Cool%20Everlasting%20Joy%20dong!',
+                photos: [
+                    { src: '{{ asset("uploads/gallery/1776736617.jpg") }}', caption: 'Lingkaran Kasih & Saling Menguatkan' },
+                    { src: '{{ asset("uploads/gallery/1776846904.jpg") }}', caption: 'Momen Manis Kebersamaan & Makan Sore' },
+                    { src: '{{ asset("uploads/gallery/1776846921.jpg") }}', caption: 'Senyum Ceria Anggota Cool Everlasting Joy' },
+                    { src: '{{ asset("images/ibadah.jpeg") }}', caption: 'Menyembah Bersama di Hadirat-Nya' }
+                ]
+            },
+            'hoshiah-zion': {
+                name: 'Hoshiah Zion',
+                birth: 'Kelahiran 2012',
+                leader: 'Ka Dyto',
+                avatar: '{{ asset("images/dyto.jpeg") }}',
+                desc: 'Aktif, bersemangat tinggi, dan selalu mengajak adik-adik jemaat baru untuk merasa seperti di rumah sendiri.',
+                motto: '“Hosana! Keselamatan dan kemuliaan bagi Tuhan, generasi muda pembawa pujian sejati.”',
+                wa: 'https://wa.me/6285173280626?text=Halo%20Ka%20Dyto,%20aku%20mau%20tanya%20info%20dan%20jadwal%20kumpul%20Cool%20Hoshiah%20Zion%20dong!',
+                photos: [
+                    { src: '{{ asset("uploads/gallery/1776736607.jpg") }}', caption: 'Keseruan Aktivitas & Games Hoshiah Zion' },
+                    { src: '{{ asset("uploads/gallery/1776846879.jpg") }}', caption: 'Saling Menopang dalam Pokok Doa' },
+                    { src: '{{ asset("uploads/gallery/1776736574.jpg") }}', caption: 'Kompak Ibadah Bareng Teman Sebaya' },
+                    { src: '{{ asset("images/1.jpg") }}', caption: 'Kebersamaan Santai Penuh Tawa' }
+                ]
+            },
+            'salvation': {
+                name: 'Salvation',
+                birth: 'Kelahiran 2012 - 2013',
+                leader: 'Ka Maureen',
+                avatar: 'https://ui-avatars.com/api/?name=Maureen&background=F59E0B&color=ffffff&size=200&bold=true',
+                desc: 'Penuh perhatian dan keibuan bagi adik-adik awal SMP agar merasa nyaman, terlindungi, dan bergaul positif.',
+                motto: '“Teguh dalam keselamatan Kristus, melangkah dengan percaya diri menyongsong masa depan.”',
+                wa: 'https://wa.me/6285173280626?text=Halo%20Ka%20Maureen,%20aku%20mau%20tanya%20info%20dan%20jadwal%20kumpul%20Cool%20Salvation%20dong!',
+                photos: [
+                    { src: '{{ asset("uploads/gallery/1776846921.jpg") }}', caption: 'Keluarga Baru Adik-adik Cool Salvation' },
+                    { src: '{{ asset("uploads/gallery/1776736617.jpg") }}', caption: 'Mendengarkan Firman dengan Rasa Ingin Tahu' },
+                    { src: '{{ asset("uploads/gallery/1776846904.jpg") }}', caption: 'Sesi Fellowship & Snack Time yang Seru' },
+                    { src: '{{ asset("images/drn.jpeg") }}', caption: 'Menghadiri Acara Spesial DOT' }
+                ]
+            }
+        };
+
+        function openCoolModal(coolKey) {
+            const cool = coolGroupsData[coolKey];
+            if (!cool) return;
+
+            currentActiveCoolName = cool.name;
+
+            const badgeEl = document.getElementById('coolModalBadge');
+            const titleEl = document.getElementById('coolModalTitle');
+            const mottoEl = document.getElementById('coolModalMotto');
+            const leaderNameEl = document.getElementById('coolModalLeaderName');
+            const leaderAvatarEl = document.getElementById('coolModalLeaderAvatar');
+            const leaderDescEl = document.getElementById('coolModalLeaderDesc');
+            const leaderWaEl = document.getElementById('coolModalLeaderWa');
+
+            if (badgeEl) badgeEl.textContent = cool.birth;
+            if (titleEl) titleEl.textContent = cool.name;
+            if (mottoEl) mottoEl.textContent = cool.motto;
+            if (leaderNameEl) leaderNameEl.textContent = cool.leader;
+            if (leaderAvatarEl) leaderAvatarEl.src = cool.avatar;
+            if (leaderDescEl) leaderDescEl.textContent = cool.desc;
+            if (leaderWaEl) leaderWaEl.href = cool.wa;
+
+            const grid = document.getElementById('coolModalGalleryGrid');
+            if (grid) {
+                grid.innerHTML = '';
+                cool.photos.forEach(photo => {
+                    const col = document.createElement('div');
+                    col.className = 'col-6 col-md-3';
+                    col.innerHTML = `
+                        <div class="position-relative" onclick="openCoolGalleryPhoto('${photo.src}', '${photo.caption.replace(/'/g, "\\'")}')" role="button" title="${photo.caption}">
+                            <img src="${photo.src}" alt="${photo.caption}" class="cool-gallery-thumb" loading="lazy">
+                            <div class="small text-truncate mt-1 text-muted" style="font-size: 11px;">
+                                ${photo.caption}
+                            </div>
+                        </div>
+                    `;
+                    grid.appendChild(col);
+                });
+            }
+
+            if (coolModalInstance) {
+                coolModalInstance.show();
+            }
+        }
+
+        function openCoolGalleryPhoto(src, caption) {
+            openedFromCoolModal = true;
+            if (coolModalInstance) {
+                coolModalInstance.hide();
+            }
+            setTimeout(() => {
+                openLightbox(src, caption);
+            }, 250);
+        }
+
+        function joinThisCool() {
+            if (coolModalInstance) {
+                coolModalInstance.hide();
+            }
+
+            setTimeout(() => {
+                const joinSection = document.getElementById('join');
+                if (joinSection) {
+                    const navHeight = document.getElementById('navbarMain') ? document.getElementById('navbarMain').offsetHeight : 75;
+                    window.scrollTo({
+                        top: joinSection.offsetTop - navHeight + 5,
+                        behavior: 'smooth'
+                    });
+                }
+
+                const fireCellInput = document.querySelector('input[name="fire_cell"]');
+                if (fireCellInput) {
+                    fireCellInput.value = currentActiveCoolName;
+                    fireCellInput.focus();
+                    fireCellInput.style.borderColor = 'var(--cyan-electric)';
+                    fireCellInput.style.boxShadow = '0 0 15px rgba(56, 189, 248, 0.4)';
+                }
             }, 300);
         }
     </script>
