@@ -61,4 +61,10 @@ class EventController extends Controller
         $event->delete();
         return back()->with('success', 'Acara berhasil dihapus.');
     }
+
+    // Tampilkan Detail Acara / Peserta
+    public function show($id)
+    {
+        return redirect()->route('admin.events.participants', ['event_id' => $id]);
+    }
 }

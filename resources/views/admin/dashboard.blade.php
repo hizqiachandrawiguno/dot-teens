@@ -397,12 +397,20 @@
                         <div class="col-md-4">
                             <div class="glass-card mb-0 p-3 h-100 d-flex flex-column justify-content-between" style="border-left: 4px solid #10B981;">
                                 <div class="mb-3">
-                                    <h6 class="text-white fw-bold mb-1"><i class="fa-solid fa-calendar-days me-2" style="color: #10B981;"></i> Ruang Acara</h6>
-                                    <p class="text-secondary small mb-0">Posting jadwal ibadah raya, event spesial DOT, dan kelola poster.</p>
+                                    <div class="d-flex justify-content-between align-items-center mb-1">
+                                        <h6 class="text-white fw-bold mb-0"><i class="fa-solid fa-calendar-days me-2" style="color: #10B981;"></i> Ruang Acara & Event</h6>
+                                        <span class="badge bg-primary bg-opacity-25 text-info border border-info" style="font-size: 10px;">Revival 10 Okt</span>
+                                    </div>
+                                    <p class="text-secondary small mb-0">Posting event, buka Scanner QR kehadiran, dan kelola pendaftar Disciples Revival Night.</p>
                                 </div>
-                                <a href="/admin/events" class="btn btn-sm text-white fw-semibold rounded-pill align-self-start px-3 py-2" style="background: #10B981;">
-                                    Buka Panel Acara <i class="fa-solid fa-arrow-right ms-1"></i>
-                                </a>
+                                <div class="d-flex gap-2 flex-wrap">
+                                    <a href="/admin/events" class="btn btn-sm text-white fw-semibold rounded-pill px-3 py-2" style="background: #10B981;">
+                                        Kelola Acara <i class="fa-solid fa-arrow-right ms-1"></i>
+                                    </a>
+                                    <a href="/admin/events/scan" class="btn btn-sm btn-outline-info rounded-pill px-3 py-2 fw-semibold">
+                                        <i class="fa-solid fa-qrcode me-1"></i> Scanner QR
+                                    </a>
+                                </div>
                             </div>
                         </div>
                     </div>

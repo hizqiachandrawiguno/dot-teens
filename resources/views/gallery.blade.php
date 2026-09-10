@@ -3,9 +3,9 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>DOT GBI Sawangan - Department Teens</title>
+    <title>DOT GBI Sawangan - DRP Outstanding Teens</title>
 
-    <meta name="description" content="Website resmi DOT (Department of Teens) Sawangan. Temukan jadwal ibadah, info komunitas cell, galeri kegiatan, dan mari bertumbuh bersama komunitas youth kami!">
+    <meta name="description" content="Website resmi DOT (DRP Outstanding Teens) Sawangan. Temukan jadwal ibadah, info komunitas cell, galeri kegiatan, dan mari bertumbuh bersama komunitas youth kami!">
     <meta name="keywords" content="DOT Sawangan, Youth Sawangan, Pemuda Kristen Sawangan, Ibadah Youth Sawangan, Gereja Sawangan, Komunitas Pemuda, Cell DOT">
     <meta name="author" content="DOT Sawangan">
 
@@ -201,7 +201,7 @@
 <footer class="text-center py-4 mt-5" style="border-top: 1px solid rgba(255,255,255,0.05);">
     <p class="small mb-0">
         <a href="/login" class="text-secondary" style="text-decoration: none; cursor: default;">
-            &copy; 2026 Department Teens GBI Sawangan.
+            &copy; 2026 DRP Outstanding Teens GBI Sawangan.
         </a>
     </p>
 </footer>

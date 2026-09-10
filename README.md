@@ -1,6 +1,6 @@
 # 🚀 DOT Teens Website — GBI ERC Sawangan
 
-Website resmi **Department of Teens (DOT) GBI ERC Sawangan**. Berisi informasi jadwal ibadah, pendaftaran jemaat baru (Join Us), jadwal pertemuan sel rohani (Fire Cell / Cool), galeri kegiatan, pokok doa, dan dashboard admin terpadu untuk pengurus.
+Website resmi **DRP Outstanding Teens (DOT) GBI ERC Sawangan**. Berisi informasi jadwal ibadah, pendaftaran jemaat baru (Join Us), jadwal pertemuan sel rohani (Fire Cell / Cool), galeri kegiatan, pokok doa, dan dashboard admin terpadu untuk pengurus.
 
 ---
 
@@ -89,4 +89,4 @@ Agar website bisa diakses dari HP tanpa error DNS atau koneksi ditolak:
 - **Mobile Responsive CSS**: Animasi orb dan efek blur diringankan khusus layar HP agar scrolling mulus 60 FPS tanpa panas/lag.
 
 ---
-© 2026 Department Teens GBI ERC Sawangan.
+© 2026 DRP Outstanding Teens GBI ERC Sawangan.

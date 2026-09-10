@@ -5,7 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>DOT Teens | GBI ERC Sawangan - Fun Disciples, Fun Community</title>
     
-    <meta name="description" content="Komunitas anak muda Department of Teens (DOT) GBI ERC Sawangan. Ibadah seru, 9 Cool group sebaya, teman suportif, dan ruang bertumbuh bareng Kristus!">
+    <meta name="description" content="Komunitas anak muda DRP Outstanding Teens (DOT) GBI ERC Sawangan. Ibadah seru, 9 Cool group sebaya, teman suportif, dan ruang bertumbuh bareng Kristus!">
     <meta name="keywords" content="DOT Sawangan, Youth Sawangan, Pemuda Kristen Sawangan, Ibadah Youth Sawangan, GBI ERC Sawangan, Komunitas Pemuda, Cell DOT, Cool Teens">
     <meta name="author" content="DOT Teens Sawangan">
 
@@ -30,6 +30,9 @@
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
     <link href="https://unpkg.com/aos@2.3.1/dist/aos.css" rel="stylesheet">
+    
+    <!-- QR Code Generator Library -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
     
     <style>
         :root {
@@ -667,6 +670,123 @@
                 height: 40px;
             }
         }
+
+        /* ==========================================================
+           EVENT REGISTRATION & POPUP MODAL PREMIUM STYLING
+           ========================================================== */
+        .event-modal-card {
+            background: #0D192E !important;
+            background: linear-gradient(180deg, #0F1F38 0%, #0B1629 100%) !important;
+            border: 1px solid rgba(56, 189, 248, 0.35) !important;
+            border-radius: 28px !important;
+            box-shadow: 0 30px 80px -15px rgba(0, 0, 0, 0.9), 0 0 30px rgba(56, 189, 248, 0.15) !important;
+            overflow: hidden;
+            color: #F8FAFC !important;
+        }
+
+        .event-modal-header {
+            padding: 30px 36px 18px 36px !important;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.08) !important;
+        }
+
+        .event-modal-body {
+            padding: 24px 36px 36px 36px !important;
+        }
+
+        @media (max-width: 576px) {
+            .event-modal-header {
+                padding: 22px 20px 14px 20px !important;
+            }
+            .event-modal-body {
+                padding: 18px 20px 28px 20px !important;
+            }
+        }
+
+        .event-form-label {
+            font-size: 13.5px !important;
+            font-weight: 600 !important;
+            color: #F1F5F9 !important;
+            margin-bottom: 7px !important;
+            display: flex;
+            align-items: center;
+            gap: 4px;
+        }
+
+        .event-form-label .text-req {
+            color: #F87171 !important;
+            font-weight: bold;
+        }
+
+        .event-form-control, .event-form-select {
+            background-color: #172D4D !important;
+            border: 1.5px solid rgba(56, 189, 248, 0.3) !important;
+            color: #FFFFFF !important;
+            font-size: 14.5px !important;
+            padding: 12px 16px !important;
+            border-radius: 14px !important;
+            transition: all 0.25s ease !important;
+            line-height: 1.5 !important;
+        }
+
+        .event-form-control:focus, .event-form-select:focus {
+            background-color: #1D3A63 !important;
+            border-color: #38BDF8 !important;
+            box-shadow: 0 0 0 4px rgba(56, 189, 248, 0.25) !important;
+            color: #FFFFFF !important;
+            outline: none !important;
+        }
+
+        .event-form-control::placeholder,
+        .event-form-control::-webkit-input-placeholder,
+        .event-form-control::-moz-placeholder,
+        .event-form-control:-ms-input-placeholder {
+            color: #94A3B8 !important;
+            opacity: 1 !important;
+        }
+
+        .event-input-group {
+            display: flex;
+            width: 100%;
+        }
+
+        .event-input-group .input-group-text {
+            background-color: #1E3B66 !important;
+            border: 1.5px solid rgba(56, 189, 248, 0.3) !important;
+            border-right: none !important;
+            border-top-left-radius: 14px !important;
+            border-bottom-left-radius: 14px !important;
+            padding: 12px 16px !important;
+            color: #38BDF8 !important;
+            font-size: 15px !important;
+            transition: all 0.25s ease !important;
+        }
+
+        .event-input-group .event-form-control {
+            border-left: none !important;
+            border-top-left-radius: 0 !important;
+            border-bottom-left-radius: 0 !important;
+            border-top-right-radius: 14px !important;
+            border-bottom-right-radius: 14px !important;
+        }
+
+        .event-input-group:focus-within .input-group-text {
+            border-color: #38BDF8 !important;
+            background-color: #24497E !important;
+            color: #7DD3FC !important;
+        }
+
+        .event-form-select option {
+            background-color: #0D1A30 !important;
+            color: #FFFFFF !important;
+            padding: 10px !important;
+        }
+
+        .event-helper-text {
+            color: #94A3B8 !important;
+            font-size: 12px !important;
+            margin-top: 6px !important;
+            line-height: 1.4 !important;
+        }
     </style>
 </head>
 <body>
@@ -727,7 +847,7 @@
             <div class="row align-items-center g-5">
                 <div class="col-lg-7 text-center text-lg-start" data-aos="fade-right" data-aos-duration="800">
                     <span class="pill-badge pill-badge-hero mb-3">
-                        <i class="fa-solid fa-cross me-1"></i> GBI ERC SAWANGAN &bull; DEPARTMENT OF TEENS
+                        <i class="fa-solid fa-cross me-1"></i> GBI ERC SAWANGAN &bull; DRP OUTSTANDING TEENS
                     </span>
 
                     <h1 class="display-4 hero-title mb-4">
@@ -799,7 +919,7 @@
                     <span class="text-gradient-cyan">Ini Rumah Kedua Kamu!</span>
                 </h2>
                 <p class="text-muted mx-auto fs-5" style="max-width: 650px;">
-                    Department of Teens (DOT) GBI ERC Sawangan adalah wadah keluarga bagi generasi muda untuk menemukan tujuan hidup di dalam Kristus.
+                    DRP Outstanding Teens (DOT) GBI ERC Sawangan adalah wadah keluarga bagi generasi muda untuk menemukan tujuan hidup di dalam Kristus.
                 </p>
             </div>
 
@@ -962,9 +1082,22 @@
                 @forelse($events as $event)
                     <div class="col-md-6 col-lg-4" data-aos="fade-up" data-aos-delay="100">
                         <div class="navy-card h-100 p-4 d-flex flex-column" style="border-top: 4px solid var(--cyan-electric);">
-                            @if($event->image)
+                            @php
+                                $eventImg = null;
+                                if($event->image) {
+                                    if(file_exists(public_path('uploads/events/' . $event->image))) {
+                                        $eventImg = asset('uploads/events/' . $event->image);
+                                    } elseif(file_exists(public_path('images/' . $event->image))) {
+                                        $eventImg = asset('images/' . $event->image);
+                                    }
+                                }
+                                if(!$eventImg && stripos($event->title, 'Revival') !== false && file_exists(public_path('images/drn.jpeg'))) {
+                                    $eventImg = asset('images/drn.jpeg');
+                                }
+                            @endphp
+                            @if($eventImg)
                                 <div class="mb-3 overflow-hidden rounded-4" style="aspect-ratio: 16/9;">
-                                    <img src="{{ asset('uploads/events/' . $event->image) }}" alt="{{ $event->title }}" class="w-100 h-100 object-fit-cover" loading="lazy">
+                                    <img src="{{ $eventImg }}" alt="{{ $event->title }}" class="w-100 h-100 object-fit-cover" loading="lazy">
                                 </div>
                             @endif
 
@@ -987,11 +1120,14 @@
 
                             <div class="border-top border-secondary border-opacity-25 pt-3 mt-auto">
                                 <div class="small text-muted mb-1">
-                                    <i class="fa-solid fa-clock text-info me-2"></i> Pukul {{ date('H:i', strtotime($event->event_waktu)) }} WIB
+                                    <i class="fa-solid fa-clock text-info me-2"></i> Pukul {{ $event->time_formatted }} WIB
                                 </div>
-                                <div class="small text-muted">
+                                <div class="small text-muted mb-3">
                                     <i class="fa-solid fa-location-dot text-danger me-2"></i> {{ $event->location }}
                                 </div>
+                                <button type="button" class="btn btn-sm btn-cyan-pill w-100 fw-bold" onclick="openEventRegistration({{ $event->id }}, '{{ addslashes($event->title) }}', '{{ date('d M Y', strtotime($event->event_date)) }}', '{{ $event->time_formatted }} WIB', '{{ addslashes($event->location) }}')">
+                                    <i class="fa-solid fa-ticket me-1"></i> Daftar & Dapatkan E-Tiket
+                                </button>
                             </div>
                         </div>
                     </div>
@@ -1520,7 +1656,7 @@
                 <div class="col-lg-4 col-md-6">
                     <img src="{{ asset('images/logo.png') }}" alt="DOT Teens" class="mb-3" style="height: 65px; object-fit: contain;">
                     <p class="text-muted small mb-4" style="line-height: 1.8;">
-                        <strong class="text-white">Department of Teens (DOT) GBI ERC Sawangan</strong> adalah wadah ibadah, komunitas sel, dan keluarga rohani bagi anak-anak usia SMP hingga SMA untuk bertumbuh dan bersinar bagi Kristus.
+                        <strong class="text-white">DRP Outstanding Teens (DOT) GBI ERC Sawangan</strong> adalah wadah ibadah, komunitas sel, dan keluarga rohani bagi anak-anak usia SMP hingga SMA untuk bertumbuh dan bersinar bagi Kristus.
                     </p>
                     <div class="d-flex gap-2">
                         <a href="https://instagram.com/dot_teens" target="_blank" class="btn btn-sm btn-outline-cyan rounded-circle" style="width: 38px; height: 38px; padding: 0;" title="Instagram">
@@ -1585,7 +1721,7 @@
 
             <div class="d-flex flex-column flex-md-row align-items-center justify-content-between pt-4 gap-2">
                 <p class="small text-muted mb-0">
-                    &copy; {{ date('Y') }} <strong class="text-white">Department of Teens (DOT)</strong> &bull; GBI ERC Sawangan. All rights reserved.
+                    &copy; {{ date('Y') }} <strong class="text-white">DRP Outstanding Teens (DOT)</strong> &bull; GBI ERC Sawangan. All rights reserved.
                 </p>
                 <div class="small text-muted">
                     Fun Disciples, Fun Community ✨
@@ -1593,6 +1729,277 @@
             </div>
         </div>
     </footer>
+
+    <!-- FLOATING PILL EVENT MENDATANG -->
+    @if(isset($featuredEvent) && $featuredEvent)
+        @php
+            $bannerImage = null;
+            if (!empty($featuredEvent->image)) {
+                if (file_exists(public_path('uploads/events/' . $featuredEvent->image))) {
+                    $bannerImage = asset('uploads/events/' . $featuredEvent->image);
+                } elseif (file_exists(public_path('images/' . $featuredEvent->image))) {
+                    $bannerImage = asset('images/' . $featuredEvent->image);
+                }
+            }
+            if (!$bannerImage && file_exists(public_path('images/drn.jpeg'))) {
+                $bannerImage = asset('images/drn.jpeg');
+            }
+        @endphp
+
+        <div id="floatingEventPill" class="position-fixed bottom-0 start-0 m-3 z-3" style="cursor: pointer;" onclick="openUpcomingPopup()">
+            <div class="badge rounded-pill p-2 pe-3 d-flex align-items-center gap-2 shadow-lg" style="background: rgba(17, 34, 64, 0.95); border: 1px solid var(--cyan-electric); backdrop-filter: blur(10px);">
+                @if($bannerImage)
+                    <img src="{{ $bannerImage }}" alt="Banner" class="rounded-circle" style="width: 32px; height: 32px; object-fit: cover; border: 2px solid var(--cyan-electric);">
+                @else
+                    <span class="badge bg-danger rounded-circle p-2" style="box-shadow: 0 0 10px rgba(239, 68, 68, 0.7);"><i class="fa-solid fa-fire text-white"></i></span>
+                @endif
+                <div class="text-start">
+                    <div class="text-white fw-bold" style="font-size: 12px;">{{ $featuredEvent->title }}</div>
+                    <div class="small text-info" style="font-size: 10px;"><i class="fa-regular fa-calendar me-1"></i>{{ date('d M Y', strtotime($featuredEvent->event_date)) }} &bull; Klik untuk Banner & Tiket</div>
+                </div>
+            </div>
+        </div>
+
+        <!-- MODAL POP UP BANNER EVENT MENDATANG -->
+        <div class="modal fade" id="upcomingEventPopupModal" tabindex="-1" aria-labelledby="upcomingEventLabel" aria-hidden="true">
+            <div class="modal-dialog modal-dialog-centered" style="max-width: 520px;">
+                <div class="modal-content text-start" style="background: #112240; border: 1px solid rgba(56, 189, 248, 0.35); border-radius: 28px; box-shadow: 0 25px 60px -15px rgba(0, 0, 0, 0.8), 0 0 40px rgba(56, 189, 248, 0.2); overflow: hidden;">
+                    
+                    <!-- BANNER POSTER EVENT RESMI -->
+                    @if($bannerImage)
+                        <div class="position-relative overflow-hidden text-center" style="background: #060D18;">
+                            <img src="{{ $bannerImage }}" alt="{{ $featuredEvent->title }} Banner" class="w-100" style="max-height: 320px; object-fit: cover; object-position: center 15%; display: block; cursor: pointer;" onclick="openLightbox('{{ $bannerImage }}', 'Poster Resmi {{ addslashes($featuredEvent->title) }}', true)" title="Klik untuk melihat poster penuh">
+                            
+                            <!-- Gradient Fade Overlay -->
+                            <div class="position-absolute start-0 end-0 bottom-0" style="height: 100px; background: linear-gradient(to top, #112240 15%, rgba(17, 34, 64, 0.7) 60%, transparent 100%); pointer-events: none;"></div>
+                            
+                            <button type="button" class="btn-close btn-close-white position-absolute top-0 end-0 m-3 shadow" data-bs-dismiss="modal" aria-label="Close" style="background-color: rgba(10, 22, 40, 0.75); border: 1px solid rgba(255,255,255,0.25); padding: 8px; border-radius: 50%; z-index: 10;"></button>
+
+                            <div class="position-absolute bottom-0 start-0 m-3 z-1">
+                                <span class="badge rounded-pill px-3 py-1 fw-bold text-uppercase" style="background: linear-gradient(135deg, #F59E0B, #EF4444); color: #FFFFFF; font-size: 11px; letter-spacing: 1px; box-shadow: 0 4px 15px rgba(245, 158, 11, 0.5);">
+                                    <i class="fa-solid fa-fire me-1 text-white"></i> Special Upcoming Event
+                                </span>
+                            </div>
+
+                            <button type="button" class="btn btn-sm position-absolute bottom-0 end-0 m-3 rounded-pill px-3 text-white z-1" style="background: rgba(10,22,40,0.85); border: 1px solid rgba(56,189,248,0.4); font-size: 11px; backdrop-filter: blur(8px);" onclick="openLightbox('{{ $bannerImage }}', 'Poster Resmi {{ addslashes($featuredEvent->title) }}', true)">
+                                <i class="fa-solid fa-expand me-1 text-info"></i> Perbesar Poster
+                            </button>
+                        </div>
+                    @endif
+
+                    <!-- Content Details -->
+                    <div class="position-relative text-center px-4 pt-{{ $bannerImage ? '2' : '5' }} pb-4">
+                        @if(!$bannerImage)
+                            <button type="button" class="btn-close btn-close-white position-absolute top-0 end-0 m-3" data-bs-dismiss="modal" aria-label="Close"></button>
+                            <span class="badge rounded-pill px-3 py-2 fw-bold text-uppercase mb-3" style="background: linear-gradient(135deg, rgba(245, 158, 11, 0.25), rgba(239, 68, 68, 0.25)); color: #FBBF24; border: 1px solid rgba(245, 158, 11, 0.5); font-size: 11px; letter-spacing: 1px;">
+                                <i class="fa-solid fa-fire text-warning me-1"></i> Special Upcoming Event
+                            </span>
+                        @endif
+
+                        <h2 class="fw-bold text-white mb-1" style="font-family: 'Outfit', sans-serif; font-size: 26px; line-height: 1.2;">
+                            {{ $featuredEvent->title }}
+                        </h2>
+                        
+                        <p class="small mb-3" style="color: #94A3B8;">
+                            DRP Outstanding Teens (DOT) &bull; GBI Sawangan
+                        </p>
+
+                        <!-- Highlight Box -->
+                        <div class="rounded-4 p-3 mb-3 text-start mx-auto" style="background: rgba(10, 22, 40, 0.75); border: 1px solid rgba(56, 189, 248, 0.2); max-width: 440px;">
+                            <div class="d-flex align-items-center gap-3 mb-2">
+                                <div class="rounded-3 p-2 text-center" style="background: rgba(56, 189, 248, 0.15); color: #38BDF8; min-width: 45px;">
+                                    <i class="fa-regular fa-calendar-check fs-5"></i>
+                                </div>
+                                <div>
+                                    <div class="small text-muted" style="font-size: 11px;">TANGGAL & WAKTU</div>
+                                    <div class="fw-bold text-white" style="font-size: 14px;">
+                                        {{ date('l, d F Y', strtotime($featuredEvent->event_date)) }} &bull; {{ $featuredEvent->time_formatted }} WIB
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="d-flex align-items-center gap-3">
+                                <div class="rounded-3 p-2 text-center" style="background: rgba(239, 68, 68, 0.15); color: #F87171; min-width: 45px;">
+                                    <i class="fa-solid fa-location-dot fs-5"></i>
+                                </div>
+                                <div>
+                                    <div class="small text-muted" style="font-size: 11px;">LOKASI</div>
+                                    <div class="fw-bold text-white" style="font-size: 14px;">
+                                        {{ $featuredEvent->location }}
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <p class="small text-light mb-4 px-2" style="line-height: 1.6; color: #CBD5E1;">
+                            {{ Str::limit($featuredEvent->description, 160) }}
+                        </p>
+
+                        <!-- Tombol CTA -->
+                        <div class="d-flex flex-column gap-2">
+                            <button type="button" class="btn py-3 fw-bold rounded-pill text-white shadow-lg" style="background: linear-gradient(135deg, #0284C7 0%, #2563EB 100%); font-size: 15px;" onclick="openEventRegistration({{ $featuredEvent->id }}, '{{ addslashes($featuredEvent->title) }}', '{{ date('d M Y', strtotime($featuredEvent->event_date)) }}', '{{ $featuredEvent->time_formatted }} WIB', '{{ addslashes($featuredEvent->location) }}')">
+                                <i class="fa-solid fa-ticket me-2"></i> Daftar Sekarang (Dapatkan E-Tiket & QR)
+                            </button>
+                            <button type="button" class="btn btn-link text-secondary text-decoration-none small" data-bs-dismiss="modal">
+                                Nanti Saja
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    @endif
+
+    <!-- MODAL REGISTRASI EVENT -->
+    <div class="modal fade" id="eventRegisterModal" tabindex="-1" aria-labelledby="regModalLabel" aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered" style="max-width: 540px;">
+            <div class="modal-content text-start event-modal-card">
+                <div class="modal-header event-modal-header border-0 pb-2">
+                    <div>
+                        <span class="badge bg-info bg-opacity-25 text-info border border-info border-opacity-50 px-3 py-1 mb-2 rounded-pill" style="font-size: 11.5px; letter-spacing: 0.5px;">
+                            <i class="fa-solid fa-ticket me-1"></i> Registrasi Peserta
+                        </span>
+                        <h4 class="modal-title fw-bold text-white mb-1" id="regModalTitle">Daftar Event DOT</h4>
+                        <p class="small mb-0" id="regModalSubtitle" style="color: #94A3B8; font-size: 13px; line-height: 1.5;">Isi data dirimu untuk mendapatkan E-Tiket & QR Code kehadiran.</p>
+                    </div>
+                    <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                
+                <div class="modal-body event-modal-body pt-2">
+                    <div id="regErrorAlert" class="alert alert-danger d-none py-2 px-3 small rounded-3 mb-3"></div>
+
+                    <form id="eventRegisterForm" onsubmit="submitEventRegistration(event)">
+                        @csrf
+                        <input type="hidden" name="event_id" id="formEventId" value="{{ isset($featuredEvent) && $featuredEvent ? $featuredEvent->id : '' }}">
+
+                        <div class="mb-3">
+                            <label class="event-form-label">Nama Lengkap <span class="text-req">*</span></label>
+                            <div class="input-group event-input-group">
+                                <span class="input-group-text"><i class="fa-solid fa-user"></i></span>
+                                <input type="text" name="name" id="regName" class="form-control event-form-control" placeholder="Nama lengkap kamu..." required>
+                            </div>
+                        </div>
+
+                        <div class="mb-3">
+                            <label class="event-form-label">Nomor WhatsApp / HP <span class="text-req">*</span></label>
+                            <div class="input-group event-input-group">
+                                <span class="input-group-text" style="color: #22C55E;"><i class="fa-brands fa-whatsapp"></i></span>
+                                <input type="tel" name="phone" id="regPhone" class="form-control event-form-control" placeholder="08xxxxxxxxxx" required>
+                            </div>
+                            <div class="event-helper-text">
+                                <i class="fa-solid fa-circle-info me-1"></i> E-Tiket dan QR Code akan terhubung dengan nomor ini.
+                            </div>
+                        </div>
+
+                        <div class="row g-3 mb-3">
+                            <div class="col-md-6">
+                                <label class="event-form-label">Kategori / Umur <span class="text-req">*</span></label>
+                                <select name="category" id="regCategory" class="form-select event-form-control event-form-select" required>
+                                    <option value="SMP">SMP</option>
+                                    <option value="SMA">SMA</option>
+                                    <option value="Kuliah / Pemuda">Kuliah / Pemuda</option>
+                                    <option value="Pelayan / Mentor">Pelayan / Mentor</option>
+                                </select>
+                            </div>
+                            <div class="col-md-6">
+                                <label class="event-form-label">Email (Opsional)</label>
+                                <input type="email" name="email" id="regEmail" class="form-control event-form-control" placeholder="kamu@gmail.com">
+                            </div>
+                        </div>
+
+                        <div class="mb-3">
+                            <label class="event-form-label">Asal Sekolah / Cool / Gereja</label>
+                            <input type="text" name="origin" id="regOrigin" class="form-control event-form-control" placeholder="cth: SMPN 1 Sawangan / Cool 2009">
+                        </div>
+
+                        <div class="mb-4">
+                            <label class="event-form-label">Pokok Doa / Harapan (Opsional)</label>
+                            <textarea name="notes" id="regNotes" rows="2" class="form-control event-form-control" placeholder="Tuliskan harapan atau pokok doamu..."></textarea>
+                        </div>
+
+                        <button type="submit" id="btnSubmitReg" class="btn w-100 py-3 fw-bold rounded-pill text-white shadow-lg" style="background: linear-gradient(135deg, #0284C7 0%, #2563EB 100%); font-size: 15.5px; border: none;">
+                            <span id="btnRegSpinner" class="spinner-border spinner-border-sm me-2 d-none"></span>
+                            <i class="fa-solid fa-qrcode me-2" id="btnRegIcon"></i> Dapatkan E-Tiket & QR Code Sekarang
+                        </button>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- MODAL HASIL E-TIKET SETELAH MENDAFTAR -->
+    <div class="modal fade" id="eventTicketModal" tabindex="-1" aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered" style="max-width: 440px;">
+            <div class="modal-content text-center p-4" style="background: #112240; border: 1px solid rgba(56, 189, 248, 0.35); border-radius: 28px; box-shadow: 0 25px 50px rgba(0, 0, 0, 0.8);">
+                
+                <div class="d-inline-flex p-3 rounded-circle mx-auto mb-2" style="background: rgba(16, 185, 129, 0.15); color: #10B981;">
+                    <i class="fa-solid fa-circle-check fs-2"></i>
+                </div>
+                
+                <h4 class="fw-bold text-white mb-1">Pendaftaran Berhasil! 🎉</h4>
+                <p class="text-secondary small mb-3">Simpan E-Tiket ini dan tunjukkan QR Code ke panitia saat tiba di gate masuk.</p>
+
+                <!-- Card Tiket Mini -->
+                <div class="rounded-4 p-3 mb-3 text-center" style="background: #0D1C33; border: 1px dashed rgba(56, 189, 248, 0.3);">
+                    <div class="badge bg-primary bg-opacity-25 text-info mb-2 px-3 py-1 font-monospace fw-bold" id="ticketCodeDisplay" style="font-size: 16px; letter-spacing: 2px;">
+                        DRN-XXXXX
+                    </div>
+                    
+                    <h5 class="fw-bold text-white mb-1" id="ticketNameDisplay">Nama Peserta</h5>
+                    <div class="small text-secondary mb-3" id="ticketDetailDisplay">10 Oktober 2026 &bull; 17:30 WIB</div>
+
+                    <!-- QR Code Box -->
+                    <div class="bg-white p-3 rounded-4 d-inline-block shadow-sm mb-2">
+                        <div id="modalQrCode"></div>
+                    </div>
+                    
+                    <small class="text-secondary d-block" style="font-size: 11px;">Scan QR ini saat check-in di gate masuk</small>
+                </div>
+
+                <!-- Tombol Aksi -->
+                <div class="d-flex flex-column gap-2">
+                    <a id="btnViewFullTicket" href="#" target="_blank" class="btn py-2 fw-bold text-white rounded-pill" style="background: linear-gradient(135deg, #0284C7, #2563EB);">
+                        <i class="fa-solid fa-arrow-up-right-from-square me-1"></i> Buka Halaman Tiket Lengkap & Simpan
+                    </a>
+                    <button type="button" class="btn btn-outline-secondary text-light rounded-pill py-2" data-bs-dismiss="modal">
+                        Tutup
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- MODAL LIGHTBOX POSTER RESMI -->
+    <div class="modal fade" id="lightboxModal" tabindex="-1" aria-hidden="true" style="z-index: 1065;">
+        <div class="modal-dialog modal-dialog-centered" style="max-width: 580px;">
+            <div class="modal-content border-0 text-center" style="background: #0B1629; border: 1px solid rgba(56, 189, 248, 0.35) !important; border-radius: 28px; box-shadow: 0 30px 80px rgba(0, 0, 0, 0.95), 0 0 40px rgba(56, 189, 248, 0.2); overflow: hidden;">
+                
+                <div class="modal-header border-0 pb-0 pt-3 px-4 d-flex justify-content-between align-items-center">
+                    <div class="d-flex align-items-center gap-2">
+                        <span class="badge bg-info bg-opacity-25 text-info border border-info border-opacity-50 px-2.5 py-1 rounded-pill" style="font-size: 11px;">
+                            <i class="fa-regular fa-image me-1"></i> Poster Resmi
+                        </span>
+                        <span id="lightboxCaption" class="text-white small fw-bold text-truncate" style="max-width: 260px;"></span>
+                    </div>
+                    <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+
+                <div class="modal-body p-3 text-center">
+                    <img id="lightboxImg" src="" alt="Poster" class="img-fluid rounded-4 shadow-lg" style="max-height: 72vh; width: auto; object-fit: contain; border: 1px solid rgba(255, 255, 255, 0.12);">
+                </div>
+
+                <div class="modal-footer border-0 pt-0 pb-3 px-4 d-flex justify-content-between align-items-center">
+                    <button type="button" class="btn btn-outline-secondary text-light btn-sm rounded-pill px-3" data-bs-dismiss="modal">
+                        <i class="fa-solid fa-arrow-left me-1"></i> Kembali ke Event
+                    </button>
+                    @if(isset($featuredEvent) && $featuredEvent)
+                        <button type="button" id="btnLightboxRegister" class="btn btn-sm rounded-pill px-4 fw-bold text-white shadow d-none" style="background: linear-gradient(135deg, #0284C7, #2563EB); border: none;" onclick="lightboxToRegistration()">
+                            <i class="fa-solid fa-ticket me-1"></i> Daftar Sekarang
+                        </button>
+                    @endif
+                </div>
+            </div>
+        </div>
+    </div>
 
     <!-- SCRIPTS -->
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
@@ -1605,7 +2012,48 @@
             easing: 'ease-out-cubic'
         });
 
+        let upcomingModalInstance = null;
+        let regModalInstance = null;
+        let ticketModalInstance = null;
+        let lightboxModalInstance = null;
+        let openedFromUpcomingModal = false;
+        let isNavigatingToRegister = false;
+
         document.addEventListener('DOMContentLoaded', function() {
+            // Inisialisasi Modal
+            const upModalEl = document.getElementById('upcomingEventPopupModal');
+            if (upModalEl) upcomingModalInstance = new bootstrap.Modal(upModalEl);
+
+            const regModalEl = document.getElementById('eventRegisterModal');
+            if (regModalEl) regModalInstance = new bootstrap.Modal(regModalEl);
+
+            const tickModalEl = document.getElementById('eventTicketModal');
+            if (tickModalEl) ticketModalInstance = new bootstrap.Modal(tickModalEl);
+
+            const lbModalEl = document.getElementById('lightboxModal');
+            if (lbModalEl) {
+                lightboxModalInstance = new bootstrap.Modal(lbModalEl);
+                lbModalEl.addEventListener('hidden.bs.modal', function() {
+                    if (openedFromUpcomingModal && !isNavigatingToRegister) {
+                        openedFromUpcomingModal = false;
+                        if (upcomingModalInstance) {
+                            upcomingModalInstance.show();
+                        }
+                    }
+                });
+            }
+
+            // Tampilkan pop-up event otomatis saat pertama kali dibuka di sesi ini
+            @if(isset($featuredEvent) && $featuredEvent)
+                const popupSeen = sessionStorage.getItem('dot_event_popup_seen');
+                if (!popupSeen && upcomingModalInstance) {
+                    setTimeout(() => {
+                        upcomingModalInstance.show();
+                        sessionStorage.setItem('dot_event_popup_seen', 'true');
+                    }, 800);
+                }
+            @endif
+
             const navLinks = document.querySelectorAll('#navbarMain .nav-link, #navbarMain .btn, .footer-links a');
             const navbarCollapse = document.getElementById('navbarNav');
             
@@ -1639,10 +2087,12 @@
             const links = document.querySelectorAll('#navbarMain .nav-link');
 
             window.addEventListener('scroll', function() {
-                if (window.scrollY > 350) {
-                    backToTopBtn.classList.add('show');
-                } else {
-                    backToTopBtn.classList.remove('show');
+                if (backToTopBtn) {
+                    if (window.scrollY > 350) {
+                        backToTopBtn.classList.add('show');
+                    } else {
+                        backToTopBtn.classList.remove('show');
+                    }
                 }
 
                 let currentSection = '';
@@ -1667,11 +2117,140 @@
             });
         });
 
-        function openLightbox(src, title) {
-            document.getElementById('lightboxImg').src = src;
-            document.getElementById('lightboxCaption').textContent = title || '';
-            const modal = new bootstrap.Modal(document.getElementById('lightboxModal'));
-            modal.show();
+        function openUpcomingPopup() {
+            if (upcomingModalInstance) {
+                upcomingModalInstance.show();
+            }
+        }
+
+        function openEventRegistration(eventId, title, date, time, location) {
+            if (upcomingModalInstance) upcomingModalInstance.hide();
+
+            document.getElementById('formEventId').value = eventId;
+            document.getElementById('regModalTitle').innerText = 'Daftar: ' + title;
+            document.getElementById('regModalSubtitle').innerText = date + ' • ' + time + ' • ' + location;
+            document.getElementById('regErrorAlert').classList.add('d-none');
+            
+            if (regModalInstance) {
+                regModalInstance.show();
+            }
+        }
+
+        function submitEventRegistration(e) {
+            e.preventDefault();
+            const btn = document.getElementById('btnSubmitReg');
+            const spinner = document.getElementById('btnRegSpinner');
+            const icon = document.getElementById('btnRegIcon');
+            const alertBox = document.getElementById('regErrorAlert');
+
+            btn.disabled = true;
+            spinner.classList.remove('d-none');
+            icon.classList.add('d-none');
+            alertBox.classList.add('d-none');
+
+            const form = document.getElementById('eventRegisterForm');
+            const formData = new FormData(form);
+
+            fetch('{{ route("event.register") }}', {
+                method: 'POST',
+                headers: {
+                    'X-Requested-With': 'XMLHttpRequest',
+                    'Accept': 'application/json',
+                },
+                body: formData
+            })
+            .then(res => res.json())
+            .then(data => {
+                btn.disabled = false;
+                spinner.classList.add('d-none');
+                icon.classList.remove('d-none');
+
+                if (data.success && data.ticket) {
+                    if (regModalInstance) regModalInstance.hide();
+                    form.reset();
+
+                    // Tampilkan data tiket di modal tiket
+                    document.getElementById('ticketCodeDisplay').innerText = data.ticket.ticket_code;
+                    document.getElementById('ticketNameDisplay').innerText = data.ticket.name;
+                    document.getElementById('ticketDetailDisplay').innerText = data.ticket.event_date + ' • ' + data.ticket.event_time;
+                    document.getElementById('btnViewFullTicket').href = data.ticket.ticket_url;
+
+                    // Render QR Code
+                    const qrContainer = document.getElementById('modalQrCode');
+                    qrContainer.innerHTML = '';
+                    new QRCode(qrContainer, {
+                        text: data.ticket.ticket_code,
+                        width: 150,
+                        height: 150,
+                        colorDark : "#0A1628",
+                        colorLight : "#FFFFFF",
+                        correctLevel : QRCode.CorrectLevel.H
+                    });
+
+                    if (ticketModalInstance) ticketModalInstance.show();
+                } else {
+                    alertBox.innerText = data.message || 'Gagal melakukan pendaftaran. Silakan periksa data Anda.';
+                    alertBox.classList.remove('d-none');
+                }
+            })
+            .catch(err => {
+                btn.disabled = false;
+                spinner.classList.add('d-none');
+                icon.classList.remove('d-none');
+                alertBox.innerText = 'Terjadi kesalahan server saat memproses pendaftaran.';
+                alertBox.classList.remove('d-none');
+            });
+        }
+
+        function openLightbox(src, title, fromUpcoming = false) {
+            const lbImg = document.getElementById('lightboxImg');
+            const lbCap = document.getElementById('lightboxCaption');
+            if (lbImg) lbImg.src = src;
+            if (lbCap) lbCap.textContent = title || '';
+
+            const btnRegister = document.getElementById('btnLightboxRegister');
+            if (btnRegister) {
+                if (fromUpcoming) {
+                    btnRegister.classList.remove('d-none');
+                } else {
+                    btnRegister.classList.add('d-none');
+                }
+            }
+
+            if (fromUpcoming) {
+                openedFromUpcomingModal = true;
+                if (upcomingModalInstance) {
+                    upcomingModalInstance.hide();
+                }
+            } else {
+                openedFromUpcomingModal = false;
+            }
+
+            setTimeout(() => {
+                if (lightboxModalInstance) {
+                    lightboxModalInstance.show();
+                } else {
+                    const modalEl = document.getElementById('lightboxModal');
+                    if (modalEl) {
+                        lightboxModalInstance = new bootstrap.Modal(modalEl);
+                        lightboxModalInstance.show();
+                    }
+                }
+            }, fromUpcoming ? 200 : 0);
+        }
+
+        function lightboxToRegistration() {
+            isNavigatingToRegister = true;
+            if (lightboxModalInstance) {
+                lightboxModalInstance.hide();
+            }
+            setTimeout(() => {
+                isNavigatingToRegister = false;
+                openedFromUpcomingModal = false;
+                @if(isset($featuredEvent) && $featuredEvent)
+                    openEventRegistration({{ $featuredEvent->id }}, '{{ addslashes($featuredEvent->title) }}', '{{ date('d M Y', strtotime($featuredEvent->event_date)) }}', '{{ $featuredEvent->time_formatted }} WIB', '{{ addslashes($featuredEvent->location) }}');
+                @endif
+            }, 300);
         }
     </script>
 </body>

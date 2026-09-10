@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Login Admin Panel - Department of Teens</title>
+    <title>Login Admin Panel - DRP Outstanding Teens</title>
     
     <link rel="icon" href="{{ asset('images/logo.png') }}" type="image/png">
     <link rel="shortcut icon" href="{{ asset('images/logo.png') }}" type="image/png">
@@ -108,11 +108,21 @@
             letter-spacing: 0.2px;
         }
 
+        .text-muted, .text-secondary {
+            color: #94A3B8 !important;
+        }
+
+        .subtitle-text {
+            color: #94A3B8;
+            font-size: 13px;
+            line-height: 1.5;
+        }
+
         .input-group-text {
-            background: var(--navy-input);
-            border: 1px solid rgba(56, 189, 248, 0.2);
-            border-right: none;
-            color: var(--cyan-accent);
+            background-color: var(--navy-input) !important;
+            border: 1px solid rgba(56, 189, 248, 0.25) !important;
+            border-right: none !important;
+            color: var(--cyan-accent) !important;
             border-top-left-radius: 12px;
             border-bottom-left-radius: 12px;
             padding-left: 16px;
@@ -120,10 +130,10 @@
         }
 
         .form-control {
-            background: var(--navy-input);
-            border: 1px solid rgba(56, 189, 248, 0.2);
-            border-left: none;
-            color: #FFFFFF;
+            background-color: var(--navy-input) !important;
+            border: 1px solid rgba(56, 189, 248, 0.25) !important;
+            border-left: none !important;
+            color: #FFFFFF !important;
             font-size: 14px;
             padding: 12px 16px 12px 0;
             border-top-right-radius: 12px;
@@ -132,21 +142,32 @@
         }
 
         .form-control:focus {
-            background: #1C3355;
-            color: #FFFFFF;
-            box-shadow: none;
-            border-color: var(--cyan-accent);
+            background-color: #1C3355 !important;
+            color: #FFFFFF !important;
+            box-shadow: none !important;
+            border-color: var(--cyan-accent) !important;
         }
 
         .form-control::placeholder {
-            color: #64748B;
+            color: #64748B !important;
+        }
+
+        /* Autofill Overrides untuk Browser Chromium/Safari/Firefox */
+        input:-webkit-autofill,
+        input:-webkit-autofill:hover, 
+        input:-webkit-autofill:focus,
+        input:-webkit-autofill:active {
+            -webkit-box-shadow: 0 0 0 1000px #172A46 inset !important;
+            -webkit-text-fill-color: #FFFFFF !important;
+            caret-color: #FFFFFF !important;
+            transition: background-color 5000s ease-in-out 0s;
         }
 
         .password-toggle-btn {
-            background: var(--navy-input);
-            border: 1px solid rgba(56, 189, 248, 0.2);
-            border-left: none;
-            color: var(--text-muted);
+            background-color: var(--navy-input) !important;
+            border: 1px solid rgba(56, 189, 248, 0.25) !important;
+            border-left: none !important;
+            color: #94A3B8 !important;
             border-top-right-radius: 12px;
             border-bottom-right-radius: 12px;
             padding-right: 16px;
@@ -155,13 +176,13 @@
         }
 
         .password-toggle-btn:hover {
-            color: var(--cyan-accent);
+            color: var(--cyan-accent) !important;
         }
 
         .input-group:focus-within .input-group-text,
         .input-group:focus-within .password-toggle-btn {
-            border-color: var(--cyan-accent);
-            background: #1C3355;
+            border-color: var(--cyan-accent) !important;
+            background-color: #1C3355 !important;
         }
 
         .btn-navy-submit {
@@ -188,7 +209,7 @@
             display: inline-flex;
             align-items: center;
             gap: 8px;
-            color: var(--text-muted);
+            color: #94A3B8;
             text-decoration: none;
             font-size: 13px;
             font-weight: 500;
@@ -231,7 +252,7 @@
                 <img src="{{ asset('images/logo.png') }}" alt="DOT Teens Logo" onerror="this.onerror=null; this.src='https://via.placeholder.com/48/38bdf8/ffffff?text=DOT';">
             </div>
             <h1 class="title-brand">DOT <span>Admin</span></h1>
-            <p class="text-muted small mb-4">Masuk untuk mengelola data komunitas Department of Teens Sawangan.</p>
+            <p class="subtitle-text mb-4">Masuk untuk mengelola data komunitas DRP Outstanding Teens Sawangan.</p>
         </div>
         
         <!-- Alerts -->

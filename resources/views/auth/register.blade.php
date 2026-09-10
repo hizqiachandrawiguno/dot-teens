@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Pendaftaran Pengurus - Department of Teens</title>
+    <title>Pendaftaran Pengurus - DRP Outstanding Teens</title>
     
     <link rel="icon" href="{{ asset('images/logo.png') }}" type="image/png">
     <link rel="shortcut icon" href="{{ asset('images/logo.png') }}" type="image/png">
@@ -82,10 +82,14 @@
             margin-bottom: 6px;
         }
 
+        .text-muted, .text-secondary {
+            color: #94A3B8 !important;
+        }
+
         .form-control, .form-select {
-            background: var(--navy-input);
-            border: 1px solid rgba(56, 189, 248, 0.2);
-            color: #FFFFFF;
+            background-color: var(--navy-input) !important;
+            border: 1px solid rgba(56, 189, 248, 0.25) !important;
+            color: #FFFFFF !important;
             font-size: 14px;
             padding: 11px 14px;
             border-radius: 12px;
@@ -93,14 +97,25 @@
         }
 
         .form-control:focus, .form-select:focus {
-            background: #1C3355;
-            color: #FFFFFF;
-            box-shadow: none;
-            border-color: var(--cyan-accent);
+            background-color: #1C3355 !important;
+            color: #FFFFFF !important;
+            box-shadow: none !important;
+            border-color: var(--cyan-accent) !important;
         }
 
         .form-control::placeholder {
-            color: #64748B;
+            color: #64748B !important;
+        }
+
+        /* Autofill Overrides */
+        input:-webkit-autofill,
+        input:-webkit-autofill:hover, 
+        input:-webkit-autofill:focus,
+        input:-webkit-autofill:active {
+            -webkit-box-shadow: 0 0 0 1000px #172A46 inset !important;
+            -webkit-text-fill-color: #FFFFFF !important;
+            caret-color: #FFFFFF !important;
+            transition: background-color 5000s ease-in-out 0s;
         }
 
         .form-select option {
@@ -144,7 +159,7 @@
     <div class="register-card">
         <div class="text-center mb-4">
             <h1 class="title-brand">Daftar Akun <span>Pengurus</span></h1>
-            <p class="text-muted small mb-0">Registrasi akun divisi pelayanan Department of Teens.</p>
+            <p class="text-muted small mb-0">Registrasi akun divisi pelayanan DRP Outstanding Teens.</p>
         </div>
         
         @if($errors->any())

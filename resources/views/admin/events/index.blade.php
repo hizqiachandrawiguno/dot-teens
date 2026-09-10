@@ -118,21 +118,31 @@
                                     @endif
                                 </td>
                                 <td>
-                                    <div class="fw-bold text-white">{{ $event->title }}</div>
-                                    <small class="text-secondary">{{ Str::limit($event->description, 50) }}</small>
+                                    <div class="fw-bold text-white mb-1">{{ $event->title }}</div>
+                                    <div class="small text-secondary mb-2">{{ Str::limit($event->description, 60) }}</div>
+                                    <div class="d-flex gap-1 flex-wrap">
+                                        <a href="{{ route('admin.events.scan', $event->id) }}" class="btn btn-xs btn-outline-info rounded-pill px-2 py-1 small" style="font-size: 11px;">
+                                            <i class="fa-solid fa-qrcode me-1"></i> Scan Kehadiran
+                                        </a>
+                                        <a href="{{ route('admin.events.participants', $event->id) }}" class="btn btn-xs btn-outline-light rounded-pill px-2 py-1 small" style="font-size: 11px;">
+                                            <i class="fa-solid fa-users me-1"></i> Peserta ({{ $event->registrations()->count() }})
+                                        </a>
+                                    </div>
                                 </td>
                                 <td>
-                                    <div class="small text-info fw-semibold"><i class="fa-regular fa-clock me-1 text-warning"></i> {{ date('d M Y', strtotime($event->event_date)) }} • {{ date('H:i', strtotime($event->event_waktu)) }} WIB</div>
+                                    <div class="small text-info fw-semibold"><i class="fa-regular fa-clock me-1 text-warning"></i> {{ date('d M Y', strtotime($event->event_date)) }} • {{ $event->time_formatted }} WIB</div>
                                     <div class="small text-secondary mt-1"><i class="fa-solid fa-location-dot me-1"></i> {{ $event->location }}</div>
                                 </td>
                                 <td class="text-center">
-                                    <form action="{{ route('events.destroy', $event->id) }}" method="POST">
-                                        @csrf
-                                        @method('DELETE')
-                                        <button class="btn btn-sm btn-outline-danger rounded-circle" style="width: 35px; height: 35px;" onclick="return confirm('Hapus acara ini?')">
-                                            <i class="fa-solid fa-trash mt-1"></i>
-                                        </button>
-                                    </form>
+                                    <div class="d-flex justify-content-center gap-1">
+                                        <form action="{{ route('events.destroy', $event->id) }}" method="POST">
+                                            @csrf
+                                            @method('DELETE')
+                                            <button class="btn btn-sm btn-outline-danger rounded-circle" style="width: 35px; height: 35px;" onclick="return confirm('Hapus acara ini?')">
+                                                <i class="fa-solid fa-trash mt-1"></i>
+                                            </button>
+                                        </form>
+                                    </div>
                                 </td>
                             </tr>
                             @empty

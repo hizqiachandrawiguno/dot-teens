@@ -5,7 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>About Us - DOT GBI Sawangan</title>
 
-    <meta name="description" content="Website resmi DOT (Department of Teens) Sawangan. Temukan jadwal ibadah, info komunitas cell, galeri kegiatan, dan mari bertumbuh bersama komunitas youth kami!">
+    <meta name="description" content="Website resmi DOT (DRP Outstanding Teens) Sawangan. Temukan jadwal ibadah, info komunitas cell, galeri kegiatan, dan mari bertumbuh bersama komunitas youth kami!">
     <meta name="keywords" content="DOT Sawangan, Youth Sawangan, Pemuda Kristen Sawangan, Ibadah Youth Sawangan, Gereja Sawangan, Komunitas Pemuda, Cell DOT">
     <meta name="author" content="DOT Sawangan">
 
@@ -153,7 +153,7 @@
             </div>
             <h1 class="display-3 fw-bold mb-4">Kenali Kami <br><span class="text-gradient-animated">Lebih Dekat</span> 👋</h1>
             <p class="fs-5 text-secondary mx-auto" style="max-width: 750px; line-height: 1.8;">
-                Department Teens (DOT) GBI Sawangan bukan sekadar tempat ibadah. Kami adalah <span class="text-white fw-bold">rumah, keluarga, dan wadah</span> bagi generasi muda untuk menemukan tujuan hidup super keren di dalam Kristus!
+                DRP Outstanding Teens (DOT) GBI Sawangan bukan sekadar tempat ibadah. Kami adalah <span class="text-white fw-bold">rumah, keluarga, dan wadah</span> bagi generasi muda untuk menemukan tujuan hidup super keren di dalam Kristus!
             </p>
         </div>
     </header>
@@ -170,7 +170,7 @@
                     
                     <div class="position-relative z-1">
                         <p class="text-light mb-4" style="line-height: 1.8; text-align: justify; font-size: 1.05rem;">
-                            Perjalanan seru <strong>Department Teens (DOT)</strong> GBI Sawangan dimulai sejak tahun <span class="badge bg-primary rounded-pill px-3 fs-6 mx-1 shadow-sm" style="background: rgba(96, 165, 250, 0.2)!important; color:#60A5FA!important; border: 1px solid #60A5FA;">2021</span>. Berawal dari kerinduan untuk menyediakan tempat ibadah dan *hangout* yang relevan, komunitas ini terus *grow up* dari tahun ke tahun.
+                            Perjalanan seru <strong>DRP Outstanding Teens (DOT)</strong> GBI Sawangan dimulai sejak tahun <span class="badge bg-primary rounded-pill px-3 fs-6 mx-1 shadow-sm" style="background: rgba(96, 165, 250, 0.2)!important; color:#60A5FA!important; border: 1px solid #60A5FA;">2021</span>. Berawal dari kerinduan untuk menyediakan tempat ibadah dan *hangout* yang relevan, komunitas ini terus *grow up* dari tahun ke tahun.
                         </p>
                         <p class="text-secondary mb-0" style="line-height: 1.8; text-align: justify;">
                             Melalui berbagai generasi pengurus, DOT telah melahirkan banyak pemimpin muda yang berdampak. Fokus kami cuma satu: membawa jiwa-jiwa muda untuk mengenal kasih Tuhan dan menghidupinya dengan cara yang *fun* dan dinamis! 🔥
@@ -263,7 +263,7 @@
     <footer class="text-center py-4 mt-5" style="border-top: 1px solid rgba(255,255,255,0.05);">
     <p class="small mb-0">
         <a href="/login" class="text-secondary" style="text-decoration: none; cursor: default;">
-            &copy; 2026 Department Teens GBI Sawangan.
+            &copy; 2026 DRP Outstanding Teens GBI Sawangan.
         </a>
     </p>
 </footer>

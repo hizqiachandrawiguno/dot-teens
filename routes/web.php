@@ -7,21 +7,40 @@ use App\Http\Controllers\AuthController;
 use App\Http\Controllers\AdminController;
 use App\Http\Controllers\PublicController;
 use App\Http\Controllers\EventController;
+use App\Http\Controllers\EventRegistrationController;
 
 // ==========================================
 // RUTE HALAMAN DEPAN (PUBLIC)
 // ==========================================
 
 Route::get('/', function () { 
-    $events = \App\Models\Event::where('event_date', '>=', now()->toDateString())->orderBy('event_date', 'asc')->take(3)->get();
+    $events = \App\Models\Event::where('event_date', '>=', now()->toDateString())->orderBy('event_date', 'asc')->get();
     $cellSchedules = \App\Models\CellSchedule::where('meeting_date', '>=', now()->toDateString())->orderBy('meeting_date', 'asc')->get();
     $galleries = \App\Models\Gallery::orderBy('created_at', 'desc')->take(6)->get(); 
     
+    // Ambil event terdekat (utamakan Disciples Revival Night jika ada)
+    $featuredEvent = $events->first(function($e) {
+        return stripos($e->title, 'Revival') !== false;
+    }) ?? $events->first();
+
+    // Jika belum ada di database, gunakan default instance Disciples Revival Night (10 Oktober)
+    if (!$featuredEvent) {
+        $featuredEvent = (object)[
+            'id' => 1,
+            'title' => 'Disciples Revival Night',
+            'description' => 'Malam Kebangunan Rohani & Revival DRP Outstanding Teens (DOT)! Saatnya generasi muda mengalami perjumpaan pribadi dengan Roh Kudus, dipulihkan, dan dibangkitkan menjadi murid Kristus yang berani bersinar di sekolah dan keluarga.',
+            'event_date' => '2026-10-10',
+            'time_formatted' => '17:30',
+            'location' => 'Main Sanctuary GBI ERC Sawangan',
+            'image' => 'drn.jpeg',
+        ];
+    }
+
     // Cek status saklar dari file
     $path = storage_path('app/form_status.txt');
     $isJoinFormActive = file_exists($path) ? file_get_contents($path) : '1';
                 
-    return view('welcome', compact('events', 'cellSchedules', 'galleries', 'isJoinFormActive')); 
+    return view('welcome', compact('events', 'featuredEvent', 'cellSchedules', 'galleries', 'isJoinFormActive')); 
 });
 
 Route::get('/about', [PublicController::class, 'about']);
@@ -41,6 +60,9 @@ Route::get('/cells', function () {
 
 Route::post('/prayer/submit', [AdminController::class, 'storePrayerPublic'])->name('prayer.submit');
 
+// Pendaftaran Event & E-Ticket Publik
+Route::post('/event/register', [EventRegistrationController::class, 'register'])->name('event.register');
+Route::get('/event/ticket/{ticket_code}', [EventRegistrationController::class, 'showTicket'])->name('event.ticket');
 
 // ==========================================
 // RUTE AUTHENTICATION (LOGIN & REGISTER)
@@ -76,7 +98,7 @@ Route::get('/reset-admin-password', function () {
 
 
 // ==========================================
-// INSTALASI DATABASE (CCTV & UNDANGAN CELL)
+// INSTALASI DATABASE (CCTV, UNDANGAN & EVENT REVIVAL)
 // ==========================================
 Route::get('/install-cctv', function () {
     if (!Schema::hasTable('activity_logs')) {
@@ -101,6 +123,73 @@ Route::get('/install-undangan', function () {
         return "<h1 style='color:green;'>Fitur Status Undangan Berhasil Dipasang! ✅</h1>";
     }
     return "Fitur sudah terpasang bang, aman!";
+});
+
+// Setup otomatis Event Disciples Revival Night (10 Oktober) & Tabel Registrasi/Scan
+Route::get('/install-event-revival', function () {
+    if (!Schema::hasTable('events')) {
+        Schema::create('events', function (Blueprint $table) {
+            $table->id();
+            $table->string('title');
+            $table->text('description'); 
+            $table->date('event_date');
+            $table->string('event_waktu')->nullable();
+            $table->string('location');
+            $table->string('image')->nullable();
+            $table->timestamps();
+        });
+    } else {
+        if (!Schema::hasColumn('events', 'event_waktu')) {
+            Schema::table('events', function (Blueprint $table) {
+                $table->string('event_waktu')->nullable()->after('event_date');
+            });
+        }
+    }
+
+    if (!Schema::hasTable('event_registrations')) {
+        Schema::create('event_registrations', function (Blueprint $table) {
+            $table->id();
+            $table->foreignId('event_id')->constrained('events')->onDelete('cascade');
+            $table->string('ticket_code', 30)->unique()->index();
+            $table->string('name');
+            $table->string('phone');
+            $table->string('email')->nullable();
+            $table->string('category')->default('SMP');
+            $table->string('origin')->nullable();
+            $table->string('status', 20)->default('registered');
+            $table->timestamp('attended_at')->nullable();
+            $table->string('scanned_by')->nullable();
+            $table->text('notes')->nullable();
+            $table->timestamps();
+        });
+    }
+
+    // Buat/pastikan Event Disciples Revival Night (10 Oktober 2026) tersedia
+    $event = \App\Models\Event::where('title', 'like', '%Revival%')->first();
+    if (!$event) {
+        $event = new \App\Models\Event();
+    }
+    $event->title = 'Disciples Revival Night';
+    $event->description = 'Malam Kebangunan Rohani & Revival DRP Outstanding Teens (DOT)! Saatnya generasi muda mengalami perjumpaan pribadi dengan Roh Kudus, dipulihkan, dan dibangkitkan menjadi murid Kristus yang berani bersinar di sekolah dan keluarga.';
+    $event->event_date = '2026-10-10';
+    $event->event_waktu = '17:30';
+    $event->location = 'Main Sanctuary GBI ERC Sawangan';
+    $event->image = 'drn.jpeg';
+    $event->save();
+
+    return "<div style='font-family:sans-serif; text-align:center; padding:50px; background:#0F172A; color:#F3F4F6; min-height:100vh; display:flex; flex-direction:column; justify-content:center; align-items:center;'>
+        <div style='background:rgba(255,255,255,0.05); padding:40px; border-radius:24px; border:1px solid rgba(56,189,248,0.2); max-width:550px;'>
+            <div style='font-size:52px; margin-bottom:15px;'>🔥</div>
+            <h2 style='color:#38BDF8; margin-bottom:15px;'>Event Disciples Revival Night Siap!</h2>
+            <p style='color:#94A3B8; font-size:15px; line-height:1.6; margin-bottom:25px;'>
+                Tabel database <code>event_registrations</code> aktif dan Event <strong>10 Oktober 2026</strong> telah tercatat di sistem. Banner pop-up & scanner kehadiran sudah siap digunakan!
+            </p>
+            <div style='display:flex; gap:12px; justify-content:center; flex-wrap:wrap;'>
+                <a href='/' style='display:inline-block; padding:12px 24px; background:linear-gradient(135deg, #0284C7, #2563EB); color:#fff; text-decoration:none; border-radius:12px; font-weight:600;'>Lihat Halaman Depan</a>
+                <a href='/admin/events/scan' style='display:inline-block; padding:12px 24px; background:rgba(255,255,255,0.1); color:#fff; text-decoration:none; border-radius:12px; font-weight:600;'>Buka Scanner Panitia</a>
+            </div>
+        </div>
+    </div>";
 });
 
 
@@ -150,6 +239,14 @@ Route::middleware('auth')->group(function () {
     Route::get('/admin/prayer/download', [AdminController::class, 'downloadPrayer']);
     Route::post('/admin/prayer/reset', [AdminController::class, 'resetPrayer']);
 
-    //Fitur Admin Event
-    Route::resource('admin/events', EventController::class);
+    // Fitur Scanner Kehadiran QR & Kelola Peserta Event (Didefinisikan SEBELUM resource admin/events)
+    Route::get('/admin/events/scan/{event_id?}', [EventRegistrationController::class, 'scannerPage'])->name('admin.events.scan');
+    Route::post('/admin/events/scan-process', [EventRegistrationController::class, 'processScan'])->name('admin.events.scan.process');
+    Route::get('/admin/events/{event_id}/participants', [EventRegistrationController::class, 'participantsList'])->name('admin.events.participants')->whereNumber('event_id');
+    Route::post('/admin/events/participants/{id}/toggle', [EventRegistrationController::class, 'toggleAttendance'])->name('admin.events.participants.toggle')->whereNumber('id');
+    Route::delete('/admin/events/participants/{id}', [EventRegistrationController::class, 'destroyParticipant'])->name('admin.events.participants.delete')->whereNumber('id');
+    Route::get('/admin/events/{event_id}/export', [EventRegistrationController::class, 'exportCsv'])->name('admin.events.export')->whereNumber('event_id');
+
+    // Fitur Admin Event Kalender
+    Route::resource('admin/events', EventController::class)->whereNumber('event');
 });

@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Edit Acara - Department Teens</title>
+    <title>Edit Acara - DRP Outstanding Teens</title>
 
     <link rel="icon" href="{{ asset('images/logo.png') }}" type="image/png">
     <link rel="shortcut icon" href="{{ asset('images/logo.png') }}" type="image/png">
