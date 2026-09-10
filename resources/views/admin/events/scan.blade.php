@@ -13,8 +13,13 @@
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
 
-    <!-- HTML5 QR Code Scanner Library -->
-    <script src="https://unpkg.com/html5-qrcode@2.3.8/html5-qrcode.min.js"></script>
+    <!-- HTML5 QR Code Scanner Library (Local with CDN Fallback) -->
+    <script src="{{ asset('js/html5-qrcode.min.js') }}"></script>
+    <script>
+        if (typeof Html5Qrcode === 'undefined') {
+            document.write('<script src="https://unpkg.com/html5-qrcode@2.3.8/html5-qrcode.min.js"><\/script>');
+        }
+    </script>
 
     <meta name="csrf-token" content="{{ csrf_token() }}">
 
@@ -235,12 +240,16 @@
                         <h5 class="fw-bold text-white mb-0">
                             <i class="fa-solid fa-camera text-info me-2"></i> Kamera Scan QR
                         </h5>
-                        <div class="d-flex gap-2">
+                        <div class="d-flex gap-2 flex-wrap">
                             <button id="btnStartScan" class="btn btn-sm btn-cyan" onclick="startScanner()">
                                 <i class="fa-solid fa-play me-1"></i> Buka Kamera
                             </button>
+                            <button id="btnUploadScan" class="btn btn-sm btn-outline-info rounded-pill px-3" onclick="triggerFileInput()" title="Pindai dari screenshot atau file foto QR Code">
+                                <i class="fa-solid fa-file-image me-1"></i> Scan dari Foto QR
+                            </button>
+                            <input type="file" id="qrFileInput" accept="image/*" class="d-none" onchange="handleFileScan(event)">
                             <button id="btnStopScan" class="btn btn-sm btn-outline-danger d-none" onclick="stopScanner()">
-                                <i class="fa-solid fa-stop me-1"></i> Tutup
+                                <i class="fa-solid fa-stop me-1"></i> Tutup Kamera
                             </button>
                         </div>
                     </div>
@@ -250,14 +259,14 @@
                         <div class="d-flex align-items-start gap-3">
                             <i class="fa-solid fa-triangle-exclamation fs-4 text-warning mt-1"></i>
                             <div class="small">
-                                <strong class="d-block text-white mb-1">Browser Memblokir Kamera (Status: Not Secure)</strong>
-                                <span class="text-light opacity-90">Google Chrome membatasi izin kamera hanya untuk koneksi <strong>HTTPS</strong> atau <strong>localhost</strong>. Karena dibuka via HTTP biasa, browser mengunci kamera.</span>
+                                <strong class="d-block text-white mb-1">Browser Memblokir Akses Kamera (Status: Not Secure)</strong>
+                                <span class="text-light opacity-90">Google Chrome membatasi izin kamera hanya untuk koneksi <strong>HTTPS</strong> atau <strong>localhost</strong>. Karena dibuka via domain lokal HTTP (.test), browser mengunci webcam.</span>
                                 <div class="mt-2 d-flex flex-wrap gap-2">
-                                    <a id="btnSwitchHttps" href="#" class="btn btn-sm btn-light fw-bold text-dark rounded-pill px-3">
-                                        <i class="fa-solid fa-lock me-1 text-success"></i> Buka dengan HTTPS
+                                    <a href="http://localhost/dot-teens/public/admin/events/scan/{{ $selectedEvent->id }}" class="btn btn-sm btn-success fw-bold text-dark rounded-pill px-3 shadow">
+                                        <i class="fa-solid fa-bolt me-1 text-dark"></i> Buka via Localhost (Kamera Aktif)
                                     </a>
-                                    <a id="btnSwitchLocalhost" href="http://127.0.0.1:8000/admin/events/scan" class="btn btn-sm btn-outline-light rounded-pill px-3">
-                                        <i class="fa-solid fa-server me-1"></i> Buka via 127.0.0.1:8000
+                                    <a id="btnSwitchHttps" href="#" class="btn btn-sm btn-light fw-bold text-dark rounded-pill px-3">
+                                        <i class="fa-solid fa-lock me-1 text-success"></i> Buka via HTTPS
                                     </a>
                                 </div>
                             </div>
@@ -273,12 +282,22 @@
                     <!-- Area Kamera QR Code -->
                     <div class="scanner-container" id="scannerWrapper">
                         <div id="qr-reader"></div>
+                        <div id="scannerLoading" class="text-center p-4 d-none">
+                            <div class="spinner-border text-info mb-3" style="width: 2.8rem; height: 2.8rem;"></div>
+                            <h6 class="text-white fw-bold mb-1">Menghubungkan Kamera...</h6>
+                            <p class="text-secondary small mb-0">Jika muncul dialog izin di browser, silakan klik <strong>"Allow / Izinkan"</strong>.</p>
+                        </div>
                         <div id="scannerPlaceholder" class="text-center p-4">
                             <i class="fa-solid fa-qrcode fs-1 text-secondary opacity-50 mb-3"></i>
-                            <p class="text-secondary small mb-3">Kamera scanner belum aktif.</p>
-                            <button class="btn btn-sm btn-cyan" onclick="startScanner()">
-                                <i class="fa-solid fa-camera me-1"></i> Izinkan & Mulai Kamera
-                            </button>
+                            <p class="text-secondary small mb-3">Kamera scanner belum aktif atau belum diberikan izin.</p>
+                            <div class="d-flex justify-content-center gap-2 flex-wrap">
+                                <button class="btn btn-sm btn-cyan px-3 py-2 fw-bold shadow" onclick="startScanner()">
+                                    <i class="fa-solid fa-camera me-1"></i> Izinkan & Mulai Kamera
+                                </button>
+                                <button class="btn btn-sm btn-outline-info rounded-pill px-3 py-2" onclick="triggerFileInput()">
+                                    <i class="fa-solid fa-file-image me-1"></i> Scan dari Foto / Gambar QR
+                                </button>
+                            </div>
                         </div>
                     </div>
 
@@ -352,24 +371,37 @@
         </div>
     </div>
 
-    <!-- AUDIO NOTIFICATION EFFECTS (SYNTHESIZED WEB AUDIO API - NO EXTERNAL ASSETS NEEDED) -->
+    <!-- AUDIO NOTIFICATION EFFECTS (SYNTHESIZED WEB AUDIO API - SAFE LAZY INIT) -->
     <script>
-        const audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+        let audioCtx = null;
+        function getAudioContext() {
+            if (!audioCtx) {
+                try {
+                    const AudioClass = window.AudioContext || window.webkitAudioContext;
+                    if (AudioClass) audioCtx = new AudioClass();
+                } catch (e) {
+                    console.warn("AudioContext init skipped", e);
+                }
+            }
+            return audioCtx;
+        }
 
         function playSoundSuccess() {
             try {
-                if (audioCtx.state === 'suspended') audioCtx.resume();
-                const now = audioCtx.currentTime;
+                const ctx = getAudioContext();
+                if (!ctx) return;
+                if (ctx.state === 'suspended') ctx.resume();
+                const now = ctx.currentTime;
                 // Tone 1
-                const osc1 = audioCtx.createOscillator();
-                const gain1 = audioCtx.createGain();
+                const osc1 = ctx.createOscillator();
+                const gain1 = ctx.createGain();
                 osc1.type = 'sine';
                 osc1.frequency.setValueAtTime(587.33, now); // D5
                 osc1.frequency.exponentialRampToValueAtTime(880, now + 0.15); // A5
                 gain1.gain.setValueAtTime(0.3, now);
                 gain1.gain.exponentialRampToValueAtTime(0.01, now + 0.3);
                 osc1.connect(gain1);
-                gain1.connect(audioCtx.destination);
+                gain1.connect(ctx.destination);
                 osc1.start(now);
                 osc1.stop(now + 0.3);
             } catch (e) { console.log(e); }
@@ -377,17 +409,19 @@
 
         function playSoundWarning() {
             try {
-                if (audioCtx.state === 'suspended') audioCtx.resume();
-                const now = audioCtx.currentTime;
-                const osc = audioCtx.createOscillator();
-                const gain = audioCtx.createGain();
+                const ctx = getAudioContext();
+                if (!ctx) return;
+                if (ctx.state === 'suspended') ctx.resume();
+                const now = ctx.currentTime;
+                const osc = ctx.createOscillator();
+                const gain = ctx.createGain();
                 osc.type = 'triangle';
                 osc.frequency.setValueAtTime(220, now);
                 osc.frequency.setValueAtTime(180, now + 0.1);
                 gain.gain.setValueAtTime(0.4, now);
                 gain.gain.exponentialRampToValueAtTime(0.01, now + 0.35);
                 osc.connect(gain);
-                gain.connect(audioCtx.destination);
+                gain.connect(ctx.destination);
                 osc.start(now);
                 osc.stop(now + 0.35);
             } catch (e) { console.log(e); }
@@ -406,85 +440,179 @@
                 const alertEl = document.getElementById('insecureOriginAlert');
                 if (alertEl) {
                     alertEl.classList.remove('d-none');
-                    document.getElementById('btnSwitchHttps').href = 'https://' + location.host + location.pathname + location.search;
+                    const btnHttps = document.getElementById('btnSwitchHttps');
+                    if (btnHttps) {
+                        btnHttps.href = 'https://' + location.host + location.pathname + location.search;
+                    }
                 }
             }
         });
 
-        function startScanner() {
-            // Cek navigator mediaDevices (Chrome mematikan API ini di non-secure HTTP)
-            if (!navigator.mediaDevices || !navigator.mediaDevices.getUserMedia) {
-                showCameraError("Google Chrome mematikan fitur kamera karena situs dibuka melalui HTTP (Not Secure). Silakan klik tombol 'Buka dengan HTTPS' di atas atau buka via http://127.0.0.1.");
+        function triggerFileInput() {
+            const fi = document.getElementById('qrFileInput');
+            if (fi) fi.click();
+        }
+
+        function handleFileScan(event) {
+            const file = event.target.files[0];
+            if (!file) return;
+
+            if (typeof Html5Qrcode === 'undefined') {
+                alert("Library scanner belum siap. Silakan refresh halaman.");
                 return;
             }
-
-            document.getElementById('scannerPlaceholder').classList.add('d-none');
-            document.getElementById('btnStartScan').classList.add('d-none');
-            document.getElementById('btnStopScan').classList.remove('d-none');
 
             if (!html5QrCode) {
                 html5QrCode = new Html5Qrcode("qr-reader");
             }
 
-            const config = { fps: 10, qrbox: { width: 250, height: 250 } };
+            const feedbackCard = document.getElementById('scanFeedbackCard');
+            feedbackCard.style.display = 'block';
+            feedbackCard.style.background = 'rgba(56, 189, 248, 0.1)';
+            feedbackCard.style.border = '1px solid rgba(56, 189, 248, 0.3)';
+            feedbackCard.innerHTML = `<div class="d-flex align-items-center gap-3"><div class="spinner-border text-info spinner-border-sm"></div><div>Menganalisis file QR: <strong>${file.name}</strong>...</div></div>`;
 
-            // Coba deteksi kamera laptop atau kamera eksternal
+            html5QrCode.scanFile(file, true)
+                .then(decodedText => {
+                    submitScanCode(decodedText);
+                    event.target.value = '';
+                })
+                .catch(err => {
+                    console.error("Scan file error:", err);
+                    showErrorFeedback("QR Code tidak terbaca pada file ini. Pastikan gambar jelas dan tidak blur.");
+                    event.target.value = '';
+                });
+        }
+
+        function startScanner() {
+            if (typeof Html5Qrcode === 'undefined') {
+                showCameraError("Library scanner belum termuat sempurna. Silakan periksa koneksi internet dan refresh halaman.");
+                return;
+            }
+
+            const btnStart = document.getElementById('btnStartScan');
+            const placeholder = document.getElementById('scannerPlaceholder');
+            const loading = document.getElementById('scannerLoading');
+            const btnStop = document.getElementById('btnStopScan');
+
+            // Cek navigator mediaDevices (Chrome mematikan API ini di non-secure HTTP seperti dot-teens.test)
+            if (!navigator.mediaDevices || !navigator.mediaDevices.getUserMedia) {
+                showCameraError(
+                    "Google Chrome mengunci webcam pada alamat HTTP biasa (" + location.hostname + ").<br><br>" +
+                    "<strong>Cara Mudah Mengaktifkan:</strong><br>" +
+                    "1. <a href='http://localhost/dot-teens/public/admin/events/scan/" + eventId + "' class='text-info fw-bold text-decoration-underline'>Klik di sini untuk Buka via Localhost</a> (Chrome mengizinkan webcam di localhost)<br>" +
+                    "2. Atau gunakan tombol <strong>'Scan dari Foto QR'</strong> di atas untuk memindai tiket dari file gambar."
+                );
+                return;
+            }
+
+            // Tampilkan status loading
+            if (placeholder) placeholder.classList.add('d-none');
+            if (loading) loading.classList.remove('d-none');
+            if (btnStart) {
+                btnStart.disabled = true;
+                btnStart.innerHTML = '<span class="spinner-border spinner-border-sm me-1"></span> Menghubungkan...';
+            }
+
+            if (!html5QrCode) {
+                try {
+                    html5QrCode = new Html5Qrcode("qr-reader");
+                } catch (e) {
+                    console.error("Init scanner error:", e);
+                    showCameraError("Gagal memulai scanner: " + e.message);
+                    return;
+                }
+            }
+
+            const config = { 
+                fps: 15, 
+                qrbox: (viewfinderWidth, viewfinderHeight) => {
+                    const minEdge = Math.min(viewfinderWidth, viewfinderHeight);
+                    const qrboxSize = Math.floor(minEdge * 0.75);
+                    return { width: qrboxSize, height: qrboxSize };
+                }
+            };
+
             Html5Qrcode.getCameras().then(devices => {
                 if (devices && devices.length) {
                     availableCameras = devices;
                     const wrapper = document.getElementById('cameraSelectWrapper');
                     const selectEl = document.getElementById('cameraSelect');
-                    selectEl.innerHTML = '';
-                    devices.forEach((dev, idx) => {
-                        const opt = document.createElement('option');
-                        opt.value = dev.id;
-                        opt.text = dev.label || `Kamera ${idx + 1}`;
-                        selectEl.appendChild(opt);
-                    });
-                    if (devices.length > 1) {
-                        wrapper.classList.remove('d-none');
+                    if (selectEl) {
+                        selectEl.innerHTML = '';
+                        devices.forEach((dev, idx) => {
+                            const opt = document.createElement('option');
+                            opt.value = dev.id;
+                            opt.text = dev.label || `Kamera ${idx + 1}`;
+                            selectEl.appendChild(opt);
+                        });
+                        if (devices.length > 1 && wrapper) {
+                            wrapper.classList.remove('d-none');
+                        }
                     }
 
                     currentCameraId = currentCameraId || devices[0].id;
-                    selectEl.value = currentCameraId;
+                    if (selectEl) selectEl.value = currentCameraId;
 
-                    html5QrCode.start(
+                    return html5QrCode.start(
                         currentCameraId,
                         config,
                         onScanSuccess,
-                        (errorMessage) => { /* ignore frame errors */ }
-                    ).catch(err => {
-                        console.warn("Gagal start dengan cameraId, coba fallback constraint:", err);
-                        fallbackStartFacingMode();
-                    });
+                        (errorMessage) => { /* frame */ }
+                    );
                 } else {
-                    fallbackStartFacingMode();
+                    return fallbackStartFacingMode(config);
                 }
+            }).then(() => {
+                // Kamera aktif!
+                if (loading) loading.classList.add('d-none');
+                if (btnStart) {
+                    btnStart.classList.add('d-none');
+                    btnStart.disabled = false;
+                    btnStart.innerHTML = '<i class="fa-solid fa-play me-1"></i> Buka Kamera';
+                }
+                if (btnStop) btnStop.classList.remove('d-none');
             }).catch(err => {
-                console.warn("getCameras gagal, coba fallback constraint:", err);
-                fallbackStartFacingMode();
+                console.warn("Mencoba fallback mode:", err);
+                fallbackStartFacingMode(config).then(() => {
+                    if (loading) loading.classList.add('d-none');
+                    if (btnStart) {
+                        btnStart.classList.add('d-none');
+                        btnStart.disabled = false;
+                        btnStart.innerHTML = '<i class="fa-solid fa-play me-1"></i> Buka Kamera';
+                    }
+                    if (btnStop) btnStop.classList.remove('d-none');
+                }).catch(fallbackErr => {
+                    console.error("Gagal start webcam:", fallbackErr);
+                    let userMsg = "Tidak dapat mengakses kamera webcam.";
+                    if (fallbackErr.name === 'NotAllowedError' || fallbackErr.name === 'PermissionDeniedError') {
+                        userMsg = "Izin webcam ditolak oleh browser. Silakan klik ikon gembok / kamera di sebelah kiri kolom URL browser, ubah menjadi <strong>'Allow'</strong>, lalu refresh halaman.";
+                    } else if (fallbackErr.name === 'NotFoundError' || fallbackErr.name === 'DevicesNotFoundError') {
+                        userMsg = "Perangkat kamera tidak ditemukan di laptop ini. Pastikan webcam terpasang.";
+                    } else if (fallbackErr.name === 'NotReadableError' || fallbackErr.name === 'TrackStartError') {
+                        userMsg = "Kamera sedang dipakai aplikasi lain (Zoom, Google Meet, Teams, atau Kamera Windows). Silakan tutup aplikasi tersebut.";
+                    } else if (fallbackErr.message) {
+                        userMsg += " (" + fallbackErr.message + ")";
+                    }
+                    showCameraError(userMsg);
+                });
             });
         }
 
-        function fallbackStartFacingMode() {
-            const config = { fps: 10, qrbox: { width: 250, height: 250 } };
-            // Coba kamera depan (user) dulu untuk webcam laptop
-            html5QrCode.start(
+        function fallbackStartFacingMode(config) {
+            config = config || { fps: 15, qrbox: { width: 250, height: 250 } };
+            return html5QrCode.start(
                 { facingMode: "user" },
                 config,
                 onScanSuccess,
-                (errorMessage) => { /* ignore frame errors */ }
-            ).catch(errUser => {
-                // Jika gagal, coba kamera environment (hp / kamera belakang)
-                html5QrCode.start(
+                (errorMessage) => { /* frame */ }
+            ).catch(() => {
+                return html5QrCode.start(
                     { facingMode: "environment" },
                     config,
                     onScanSuccess,
-                    (errorMessage) => { /* ignore frame errors */ }
-                ).catch(errEnv => {
-                    console.error("Gagal membuka kamera:", errEnv);
-                    showCameraError("Tidak dapat mengakses kamera webcam: " + (errEnv.message || errEnv));
-                });
+                    (errorMessage) => { /* frame */ }
+                );
             });
         }
 
@@ -500,36 +628,57 @@
         function showCameraError(msg) {
             stopScanner();
             const ph = document.getElementById('scannerPlaceholder');
-            ph.classList.remove('d-none');
-            ph.innerHTML = `
-                <div class="text-center p-3">
-                    <i class="fa-solid fa-triangle-exclamation fs-1 text-warning mb-2"></i>
-                    <h6 class="text-white fw-bold mb-1">Akses Kamera Terhalang</h6>
-                    <p class="text-secondary small mb-3">${msg}</p>
-                    <div class="d-flex justify-content-center gap-2 flex-wrap">
-                        <button class="btn btn-sm btn-cyan" onclick="startScanner()">
-                            <i class="fa-solid fa-rotate me-1"></i> Coba Lagi
-                        </button>
-                        <a href="https://${location.host}${location.pathname}${location.search}" class="btn btn-sm btn-outline-info">
-                            <i class="fa-solid fa-lock me-1"></i> Buka dengan HTTPS
-                        </a>
+            const loading = document.getElementById('scannerLoading');
+            if (loading) loading.classList.add('d-none');
+            if (ph) {
+                ph.classList.remove('d-none');
+                ph.innerHTML = `
+                    <div class="text-center p-3">
+                        <i class="fa-solid fa-triangle-exclamation fs-1 text-warning mb-3"></i>
+                        <h6 class="text-white fw-bold mb-2">Akses Kamera Terhalang</h6>
+                        <div class="text-light small opacity-90 mb-3 text-start bg-dark bg-opacity-50 p-3 rounded-3" style="border: 1px solid rgba(245, 158, 11, 0.3); font-size: 13px; line-height: 1.6;">
+                            ${msg}
+                        </div>
+                        <div class="d-flex justify-content-center gap-2 flex-wrap">
+                            <button class="btn btn-sm btn-cyan px-3" onclick="startScanner()">
+                                <i class="fa-solid fa-rotate me-1"></i> Coba Lagi
+                            </button>
+                            <button class="btn btn-sm btn-outline-info rounded-pill px-3" onclick="triggerFileInput()">
+                                <i class="fa-solid fa-file-image me-1"></i> Scan dari Foto QR
+                            </button>
+                            <a href="http://localhost/dot-teens/public/admin/events/scan/${eventId}" class="btn btn-sm btn-outline-light rounded-pill px-3">
+                                <i class="fa-solid fa-server me-1"></i> Buka via Localhost
+                            </a>
+                        </div>
                     </div>
-                </div>
-            `;
+                `;
+            }
         }
 
         function stopScanner() {
+            const ph = document.getElementById('scannerPlaceholder');
+            const loading = document.getElementById('scannerLoading');
+            const btnStart = document.getElementById('btnStartScan');
+            const btnStop = document.getElementById('btnStopScan');
+
+            if (loading) loading.classList.add('d-none');
+            if (btnStart) {
+                btnStart.classList.remove('d-none');
+                btnStart.disabled = false;
+                btnStart.innerHTML = '<i class="fa-solid fa-play me-1"></i> Buka Kamera';
+            }
+            if (btnStop) btnStop.classList.add('d-none');
+
             if (html5QrCode && html5QrCode.isScanning) {
                 html5QrCode.stop().then(() => {
                     html5QrCode.clear();
-                    document.getElementById('scannerPlaceholder').classList.remove('d-none');
-                    document.getElementById('btnStartScan').classList.remove('d-none');
-                    document.getElementById('btnStopScan').classList.add('d-none');
-                }).catch(err => console.log(err));
+                    if (ph) ph.classList.remove('d-none');
+                }).catch(err => {
+                    console.log(err);
+                    if (ph) ph.classList.remove('d-none');
+                });
             } else {
-                document.getElementById('scannerPlaceholder').classList.remove('d-none');
-                document.getElementById('btnStartScan').classList.remove('d-none');
-                document.getElementById('btnStopScan').classList.add('d-none');
+                if (ph) ph.classList.remove('d-none');
             }
         }
 
