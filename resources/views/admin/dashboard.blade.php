@@ -400,7 +400,15 @@
                                     <div class="d-flex justify-content-between align-items-center mb-1">
                                         <h6 class="text-white fw-bold mb-0"><i class="fa-solid fa-calendar-days me-2" style="color: #10B981;"></i> Ruang Acara & Event</h6>
                                         @php
-                                            $activePopup = \App\Models\Event::where('is_popup', true)->first();
+                                            $activePopup = null;
+                                            try {
+                                                \App\Models\Event::ensureIsPopupColumnExists();
+                                                if (\Illuminate\Support\Facades\Schema::hasColumn('events', 'is_popup')) {
+                                                    $activePopup = \App\Models\Event::where('is_popup', true)->first();
+                                                }
+                                            } catch (\Throwable $e) {
+                                                $activePopup = null;
+                                            }
                                         @endphp
                                         @if($activePopup)
                                             <span class="badge bg-warning bg-opacity-25 text-warning border border-warning" style="font-size: 10px;" title="Pop Up Banner Aktif di Awal Website">

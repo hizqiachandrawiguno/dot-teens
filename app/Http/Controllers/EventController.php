@@ -6,14 +6,25 @@ use App\Models\Event;
 use App\Models\ActivityLog;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\File;
+use Illuminate\Support\Facades\Schema;
 
 class EventController extends Controller
 {
     // Tampilkan halaman Dashboard Acara
     public function index()
     {
+        Event::ensureIsPopupColumnExists();
+
         $events = Event::orderBy('event_date', 'asc')->get();
-        $currentPopupEvent = Event::where('is_popup', true)->first();
+        $currentPopupEvent = null;
+        try {
+            if (Schema::hasColumn('events', 'is_popup')) {
+                $currentPopupEvent = Event::where('is_popup', true)->first();
+            }
+        } catch (\Throwable $e) {
+            $currentPopupEvent = null;
+        }
+
         return view('admin.events.index', compact('events', 'currentPopupEvent'));
     }
 
@@ -39,20 +50,30 @@ class EventController extends Controller
             $request->image->move(public_path('uploads/events'), $imageName);
         }
 
+        Event::ensureIsPopupColumnExists();
+
         $isPopup = $request->boolean('is_popup');
         if ($isPopup) {
-            Event::where('is_popup', true)->update(['is_popup' => false]);
+            try {
+                if (Schema::hasColumn('events', 'is_popup')) {
+                    Event::where('is_popup', true)->update(['is_popup' => false]);
+                }
+            } catch (\Throwable $e) {}
         }
 
-        $event = Event::create([
+        $eventData = [
             'title' => $request->title,
             'description' => $request->description,
             'event_date' => $request->event_date,
             'event_waktu' => $request->event_waktu,
             'location' => $request->location,
             'image' => $imageName,
-            'is_popup' => $isPopup,
-        ]);
+        ];
+        if (Schema::hasColumn('events', 'is_popup')) {
+            $eventData['is_popup'] = $isPopup;
+        }
+
+        $event = Event::create($eventData);
 
         if (class_exists(ActivityLog::class) && auth()->check()) {
             ActivityLog::create([
@@ -69,6 +90,12 @@ class EventController extends Controller
     // Toggle atau Ubah Pop Up Banner
     public function togglePopup($id)
     {
+        Event::ensureIsPopupColumnExists();
+
+        if (!Schema::hasColumn('events', 'is_popup')) {
+            return back()->with('error', 'Kolom is_popup belum tersedia di database. Sistem telah mencoba memperbaruinya, silakan coba lagi.');
+        }
+
         $event = Event::findOrFail($id);
 
         if ($event->is_popup) {

@@ -19,7 +19,15 @@ Route::get('/', function () {
     $galleries = \App\Models\Gallery::orderBy('created_at', 'desc')->take(6)->get(); 
     
     // Ambil event yang dipilih Admin sebagai Pop Up Banner Beranda (is_popup = true)
-    $featuredEvent = \App\Models\Event::where('is_popup', true)->first();
+    $featuredEvent = null;
+    try {
+        \App\Models\Event::ensureIsPopupColumnExists();
+        if (\Illuminate\Support\Facades\Schema::hasColumn('events', 'is_popup')) {
+            $featuredEvent = \App\Models\Event::where('is_popup', true)->first();
+        }
+    } catch (\Throwable $e) {
+        $featuredEvent = null;
+    }
 
     // Cek status saklar dari file
     $path = storage_path('app/form_status.txt');
