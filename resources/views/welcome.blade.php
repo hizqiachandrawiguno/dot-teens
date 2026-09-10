@@ -2304,11 +2304,11 @@
                     qrContainer.innerHTML = '';
                     new QRCode(qrContainer, {
                         text: data.ticket.ticket_code,
-                        width: 150,
-                        height: 150,
+                        width: 210,
+                        height: 210,
                         colorDark : "#0A1628",
                         colorLight : "#FFFFFF",
-                        correctLevel : QRCode.CorrectLevel.H
+                        correctLevel : QRCode.CorrectLevel.M
                     });
 
                     if (ticketModalInstance) ticketModalInstance.show();

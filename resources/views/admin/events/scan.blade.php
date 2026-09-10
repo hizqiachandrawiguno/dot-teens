@@ -345,6 +345,30 @@
                         </div>
                     </div>
 
+                    <!-- TOOLBAR KONTROL KAMERA (ZOOM, SENTER & FOKUS) -->
+                    <div id="cameraControlsBar" class="d-none mt-2 p-2 rounded-3 d-flex justify-content-between align-items-center flex-wrap gap-2" style="background: rgba(15, 23, 42, 0.7); border: 1px solid rgba(56, 189, 248, 0.2);">
+                        <div class="d-flex align-items-center gap-1">
+                            <span class="small text-secondary me-1 fw-bold"><i class="fa-solid fa-magnifying-glass me-1"></i>Zoom:</span>
+                            <button type="button" class="btn btn-sm btn-cyan text-white px-2 py-0.5 rounded-pill btn-zoom" onclick="setCameraZoom(1.0)" id="zoom1x">1x</button>
+                            <button type="button" class="btn btn-sm btn-outline-secondary text-light px-2 py-0.5 rounded-pill btn-zoom" onclick="setCameraZoom(1.5)" id="zoom15x">1.5x</button>
+                            <button type="button" class="btn btn-sm btn-outline-secondary text-light px-2 py-0.5 rounded-pill btn-zoom" onclick="setCameraZoom(2.0)" id="zoom2x">2x</button>
+                        </div>
+                        <div class="d-flex align-items-center gap-2">
+                            <button type="button" id="btnTorchToggle" class="btn btn-sm btn-outline-warning rounded-pill px-2 py-0.5 d-none" onclick="toggleTorch()">
+                                <i class="fa-solid fa-bolt me-1"></i> Senter
+                            </button>
+                            <button type="button" class="btn btn-sm btn-outline-light rounded-pill px-2 py-0.5" onclick="triggerFocus()">
+                                <i class="fa-solid fa-crosshairs me-1 text-info"></i> Fokuskan
+                            </button>
+                        </div>
+                    </div>
+
+                    <!-- TIPS SCANNING LAYAR HP -->
+                    <div class="small text-secondary mt-2 px-1 d-flex align-items-center gap-2" style="font-size: 12px; line-height: 1.5;">
+                        <i class="fa-solid fa-lightbulb text-warning fs-6"></i>
+                        <span><strong>Tips Scan:</strong> Jaga jarak sekitar <strong>20 - 30 cm</strong> dari layar HP agar kamera fokus otomatis, atau gunakan tombol <strong>1.5x Zoom</strong>.</span>
+                    </div>
+
                     <!-- Input Manual Alternatif -->
                     <div class="mt-4 pt-3 border-top border-secondary border-opacity-25">
                         <label class="small text-secondary mb-2 fw-semibold">
@@ -624,11 +648,11 @@
 
             const qrboxFunction = function(viewfinderWidth, viewfinderHeight) {
                 const minEdge = Math.min(viewfinderWidth, viewfinderHeight);
-                const size = Math.floor(minEdge * 0.72);
-                const safeSize = Math.min(size, minEdge - 20);
+                const targetSize = Math.floor(minEdge * 0.70);
+                const finalSize = Math.max(180, Math.min(270, targetSize));
                 return {
-                    width: Math.max(160, safeSize),
-                    height: Math.max(160, safeSize)
+                    width: finalSize,
+                    height: finalSize
                 };
             };
 
@@ -670,10 +694,33 @@
                 }
                 if (btnStop) btnStop.classList.remove('d-none');
 
+                // Tampilkan toolbar kontrol zoom & senter
+                const controlsBar = document.getElementById('cameraControlsBar');
+                if (controlsBar) controlsBar.classList.remove('d-none');
+
                 fixVideoLayout();
                 setTimeout(fixVideoLayout, 150);
                 setTimeout(fixVideoLayout, 400);
                 setTimeout(fixVideoLayout, 800);
+
+                // Deteksi kapabilitas kamera (Torch / Senter)
+                try {
+                    const caps = html5QrCode.getRunningTrackCameraCapabilities();
+                    if (caps && caps.torch) {
+                        const torchBtn = document.getElementById('btnTorchToggle');
+                        if (torchBtn) torchBtn.classList.remove('d-none');
+                    }
+                } catch (e) {}
+
+                // Terapkan autofocus continuous otomatis setelah stream stabil
+                setTimeout(() => {
+                    if (html5QrCode && html5QrCode.isScanning) {
+                        html5QrCode.applyVideoConstraints({
+                            focusMode: "continuous",
+                            advanced: [{ focusMode: "continuous" }]
+                        }).catch(() => {});
+                    }
+                }, 800);
 
                 // Izin sudah aktif, ambil daftar kamera untuk opsi ganti kamera
                 QrClass.getCameras().then(devices => {
@@ -725,15 +772,25 @@
             }
 
             if (isMobile) {
-                // Di smartphone / tablet, prioritaskan kamera belakang (environment)
-                html5QrCode.start({ facingMode: "environment" }, config, onScanSuccess, () => {})
+                // Di smartphone / tablet, prioritaskan kamera belakang (environment) dengan HD & Continuous Autofocus
+                const mobileConstraints = {
+                    facingMode: "environment",
+                    width: { ideal: 1280 },
+                    height: { ideal: 720 },
+                    focusMode: "continuous"
+                };
+                html5QrCode.start(mobileConstraints, config, onScanSuccess, () => {})
                     .then(onCameraStarted)
                     .catch(errEnv => {
-                        console.warn("Kamera belakang tidak tersedia, mencoba kamera depan...", errEnv);
-                        html5QrCode.start({ facingMode: "user" }, config, onScanSuccess, () => {})
+                        console.warn("Kamera belakang HD gagal, mencoba fallback standar...", errEnv);
+                        html5QrCode.start({ facingMode: "environment" }, config, onScanSuccess, () => {})
                             .then(onCameraStarted)
-                            .catch(errUser => {
-                                handleCameraError(errEnv.name === 'NotAllowedError' ? errEnv : errUser);
+                            .catch(() => {
+                                html5QrCode.start({ facingMode: "user" }, config, onScanSuccess, () => {})
+                                    .then(onCameraStarted)
+                                    .catch(errUser => {
+                                        handleCameraError(errEnv.name === 'NotAllowedError' ? errEnv : errUser);
+                                    });
                             });
                     });
             } else {
@@ -754,6 +811,67 @@
                         .then(onCameraStarted)
                         .catch(handleCameraError);
                 });
+            }
+        }
+
+        let currentZoom = 1.0;
+        function setCameraZoom(zoomVal) {
+            currentZoom = zoomVal;
+            document.querySelectorAll('.btn-zoom').forEach(b => {
+                b.classList.remove('btn-cyan', 'text-white');
+                b.classList.add('btn-outline-secondary', 'text-light');
+            });
+            const activeBtn = document.getElementById(zoomVal === 1.0 ? 'zoom1x' : (zoomVal === 1.5 ? 'zoom15x' : 'zoom2x'));
+            if (activeBtn) {
+                activeBtn.classList.add('btn-cyan', 'text-white');
+                activeBtn.classList.remove('btn-outline-secondary', 'text-light');
+            }
+
+            if (html5QrCode && html5QrCode.isScanning) {
+                html5QrCode.applyVideoConstraints({
+                    advanced: [{ zoom: zoomVal }]
+                }).catch(err => {
+                    console.log("Zoom not supported on this browser:", err);
+                });
+            }
+        }
+
+        let isTorchActive = false;
+        function toggleTorch() {
+            if (!html5QrCode || !html5QrCode.isScanning) return;
+            isTorchActive = !isTorchActive;
+            html5QrCode.applyVideoConstraints({
+                advanced: [{ torch: isTorchActive }]
+            }).then(() => {
+                const btn = document.getElementById('btnTorchToggle');
+                if (btn) {
+                    if (isTorchActive) {
+                        btn.classList.remove('btn-outline-warning');
+                        btn.classList.add('btn-warning', 'text-dark', 'fw-bold');
+                        btn.innerHTML = '<i class="fa-solid fa-bolt me-1"></i> Senter ON';
+                    } else {
+                        btn.classList.add('btn-outline-warning');
+                        btn.classList.remove('btn-warning', 'text-dark', 'fw-bold');
+                        btn.innerHTML = '<i class="fa-solid fa-bolt me-1"></i> Senter';
+                    }
+                }
+            }).catch(err => {
+                console.log("Torch error:", err);
+            });
+        }
+
+        function triggerFocus() {
+            if (!html5QrCode || !html5QrCode.isScanning) return;
+            html5QrCode.applyVideoConstraints({
+                focusMode: "continuous",
+                advanced: [{ focusMode: "continuous" }]
+            }).catch(() => {});
+
+            const btn = event ? event.currentTarget : null;
+            if (btn) {
+                const orig = btn.innerHTML;
+                btn.innerHTML = '<i class="fa-solid fa-check text-success me-1"></i> Terfokus';
+                setTimeout(() => { btn.innerHTML = orig; }, 1200);
             }
         }
 
@@ -819,8 +937,10 @@
             const loading = document.getElementById('scannerLoading');
             const btnStart = document.getElementById('btnStartScan');
             const btnStop = document.getElementById('btnStopScan');
+            const controlsBar = document.getElementById('cameraControlsBar');
 
             if (loading) loading.classList.add('d-none');
+            if (controlsBar) controlsBar.classList.add('d-none');
             if (btnStart) {
                 btnStart.classList.remove('d-none');
                 btnStart.disabled = false;
