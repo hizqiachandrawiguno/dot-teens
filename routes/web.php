@@ -15,7 +15,7 @@ use App\Http\Controllers\EventController;
 Route::get('/', function () { 
     $events = \App\Models\Event::where('event_date', '>=', now()->toDateString())->orderBy('event_date', 'asc')->take(3)->get();
     $cellSchedules = \App\Models\CellSchedule::where('meeting_date', '>=', now()->toDateString())->orderBy('meeting_date', 'asc')->get();
-    $galleries = \App\Models\Gallery::orderBy('created_at', 'desc')->take(3)->get(); 
+    $galleries = \App\Models\Gallery::orderBy('created_at', 'desc')->take(6)->get(); 
     
     // Cek status saklar dari file
     $path = storage_path('app/form_status.txt');
