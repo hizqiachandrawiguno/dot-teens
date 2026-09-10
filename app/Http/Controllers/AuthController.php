@@ -39,8 +39,9 @@ class AuthController extends Controller
 
     public function login(Request $request) {
         $credentials = $request->validate(['email' => 'required|email', 'password' => 'required']);
+        $remember = $request->boolean('remember', true);
 
-        if (Auth::attempt($credentials)) {
+        if (Auth::attempt($credentials, $remember)) {
             $user = Auth::user();
             // Cek apakah akun sudah di-approve
             if ($user->status !== 'approved') {
@@ -58,6 +59,6 @@ class AuthController extends Controller
         Auth::logout();
         $request->session()->invalidate();
         $request->session()->regenerateToken();
-        return redirect('/login');
+        return redirect('/login')->with('success', 'Anda telah berhasil keluar dari panel admin.');
     }
 }

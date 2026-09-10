@@ -293,6 +293,13 @@
                         <i class="fa-solid fa-eye" id="togglePasswordIcon"></i>
                     </span>
                 </div>
+            <div class="d-flex justify-content-between align-items-center mb-4">
+                <div class="form-check">
+                    <input class="form-check-input" type="checkbox" name="remember" id="rememberMe" checked style="background-color: var(--navy-input); border-color: rgba(56, 189, 248, 0.35); cursor: pointer;">
+                    <label class="form-check-label small text-muted" for="rememberMe" style="cursor: pointer; user-select: none;">
+                        Ingat saya di HP / perangkat ini
+                    </label>
+                </div>
             </div>
 
             <button type="submit" class="btn btn-navy-submit mb-3">
@@ -327,6 +334,11 @@
                 icon.classList.add('fa-eye');
             }
         }
+
+        // Menjaga token sesi tetap aktif saat tab dibuka lama di HP
+        setInterval(function() {
+            fetch('/up', { method: 'GET' }).catch(() => {});
+        }, 10 * 60 * 1000);
     </script>
 </body>
 </html>
