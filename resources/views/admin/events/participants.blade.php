@@ -267,7 +267,7 @@
                             </td>
                             <td>
                                 @if($p->attended_at)
-                                    <div class="text-light small">{{ $p->attended_at->format('d M, H:i') }} WIB</div>
+                                    <div class="text-light small">{{ $p->attended_at->timezone('Asia/Jakarta')->format('d M, H:i:s') }} WIB</div>
                                     <small class="text-secondary">Oleh: {{ $p->scanned_by ?? 'Panitia' }}</small>
                                 @else
                                     <span class="text-secondary">-</span>

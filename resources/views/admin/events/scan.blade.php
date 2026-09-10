@@ -270,6 +270,24 @@
         .table-custom tbody tr:hover td {
             background-color: rgba(56, 189, 248, 0.05) !important;
         }
+        .live-clock-pill {
+            background: rgba(15, 23, 42, 0.75);
+            border: 1px solid rgba(56, 189, 248, 0.4);
+            box-shadow: 0 0 15px rgba(56, 189, 248, 0.15);
+        }
+        .live-indicator-dot {
+            width: 8px;
+            height: 8px;
+            border-radius: 50%;
+            background-color: #22c55e;
+            box-shadow: 0 0 8px #22c55e;
+            display: inline-block;
+            animation: pulseLive 1.5s infinite;
+        }
+        @keyframes pulseLive {
+            0%, 100% { opacity: 1; transform: scale(1); }
+            50% { opacity: 0.35; transform: scale(0.85); }
+        }
     </style>
 </head>
 <body>
@@ -281,11 +299,19 @@
                 <a class="btn btn-sm btn-outline-secondary text-light rounded-pill px-2.5 px-sm-3" href="{{ route('dashboard') }}">
                     <i class="fa-solid fa-arrow-left me-1"></i> <span class="d-none d-sm-inline">Dashboard</span>
                 </a>
-                <span class="fw-bold text-white fs-6 fs-md-5 text-truncate" style="max-width: 45vw;">
+                <span class="fw-bold text-white fs-6 fs-md-5 text-truncate" style="max-width: 40vw;">
                     <i class="fa-solid fa-qrcode text-info me-1 me-sm-2"></i> <span class="d-none d-sm-inline">Scanner Kehadiran </span>Event
                 </span>
             </div>
-            <div>
+            <div class="d-flex align-items-center gap-2">
+                <!-- JAM PERANGKAT REAL-TIME -->
+                <div class="live-clock-pill d-flex align-items-center gap-2 px-2.5 px-sm-3 py-1.5 rounded-pill" title="Jam Real-time Perangkat / Device Anda">
+                    <span class="live-indicator-dot"></span>
+                    <i class="fa-regular fa-clock text-info" style="font-size: 13px;"></i>
+                    <span id="deviceLiveClock" class="fw-bold text-white font-monospace" style="font-size: 13px; letter-spacing: 0.5px;">--:--:--</span>
+                    <span class="badge bg-cyan text-white px-1.5 py-0.5 rounded text-uppercase d-none d-sm-inline-block" style="font-size: 9px; font-weight: 700;">WIB</span>
+                </div>
+
                 <a href="{{ route('admin.events.participants', $selectedEvent->id) }}" class="btn btn-sm btn-outline-info rounded-pill px-2.5 px-sm-3 fw-semibold">
                     <i class="fa-solid fa-users me-1"></i> <span class="d-none d-md-inline">Data Peserta</span> ({{ $totalRegistered }})
                 </a>
@@ -513,7 +539,7 @@
                                     </td>
                                     <td>
                                         <div class="text-success small fw-semibold">
-                                            <i class="fa-solid fa-check me-1"></i> {{ $att->attended_at ? $att->attended_at->format('H:i:s') : '-' }} WIB
+                                            <i class="fa-solid fa-check me-1"></i> {{ $att->attended_at ? $att->attended_at->timezone('Asia/Jakarta')->format('H:i:s') : '-' }} WIB
                                         </div>
                                     </td>
                                 </tr>
@@ -1276,6 +1302,28 @@
             input.value = '';
         }
 
+        function getDeviceTimestamp() {
+            const now = new Date();
+            const pad = n => String(n).padStart(2, '0');
+            const Y = now.getFullYear();
+            const M = pad(now.getMonth() + 1);
+            const D = pad(now.getDate());
+            const h = pad(now.getHours());
+            const m = pad(now.getMinutes());
+            const s = pad(now.getSeconds());
+            return `${Y}-${M}-${D} ${h}:${m}:${s}`;
+        }
+
+        function updateLiveDeviceClock() {
+            const now = new Date();
+            const pad = n => String(n).padStart(2, '0');
+            const timeStr = `${pad(now.getHours())}:${pad(now.getMinutes())}:${pad(now.getSeconds())}`;
+            const el = document.getElementById('deviceLiveClock');
+            if (el) el.textContent = timeStr;
+        }
+        setInterval(updateLiveDeviceClock, 1000);
+        updateLiveDeviceClock();
+
         function submitScanCode(code) {
             const feedbackCard = document.getElementById('scanFeedbackCard');
             feedbackCard.style.display = 'block';
@@ -1291,7 +1339,8 @@
                 },
                 body: JSON.stringify({
                     ticket_code: code,
-                    event_id: eventId
+                    event_id: eventId,
+                    device_time: getDeviceTimestamp()
                 })
             })
             .then(res => res.json())

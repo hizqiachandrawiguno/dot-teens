@@ -256,6 +256,7 @@ class EventRegistrationController extends Controller
         $request->validate([
             'ticket_code' => 'required|string',
             'event_id' => 'nullable|exists:events,id',
+            'device_time' => 'nullable|string',
         ]);
 
         $code = trim($request->ticket_code);
@@ -283,7 +284,7 @@ class EventRegistrationController extends Controller
         // Cek jika sudah pernah hadir
         if ($registration->status === 'attended') {
             $attendedTime = $registration->attended_at 
-                ? $registration->attended_at->format('H:i:s') . ' WIB' 
+                ? $registration->attended_at->timezone('Asia/Jakarta')->format('H:i:s') . ' WIB' 
                 : 'Sebelumnya';
             $scannedBy = $registration->scanned_by ?? 'Panitia';
 
@@ -301,11 +302,20 @@ class EventRegistrationController extends Controller
             ]);
         }
 
-        // Berhasil check in pertama kali
+        // Berhasil check in pertama kali - Gunakan waktu real-time perangkat (device time) jika dikirimkan, atau fallback Asia/Jakarta
+        $attendedAt = now('Asia/Jakarta');
+        if ($request->filled('device_time')) {
+            try {
+                $attendedAt = \Carbon\Carbon::parse($request->device_time)->timezone('Asia/Jakarta');
+            } catch (\Exception $e) {
+                $attendedAt = now('Asia/Jakarta');
+            }
+        }
+
         $scannedBy = auth()->check() ? auth()->user()->name : 'Panitia Scanner';
         $registration->update([
             'status' => 'attended',
-            'attended_at' => now(),
+            'attended_at' => $attendedAt,
             'scanned_by' => $scannedBy,
         ]);
 
@@ -334,7 +344,7 @@ class EventRegistrationController extends Controller
                 'phone' => $registration->phone,
                 'category' => $registration->category,
                 'origin' => $registration->origin,
-                'attended_at' => $registration->attended_at->format('H:i:s') . ' WIB',
+                'attended_at' => $registration->attended_at ? $registration->attended_at->timezone('Asia/Jakarta')->format('H:i:s') . ' WIB' : $attendedAt->format('H:i:s') . ' WIB',
             ],
             'stats' => [
                 'total_registered' => $totalRegistered,
@@ -405,7 +415,7 @@ class EventRegistrationController extends Controller
         } else {
             $registration->update([
                 'status' => 'attended',
-                'attended_at' => now(),
+                'attended_at' => now('Asia/Jakarta'),
                 'scanned_by' => auth()->user()->name ?? 'Admin',
             ]);
             $msg = "Status kehadiran {$registration->name} berhasil diubah menjadi HADIR.";
@@ -463,10 +473,10 @@ class EventRegistrationController extends Controller
                     $p->category,
                     $p->origin ?? '-',
                     $p->status === 'attended' ? 'HADIR' : 'BELUM HADIR',
-                    $p->attended_at ? $p->attended_at->format('d/m/Y H:i:s') : '-',
+                    $p->attended_at ? $p->attended_at->timezone('Asia/Jakarta')->format('d/m/Y H:i:s') : '-',
                     $p->scanned_by ?? '-',
                     $p->notes ?? '-',
-                    $p->created_at->format('d/m/Y H:i'),
+                    $p->created_at ? $p->created_at->timezone('Asia/Jakarta')->format('d/m/Y H:i') : '-',
                 ]);
             }
             fclose($file);

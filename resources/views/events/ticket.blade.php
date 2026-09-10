@@ -248,7 +248,7 @@
                 <div class="mb-3">
                     @if($registration->status === 'attended')
                         <span class="badge rounded-pill bg-success bg-opacity-25 text-success border border-success px-3 py-2">
-                            <i class="fa-solid fa-circle-check me-1"></i> SUDAH CHECK-IN ({{ $registration->attended_at ? $registration->attended_at->format('H:i') : '' }} WIB)
+                            <i class="fa-solid fa-circle-check me-1"></i> SUDAH CHECK-IN ({{ $registration->attended_at ? $registration->attended_at->timezone('Asia/Jakarta')->format('H:i') : '' }} WIB)
                         </span>
                     @else
                         <span class="badge rounded-pill bg-info bg-opacity-15 text-info border border-info px-3 py-2">
