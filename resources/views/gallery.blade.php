@@ -146,7 +146,7 @@
             <div class="col-md-4 col-sm-6" data-aos="fade-up">
                 <div class="glass-card p-2 position-relative" style="border-radius: 15px; overflow: hidden; cursor: pointer;" data-bs-toggle="modal" data-bs-target="#previewModal{{ $gal->id }}">
                     
-                    <img src="{{ $imageSource }}" alt="{{ $gal->title }}" style="width: 100%; height: 300px; object-fit: cover; border-radius: 10px; transition: transform 0.4s ease;" onmouseover="this.style.transform='scale(1.05)'" onmouseout="this.style.transform='scale(1)'">
+                    <img src="{{ $imageSource }}" alt="{{ $gal->title }}" style="width: 100%; height: 300px; object-fit: cover; border-radius: 10px; transition: transform 0.4s ease;" onmouseover="this.style.transform='scale(1.05)'" onmouseout="this.style.transform='scale(1)'" loading="lazy">
                     
                     <div class="position-absolute bottom-0 start-0 w-100 p-4" style="background: linear-gradient(to top, rgba(0,0,0,0.95) 0%, rgba(0,0,0,0.5) 50%, transparent 100%); border-radius: 0 0 10px 10px;">
                         <h5 class="text-white fw-bold mb-1">{{ $gal->title }}</h5>
@@ -162,7 +162,7 @@
                             <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close" style="filter: drop-shadow(0 0 5px rgba(0,0,0,0.8));"></button>
                         </div>
                         <div class="modal-body text-center p-0">
-                            <img src="{{ $imageSource }}" class="img-fluid rounded" alt="{{ $gal->title }}" style="max-height: 85vh; object-fit: contain; box-shadow: 0 10px 40px rgba(0,0,0,0.5);">
+                            <img src="{{ $imageSource }}" class="img-fluid rounded" alt="{{ $gal->title }}" style="max-height: 85vh; object-fit: contain; box-shadow: 0 10px 40px rgba(0,0,0,0.5);" loading="lazy">
                             
                             <h4 class="text-white mt-4 fw-bold mb-1">{{ $gal->title }}</h4>
                             <p class="text-secondary mb-3">{{ date('d F Y', strtotime($gal->created_at)) }}</p>

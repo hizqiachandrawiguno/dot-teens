@@ -1,59 +1,92 @@
-<p align="center"><a href="https://laravel.com" target="_blank"><img src="https://raw.githubusercontent.com/laravel/art/master/logo-lockup/5%20SVG/2%20CMYK/1%20Full%20Color/laravel-logolockup-cmyk-red.svg" width="400" alt="Laravel Logo"></a></p>
+# 🚀 DOT Teens Website — GBI ERC Sawangan
 
-<p align="center">
-<a href="https://github.com/laravel/framework/actions"><img src="https://github.com/laravel/framework/workflows/tests/badge.svg" alt="Build Status"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/dt/laravel/framework" alt="Total Downloads"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/v/laravel/framework" alt="Latest Stable Version"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/l/laravel/framework" alt="License"></a>
-</p>
+Website resmi **Department of Teens (DOT) GBI ERC Sawangan**. Berisi informasi jadwal ibadah, pendaftaran jemaat baru (Join Us), jadwal pertemuan sel rohani (Fire Cell / Cool), galeri kegiatan, pokok doa, dan dashboard admin terpadu untuk pengurus.
 
-## About Laravel
+---
 
-Laravel is a web application framework with expressive, elegant syntax. We believe development must be an enjoyable and creative experience to be truly fulfilling. Laravel takes the pain out of development by easing common tasks used in many web projects, such as:
+## 🛠️ Fitur Utama
+1. **Public Website**:
+   - **Hero & Profil DOT**: Informasi seputar visi, misi, dan tim kepengurusan DOT Teens.
+   - **Jadwal Cell (Spiritual Family)**: Jadwal pertemuan mingguan grup sel berdasarkan tahun kelahiran.
+   - **Galeri Foto & Drive**: Dokumentasi foto kegiatan dengan tautan Google Drive album penuh.
+   - **Form Pendaftaran Jemaat Baru**: Form pendaftaran interaktif langsung terhubung ke database pengurus.
+   - **Prayer Board (Dukungan Doa)**: Formulir permohonan doa bagi jemaat yang membutuhkan dukungan.
 
-- [Simple, fast routing engine](https://laravel.com/docs/routing).
-- [Powerful dependency injection container](https://laravel.com/docs/container).
-- Multiple back-ends for [session](https://laravel.com/docs/session) and [cache](https://laravel.com/docs/cache) storage.
-- Expressive, intuitive [database ORM](https://laravel.com/docs/eloquent).
-- Database agnostic [schema migrations](https://laravel.com/docs/migrations).
-- [Robust background job processing](https://laravel.com/docs/queues).
-- [Real-time event broadcasting](https://laravel.com/docs/broadcasting).
+2. **Admin Dashboard (Protected)**:
+   - Manajemen Acara & Kegiatan.
+   - Manajemen Jadwal Cell.
+   - Manajemen Galeri Foto.
+   - Divisi Pastoral: Absensi jemaat, rekap kehadiran, import data CSV/Spreadsheet, saklar buka/tutup form jemaat.
+   - Divisi Prayer: Verifikasi & tindak lanjut permohonan doa.
+   - CCTV Activity Logs & Status Undangan WhatsApp.
 
-Laravel is accessible, powerful, and provides tools required for large, robust applications.
+---
 
-## Learning Laravel
+## ⚡ Panduan Instalasi & Menjalankan di Lokal
 
-Laravel has the most extensive and thorough [documentation](https://laravel.com/docs) and video tutorial library of all modern web application frameworks, making it a breeze to get started with the framework. You can also check out [Laravel Learn](https://laravel.com/learn), where you will be guided through building a modern Laravel application.
+### 1. Prasyarat
+- PHP >= 8.2 (dengan ekstensi `pdo_mysql`, `gd`, `mbstring`)
+- Composer
+- MySQL / MariaDB (melalui Laragon / XAMPP)
 
-If you don't feel like reading, [Laracasts](https://laracasts.com) can help. Laracasts contains thousands of video tutorials on a range of topics including Laravel, modern PHP, unit testing, and JavaScript. Boost your skills by digging into our comprehensive video library.
+### 2. Langkah Setup
+1. Clone repository:
+   ```bash
+   git clone https://github.com/hizqiachandrawiguno/dot-teens.git
+   cd dot-teens
+   ```
+2. Pasang dependensi:
+   ```bash
+   composer install
+   ```
+3. Konfigurasi `.env`:
+   Salin `.env.example` ke `.env`, sesuaikan nama database:
+   ```env
+   DB_CONNECTION=mysql
+   DB_HOST=127.0.0.1
+   DB_PORT=3306
+   DB_DATABASE=db_dotsawangan
+   DB_USERNAME=root
+   DB_PASSWORD=
+   ```
+4. Generate application key:
+   ```bash
+   php artisan key:generate
+   ```
+5. Jalankan migrasi database:
+   ```bash
+   php artisan migrate
+   ```
 
-## Laravel Sponsors
+---
 
-We would like to extend our thanks to the following sponsors for funding Laravel development. If you are interested in becoming a sponsor, please visit the [Laravel Partners program](https://partners.laravel.com).
+## 📱 Cara Akses dari HP (Local Network / Wi-Fi)
 
-### Premium Partners
+Agar website bisa diakses dari HP tanpa error DNS atau koneksi ditolak:
 
-- **[Vehikl](https://vehikl.com)**
-- **[Tighten Co.](https://tighten.co)**
-- **[Kirschbaum Development Group](https://kirschbaumdevelopment.com)**
-- **[64 Robots](https://64robots.com)**
-- **[Curotec](https://www.curotec.com/services/technologies/laravel)**
-- **[DevSquad](https://devsquad.com/hire-laravel-developers)**
-- **[Redberry](https://redberry.international/laravel-development)**
-- **[Active Logic](https://activelogic.com)**
+1. Pastikan laptop/PC dan HP terhubung ke **jaringan Wi-Fi yang sama**.
+2. Buka Command Prompt / PowerShell di laptop, cari IP lokal dengan mengetik:
+   ```cmd
+   ipconfig
+   ```
+   Catat **IPv4 Address** Anda (contoh: `192.168.1.15`).
+3. Jalankan server Laravel dengan parameter `--host=0.0.0.0`:
+   ```bash
+   php artisan serve --host=0.0.0.0 --port=8000
+   ```
+4. Buka browser di HP Anda (Chrome/Safari) dan ketik:
+   ```
+   http://192.168.1.15:8000
+   ```
+   *(Ganti `192.168.1.15` dengan IPv4 laptop Anda)*.
 
-## Contributing
+---
 
-Thank you for considering contributing to the Laravel framework! The contribution guide can be found in the [Laravel documentation](https://laravel.com/docs/contributions).
+## 📈 Catatan Optimasi Performa Terbaru
+- **Kompresi Aset Gambar**: File ilustrasi header sebelumnya berukuran **38 MB** (karena 5 foto 4K base64 mentah), kini telah dikompresi menjadi format modern WebP sebesar **98 KB** (turun 99.7%!), rendering instan dan anti-crash di browser HP.
+- **Lazy Loading**: Seluruh gambar di bawah layar menggunakan `loading="lazy"` agar halaman pertama terbuka secepat kilat.
+- **Perbaikan Schema Database**: Menambahkan migrasi kolom tambahan jemaat sehingga form submit di HP tidak lagi menghasilkan SQL Error 1054.
+- **Mobile Responsive CSS**: Animasi orb dan efek blur diringankan khusus layar HP agar scrolling mulus 60 FPS tanpa panas/lag.
 
-## Code of Conduct
-
-In order to ensure that the Laravel community is welcoming to all, please review and abide by the [Code of Conduct](https://laravel.com/docs/contributions#code-of-conduct).
-
-## Security Vulnerabilities
-
-If you discover a security vulnerability within Laravel, please send an e-mail to Taylor Otwell via [taylor@laravel.com](mailto:taylor@laravel.com). All security vulnerabilities will be promptly addressed.
-
-## License
-
-The Laravel framework is open-sourced software licensed under the [MIT license](https://opensource.org/licenses/MIT).
+---
+© 2026 Department Teens GBI ERC Sawangan.

@@ -108,6 +108,36 @@
         .btn-kirim-doa:hover { transform: scale(1.05); box-shadow: 0 0 25px rgba(139, 92, 246, 0.4) !important; }
         #modalDoa .form-control { background: rgba(255,255,255,0.03) !important; border: 1px solid rgba(255,255,255,0.08) !important; color: #fff !important; }
         #modalDoa .form-control:focus { background: rgba(255,255,255,0.08) !important; border-color: #8B5CF6 !important; box-shadow: 0 0 15px rgba(139, 92, 246, 0.3) !important; }
+
+        .navbar-logo {
+            height: 80px;
+            object-fit: contain;
+            transition: height 0.3s ease;
+        }
+
+        @media (max-width: 768px) {
+            .navbar-logo {
+                height: 55px;
+            }
+            section {
+                padding: 80px 0;
+            }
+            .orb {
+                filter: blur(40px) !important;
+                opacity: 0.25 !important;
+                animation: none !important;
+            }
+            body {
+                animation-duration: 30s !important;
+            }
+            .floating-wa {
+                bottom: 20px !important;
+                right: 20px !important;
+                width: 50px !important;
+                height: 50px !important;
+                font-size: 24px !important;
+            }
+        }
     </style>
 </head>
 <body data-bs-spy="scroll" data-bs-target="#navbarMain" data-bs-offset="150">
@@ -118,7 +148,7 @@
     <nav id="navbarMain" class="navbar navbar-expand-lg navbar-dark navbar-custom fixed-top py-0">
         <div class="container">
             <a class="navbar-brand" href="#home">
-                <img src="{{ asset('images/logo.png') }}" alt="Logo DOT" style="height: 90px; object-fit: contain;">
+                <img src="{{ asset('images/logo.png') }}" alt="Logo DOT" class="navbar-logo">
             </a>
             <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
                 <span class="navbar-toggler-icon"></span>
@@ -174,7 +204,10 @@
             
             <div class="col-lg-5 text-center" data-aos="zoom-in" data-aos-duration="1200">
                 <div>
-                    <img src="{{ asset('images/header.svg') }}" alt="Ilustrasi DOT" style="width: 100%; max-width: 400px; filter: drop-shadow(0 20px 30px rgba(139, 92, 246, 0.4));">
+                    <picture>
+                        <source srcset="{{ asset('images/header.webp') }}" type="image/webp">
+                        <img src="{{ asset('images/header.png') }}" alt="Ilustrasi DOT" width="400" height="328" style="width: 100%; max-width: 400px; height: auto; filter: drop-shadow(0 20px 30px rgba(139, 92, 246, 0.4));">
+                    </picture>
                 </div>
             </div>
         </div>
@@ -185,7 +218,7 @@
             <div class="row align-items-center rounded-4 shadow-lg overflow-hidden border border-secondary" data-aos="fade-up" style="background: rgba(255, 255, 255, 0.03);">
                 
                 <div class="col-md-5 p-0">
-                    <img src="{{ asset('images/md.png') }}" alt="Promo Morning Devotion" class="img-fluid w-100 h-100" style="object-fit: cover; min-height: 300px;">
+                    <img src="{{ asset('images/md.png') }}" alt="Promo Morning Devotion" class="img-fluid w-100 h-100" style="object-fit: cover; min-height: 300px;" loading="lazy">
                 </div>
 
                 <div class="col-md-7 p-4 p-md-5">
@@ -266,7 +299,7 @@
                 
                 @if($event->image)
                 <div class="mb-4">
-                    <img src="{{ asset('uploads/events/' . $event->image) }}" alt="Poster" class="img-fluid rounded-3 shadow" style="width: 100%; height: 200px; object-fit: cover; border: 1px solid rgba(255,255,255,0.1);">
+                    <img src="{{ asset('uploads/events/' . $event->image) }}" alt="Poster" class="img-fluid rounded-3 shadow" style="width: 100%; height: 200px; object-fit: cover; border: 1px solid rgba(255,255,255,0.1);" loading="lazy">
                 </div>
                 @endif
 
@@ -311,7 +344,7 @@
             @forelse($galleries as $index => $gal)
             <div class="col-md-4" data-aos="zoom-in" data-aos-delay="{{ ($index + 1) * 100 }}">
                 <div class="glass-card p-2 position-relative group" style="border-radius: 15px; overflow: hidden; transition: 0.3s;">
-                    <img src="{{ asset('uploads/gallery/' . $gal->image) }}" alt="{{ $gal->title }}" style="width: 100%; height: 250px; object-fit: cover; border-radius: 10px;">
+                    <img src="{{ asset('uploads/gallery/' . $gal->image) }}" alt="{{ $gal->title }}" style="width: 100%; height: 250px; object-fit: cover; border-radius: 10px;" loading="lazy">
                     <div class="position-absolute bottom-0 start-0 w-100 p-3" style="background: linear-gradient(to top, rgba(0,0,0,0.9), transparent); border-radius: 0 0 10px 10px;">
                         <h6 class="text-white fw-bold mb-0">{{ $gal->title }}</h6>
                     </div>
@@ -357,19 +390,19 @@
                     <div class="row g-2 position-relative z-1">
                         <div class="col-4">
                             <a href="https://instagram.com/dot_teens" target="_blank" class="d-block position-relative overflow-hidden rounded" style="aspect-ratio: 1/1;">
-                                <img src="images/ibadah.jpeg" class="w-100 h-100 object-fit-cover" alt="DOT Worship" style="transition: 0.3s;" onmouseover="this.style.transform='scale(1.1)'" onmouseout="this.style.transform='scale(1)'">
+                                <img src="{{ asset('images/ibadah.jpeg') }}" class="w-100 h-100 object-fit-cover" alt="DOT Worship" loading="lazy" style="transition: 0.3s;" onmouseover="this.style.transform='scale(1.1)'" onmouseout="this.style.transform='scale(1)'">
                                 <div class="position-absolute bottom-0 start-0 w-100 p-1" style="background: linear-gradient(to top, rgba(0,0,0,0.8), transparent);"><span class="badge bg-danger" style="font-size: 0.6rem;">DServices</span></div>
                             </a>
                         </div>
                         <div class="col-4">
                             <a href="https://instagram.com/dot_teens" target="_blank" class="d-block position-relative overflow-hidden rounded" style="aspect-ratio: 1/1;">
-                                <img src="images/1.jpg" class="w-100 h-100 object-fit-cover" alt="DOT Community" style="transition: 0.3s;" onmouseover="this.style.transform='scale(1.1)'" onmouseout="this.style.transform='scale(1)'">
+                                <img src="{{ asset('images/1.jpg') }}" class="w-100 h-100 object-fit-cover" alt="DOT Community" loading="lazy" style="transition: 0.3s;" onmouseover="this.style.transform='scale(1.1)'" onmouseout="this.style.transform='scale(1)'">
                                 <div class="position-absolute bottom-0 start-0 w-100 p-1" style="background: linear-gradient(to top, rgba(0,0,0,0.8), transparent);"><span class="badge bg-primary" style="font-size: 0.6rem;">Reels</span></div>
                             </a>
                         </div>
                         <div class="col-4">
                             <a href="https://instagram.com/dot_teens" target="_blank" class="d-block position-relative overflow-hidden rounded" style="aspect-ratio: 1/1;">
-                                <img src="images/drn.jpeg" class="w-100 h-100 object-fit-cover" alt="DOT Event" style="transition: 0.3s;" onmouseover="this.style.transform='scale(1.1)'" onmouseout="this.style.transform='scale(1)'">
+                                <img src="{{ asset('images/drn.jpeg') }}" class="w-100 h-100 object-fit-cover" alt="DOT Event" loading="lazy" style="transition: 0.3s;" onmouseover="this.style.transform='scale(1.1)'" onmouseout="this.style.transform='scale(1)'">
                                 <div class="position-absolute bottom-0 start-0 w-100 p-1" style="background: linear-gradient(to top, rgba(0,0,0,0.8), transparent);"><span class="badge bg-success" style="font-size: 0.6rem;">Worship</span></div>
                             </a>
                         </div>
@@ -503,7 +536,7 @@
                                     </div>
                                     <div class="col-md-6">
                                         <label class="text-secondary small fw-bold mb-1">No. WhatsApp *</label>
-                                        <input type="number" name="phone_number" class="form-control rounded-3 bg-dark text-white border-secondary" required>
+                                        <input type="tel" inputmode="numeric" name="phone_number" class="form-control rounded-3 bg-dark text-white border-secondary" placeholder="08xxxxxxxxxx" required>
                                     </div>
                                     <div class="col-md-6">
                                         <label class="text-secondary small fw-bold mb-1">Tanggal Lahir *</label>
@@ -533,7 +566,7 @@
                                     </div>
                                     <div class="col-md-6">
                                         <label class="text-secondary small fw-bold mb-1">No. Telp Orang Tua</label>
-                                        <input type="number" name="parent_phone" class="form-control rounded-3 bg-dark text-white border-secondary">
+                                        <input type="tel" inputmode="numeric" name="parent_phone" class="form-control rounded-3 bg-dark text-white border-secondary" placeholder="08xxxxxxxxxx">
                                     </div>
                                     <div class="col-md-6">
                                         <label class="text-secondary small fw-bold mb-1">Asal Sekolah</label>

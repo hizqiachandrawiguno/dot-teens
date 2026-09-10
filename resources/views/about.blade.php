@@ -210,28 +210,30 @@
         <div class="row justify-content-center g-4">
             <div class="col-md-6 col-lg-3" data-aos="fade-up" data-aos-delay="100">
                 <div class="glass-card text-center h-100 p-4">
-                    <div class="profile-img-container"><img src="images/hizqia.jpg" alt="Hizqia" class="profile-img"></div>
+                    <div class="profile-img-container">
+                        <img src="{{ file_exists(public_path('images/hizqia.jpg')) ? asset('images/hizqia.jpg') : 'https://ui-avatars.com/api/?name=Hizqia&background=111827&color=60A5FA&size=200&bold=true' }}" alt="Hizqia" class="profile-img" loading="lazy">
+                    </div>
                     <h4 class="fw-bold text-white mb-1">Ka Hizqia</h4>
                     <p class="small text-info mb-0 fw-bold"><i class="fa-solid fa-crown me-1"></i> Ketua Dept</p>
                 </div>
             </div>
             <div class="col-md-6 col-lg-3" data-aos="fade-up" data-aos-delay="200">
                 <div class="glass-card text-center h-100 p-4">
-                    <div class="profile-img-container"><img src="https://ui-avatars.com/api/?name=Dyto&background=111827&color=8B5CF6&size=200&bold=true" alt="Dyto" class="profile-img"></div>
+                    <div class="profile-img-container"><img src="https://ui-avatars.com/api/?name=Dyto&background=111827&color=8B5CF6&size=200&bold=true" alt="Dyto" class="profile-img" loading="lazy"></div>
                     <h4 class="fw-bold text-white mb-1">Ka Dyto</h4>
                     <p class="small mb-0 fw-bold" style="color: #8B5CF6;"><i class="fa-solid fa-star me-1"></i> Wakil Ketua</p>
                 </div>
             </div>
             <div class="col-md-6 col-lg-3" data-aos="fade-up" data-aos-delay="300">
                 <div class="glass-card text-center h-100 p-4">
-                    <div class="profile-img-container"><img src="https://ui-avatars.com/api/?name=Veli&background=111827&color=EC4899&size=200&bold=true" alt="Veli" class="profile-img"></div>
+                    <div class="profile-img-container"><img src="https://ui-avatars.com/api/?name=Veli&background=111827&color=EC4899&size=200&bold=true" alt="Veli" class="profile-img" loading="lazy"></div>
                     <h4 class="fw-bold text-white mb-1">Ka Veli</h4>
                     <p class="small mb-0 fw-bold" style="color: #EC4899;"><i class="fa-solid fa-pen-nib me-1"></i> Sekretaris</p>
                 </div>
             </div>
             <div class="col-md-6 col-lg-3" data-aos="fade-up" data-aos-delay="400">
                 <div class="glass-card text-center h-100 p-4">
-                    <div class="profile-img-container"><img src="https://ui-avatars.com/api/?name=Kezia&background=111827&color=F59E0B&size=200&bold=true" alt="Kezia" class="profile-img"></div>
+                    <div class="profile-img-container"><img src="https://ui-avatars.com/api/?name=Kezia&background=111827&color=F59E0B&size=200&bold=true" alt="Kezia" class="profile-img" loading="lazy"></div>
                     <h4 class="fw-bold text-white mb-1">Ka Kezia</h4>
                     <p class="small text-warning mb-0 fw-bold"><i class="fa-solid fa-coins me-1"></i> Bendahara</p>
                 </div>

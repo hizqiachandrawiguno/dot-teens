@@ -12,13 +12,27 @@ return new class extends Migration
     public function up()
     {
         Schema::table('members', function (Blueprint $table) {
-            // $table->string('fire_cell')->nullable();
-            // $table->string('hobby')->nullable();
-            // $table->string('instagram')->nullable();
-            // $table->string('email')->nullable();
-            // $table->string('parent_name')->nullable();
-            // $table->string('parent_phone')->nullable();
-            // $table->string('school')->nullable();
+            if (!Schema::hasColumn('members', 'fire_cell')) {
+                $table->string('fire_cell')->nullable();
+            }
+            if (!Schema::hasColumn('members', 'hobby')) {
+                $table->string('hobby')->nullable();
+            }
+            if (!Schema::hasColumn('members', 'instagram')) {
+                $table->string('instagram')->nullable();
+            }
+            if (!Schema::hasColumn('members', 'email')) {
+                $table->string('email')->nullable();
+            }
+            if (!Schema::hasColumn('members', 'parent_name')) {
+                $table->string('parent_name')->nullable();
+            }
+            if (!Schema::hasColumn('members', 'parent_phone')) {
+                $table->string('parent_phone')->nullable();
+            }
+            if (!Schema::hasColumn('members', 'school')) {
+                $table->string('school')->nullable();
+            }
         });
     }
 
