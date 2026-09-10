@@ -120,6 +120,81 @@
             justify-content: center;
         }
 
+        /* Modern Custom Viewfinder Overlay */
+        .scanner-viewfinder-overlay {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            pointer-events: none;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            z-index: 10;
+        }
+
+        .viewfinder-box {
+            position: relative;
+            width: min(270px, 72vw);
+            height: min(270px, 72vw);
+            border-radius: 20px;
+            box-shadow: 0 0 0 9999px rgba(0, 0, 0, 0.3);
+            transition: all 0.3s ease;
+        }
+
+        .pulse-focus {
+            animation: pulseFocusBox 0.6s ease-out;
+        }
+
+        @keyframes pulseFocusBox {
+            0% { transform: scale(1); box-shadow: 0 0 20px #22C55E, 0 0 0 9999px rgba(0, 0, 0, 0.4); }
+            50% { transform: scale(1.05); box-shadow: 0 0 35px #22C55E, 0 0 0 9999px rgba(0, 0, 0, 0.2); }
+            100% { transform: scale(1); box-shadow: 0 0 0 9999px rgba(0, 0, 0, 0.3); }
+        }
+
+        .vf-corner {
+            position: absolute;
+            width: 32px;
+            height: 32px;
+            border: 4px solid #22C55E;
+            box-shadow: 0 0 10px rgba(34, 197, 94, 0.7);
+        }
+        .vf-tl { top: 0; left: 0; border-right: none; border-bottom: none; border-top-left-radius: 14px; }
+        .vf-tr { top: 0; right: 0; border-left: none; border-bottom: none; border-top-right-radius: 14px; }
+        .vf-bl { bottom: 0; left: 0; border-right: none; border-top: none; border-bottom-left-radius: 14px; }
+        .vf-br { bottom: 0; right: 0; border-left: none; border-top: none; border-bottom-right-radius: 14px; }
+
+        .scan-laser-line {
+            position: absolute;
+            left: 5%;
+            width: 90%;
+            height: 3px;
+            background: linear-gradient(90deg, transparent, #22C55E 50%, transparent);
+            box-shadow: 0 0 12px #22C55E;
+            border-radius: 50%;
+            animation: scanLaserAnim 2.2s ease-in-out infinite alternate;
+        }
+
+        @keyframes scanLaserAnim {
+            0% { top: 10%; opacity: 0.4; }
+            50% { opacity: 1; }
+            100% { top: 90%; opacity: 0.4; }
+        }
+
+        .tap-focus-hint {
+            position: absolute;
+            bottom: 12px;
+            background: rgba(0, 0, 0, 0.65);
+            color: #E2E8F0;
+            font-size: 11px;
+            padding: 5px 14px;
+            border-radius: 20px;
+            backdrop-filter: blur(5px);
+            border: 1px solid rgba(255, 255, 255, 0.15);
+        }
+
         .stat-card {
             background: rgba(15, 23, 42, 0.7);
             border: 1px solid rgba(56, 189, 248, 0.15);
@@ -326,6 +401,21 @@
                     <!-- Area Kamera QR Code -->
                     <div class="scanner-container" id="scannerWrapper">
                         <div id="qr-reader"></div>
+
+                        <!-- Custom Modern Viewfinder Overlay (Green Corners + Laser Scan) -->
+                        <div id="scannerOverlay" class="scanner-viewfinder-overlay d-none">
+                            <div class="viewfinder-box">
+                                <div class="scan-laser-line"></div>
+                                <span class="vf-corner vf-tl"></span>
+                                <span class="vf-corner vf-tr"></span>
+                                <span class="vf-corner vf-bl"></span>
+                                <span class="vf-corner vf-br"></span>
+                            </div>
+                            <div class="tap-focus-hint">
+                                <i class="fa-solid fa-hand-pointer me-1"></i> Arahkan QR ke kotak atau ketuk layar untuk fokus
+                            </div>
+                        </div>
+
                         <div id="scannerLoading" class="text-center p-4 d-none">
                             <div class="spinner-border text-info mb-3" style="width: 2.8rem; height: 2.8rem;"></div>
                             <h6 class="text-white fw-bold mb-1">Menghubungkan Kamera...</h6>
@@ -495,12 +585,27 @@
             } catch (e) { console.log(e); }
         }
 
-        // SCANNER LOGIC
+        // SCANNER LOGIC - DUAL ENGINE (HARDWARE ML BARCODEDETECTOR + FULL-FRAME HTML5-QRCODE)
         let html5QrCode = null;
+        let barcodeDetectorInstance = null;
+        let nativeDetectorInterval = null;
         let isProcessing = false;
         let availableCameras = [];
         let currentCameraId = null;
+        let currentZoom = 1.0;
+        let isTorchActive = false;
         const eventId = {{ $selectedEvent->id }};
+
+        // Inisialisasi Hardware ML BarcodeDetector jika didukung (Chrome Android / Chromium)
+        if ('BarcodeDetector' in window) {
+            try {
+                barcodeDetectorInstance = new BarcodeDetector({ formats: ['qr_code'] });
+                console.log("⚡ Hardware ML BarcodeDetector aktif untuk scan QR instan.");
+            } catch (e) {
+                console.warn("BarcodeDetector init:", e);
+                barcodeDetectorInstance = null;
+            }
+        }
 
         document.addEventListener('DOMContentLoaded', function() {
             // Deteksi Insecure Origin di Chrome/Edge
@@ -513,6 +618,17 @@
                         btnHttps.href = 'https://' + location.host + location.pathname + location.search;
                     }
                 }
+            }
+
+            // Ketuk area kamera untuk refokus lensa otomatis
+            const scannerWrap = document.getElementById('scannerWrapper');
+            if (scannerWrap) {
+                scannerWrap.addEventListener('click', function(e) {
+                    if (e.target.closest('button') || e.target.closest('#scannerPlaceholder') || e.target.closest('#scannerLoading')) return;
+                    if (html5QrCode && html5QrCode.isScanning) {
+                        triggerFocus();
+                    }
+                });
             }
         });
 
@@ -692,19 +808,10 @@
                 return;
             }
 
-            const qrboxFunction = function(viewfinderWidth, viewfinderHeight) {
-                const minEdge = Math.min(viewfinderWidth, viewfinderHeight);
-                const targetSize = Math.floor(minEdge * 0.70);
-                const finalSize = Math.max(180, Math.min(270, targetSize));
-                return {
-                    width: finalSize,
-                    height: finalSize
-                };
-            };
-
+            // SANGAT PENTING: Tanpa qrbox agar tidak terjadi bug koordinat crop / offset
+            // Full-frame scanning membaca frame kamera secara utuh 100% pada resolusi sensor
             const config = { 
-                fps: 15, 
-                qrbox: qrboxFunction
+                fps: 20
             };
 
             function fixVideoLayout() {
@@ -716,6 +823,9 @@
                 const scanRegion = document.getElementById('qr-reader__scan_region');
                 if (scanRegion) {
                     scanRegion.style.width = '100%';
+                    scanRegion.style.display = 'flex';
+                    scanRegion.style.alignItems = 'center';
+                    scanRegion.style.justifyContent = 'center';
                 }
                 const videoEl = document.querySelector('#qr-reader video');
                 if (videoEl) {
@@ -725,6 +835,7 @@
                     videoEl.style.display = 'block';
                     videoEl.style.margin = '0 auto';
                     videoEl.style.borderRadius = '14px';
+                    videoEl.style.objectFit = 'cover';
                 }
             }
 
@@ -740,13 +851,19 @@
                 }
                 if (btnStop) btnStop.classList.remove('d-none');
 
-                // Tampilkan toolbar kontrol zoom & senter
+                // Tampilkan viewfinder overlay visual dan toolbar kontrol
+                const overlay = document.getElementById('scannerOverlay');
+                if (overlay) overlay.classList.remove('d-none');
+
                 const controlsBar = document.getElementById('cameraControlsBar');
                 if (controlsBar) controlsBar.classList.remove('d-none');
 
                 fixVideoLayout();
                 setTimeout(fixVideoLayout, 150);
                 setTimeout(fixVideoLayout, 400);
+
+                // Jalankan Engine Hardware ML BarcodeDetector secara paralel
+                startNativeBarcodeDetectorLoop();
 
                 // Deteksi kapabilitas Torch / Senter
                 try {
@@ -757,15 +874,10 @@
                     }
                 } catch (e) {}
 
-                // Terapkan autofocus continuous otomatis setelah stream aktif
+                // Terapkan autofocus continuous otomatis pada sensor lensa
                 setTimeout(() => {
-                    if (html5QrCode && html5QrCode.isScanning) {
-                        html5QrCode.applyVideoConstraints({
-                            focusMode: "continuous",
-                            advanced: [{ focusMode: "continuous" }]
-                        }).catch(() => {});
-                    }
-                }, 1000);
+                    applyOptimalCameraConstraints();
+                }, 600);
 
                 // Ambil daftar kamera untuk switcher jika lebih dari 1
                 QrClass.getCameras().then(devices => {
@@ -820,18 +932,28 @@
             }
 
             if (isMobile) {
-                // Di smartphone: Gunakan facingMode standar murni "environment"
-                html5QrCode.start({ facingMode: "environment" }, config, onScanSuccess, () => {})
+                // Di smartphone: Utamakan kamera belakang (environment) dengan resolusi HD ideal (1280x720)
+                const hdConstraints = {
+                    facingMode: { ideal: "environment" },
+                    width: { ideal: 1280, min: 640 },
+                    height: { ideal: 720, min: 480 }
+                };
+
+                html5QrCode.start(hdConstraints, config, onScanSuccess, () => {})
                     .then(onCameraStarted)
                     .catch(errEnv => {
-                        console.warn("Gagal kamera environment, fallback ke user...", errEnv);
+                        console.warn("Gagal kamera environment dengan constraint HD, fallback ke facingMode standard...", errEnv);
                         if (errEnv.name === 'NotAllowedError' || errEnv.name === 'PermissionDeniedError') {
                             handleCameraError(errEnv);
                             return;
                         }
-                        html5QrCode.start({ facingMode: "user" }, config, onScanSuccess, () => {})
+                        html5QrCode.start({ facingMode: "environment" }, config, onScanSuccess, () => {})
                             .then(onCameraStarted)
-                            .catch(handleCameraError);
+                            .catch(() => {
+                                html5QrCode.start({ facingMode: "user" }, config, onScanSuccess, () => {})
+                                    .then(onCameraStarted)
+                                    .catch(handleCameraError);
+                            });
                     });
             } else {
                 // Di Laptop / Desktop
@@ -854,8 +976,64 @@
             }
         }
 
-        let currentZoom = 1.0;
-        function setCameraZoom(zoomVal) {
+        // FUNGSI KONTROL KAMERA & ZOOM TINGKAT LANJUT
+        function getCameraTrack() {
+            try {
+                const videoEl = document.querySelector('#qr-reader video');
+                if (videoEl && videoEl.srcObject) {
+                    const tracks = videoEl.srcObject.getVideoTracks();
+                    if (tracks && tracks.length > 0) return tracks[0];
+                }
+            } catch (e) {}
+            return null;
+        }
+
+        function applyOptimalCameraConstraints() {
+            const track = getCameraTrack();
+            if (!track) return;
+            try {
+                const caps = track.getCapabilities ? track.getCapabilities() : {};
+                const advanced = [];
+
+                if (caps.focusMode && Array.isArray(caps.focusMode) && caps.focusMode.includes('continuous')) {
+                    advanced.push({ focusMode: 'continuous' });
+                }
+
+                if (advanced.length > 0) {
+                    track.applyConstraints({ advanced }).catch(() => {});
+                }
+            } catch (e) {
+                console.log("applyOptimalCameraConstraints err:", e);
+            }
+        }
+
+        function startNativeBarcodeDetectorLoop() {
+            if (nativeDetectorInterval) {
+                clearInterval(nativeDetectorInterval);
+                nativeDetectorInterval = null;
+            }
+            if (!barcodeDetectorInstance) return;
+
+            // Loop deteksi frame langsung melalui Native Hardware ML Vision
+            nativeDetectorInterval = setInterval(async () => {
+                if (isProcessing) return;
+                const videoEl = document.querySelector('#qr-reader video');
+                if (!videoEl || videoEl.readyState < 2) return;
+
+                try {
+                    const barcodes = await barcodeDetectorInstance.detect(videoEl);
+                    if (barcodes && barcodes.length > 0 && !isProcessing) {
+                        const code = barcodes[0].rawValue;
+                        if (code) {
+                            console.log("⚡ [Native ML Vision] QR Terdeteksi:", code);
+                            onScanSuccess(code);
+                        }
+                    }
+                } catch (e) {}
+            }, 80);
+        }
+
+        async function setCameraZoom(zoomVal) {
             currentZoom = zoomVal;
             document.querySelectorAll('.btn-zoom').forEach(b => {
                 b.classList.remove('btn-cyan', 'text-white');
@@ -867,12 +1045,31 @@
                 activeBtn.classList.remove('btn-outline-secondary', 'text-light');
             }
 
-            if (html5QrCode && html5QrCode.isScanning) {
-                html5QrCode.applyVideoConstraints({
-                    advanced: [{ zoom: zoomVal }]
-                }).catch(err => {
-                    console.log("Zoom not supported on this browser:", err);
-                });
+            let hwZoomApplied = false;
+            const track = getCameraTrack();
+            if (track) {
+                try {
+                    const caps = track.getCapabilities ? track.getCapabilities() : {};
+                    if (caps.zoom) {
+                        const targetZoom = Math.max(caps.zoom.min, Math.min(caps.zoom.max, zoomVal));
+                        await track.applyConstraints({ advanced: [{ zoom: targetZoom }] });
+                        hwZoomApplied = true;
+                    }
+                } catch (e) {
+                    hwZoomApplied = false;
+                }
+            }
+
+            // Fallback ke CSS digital zoom jika hardware zoom tidak didukung browser
+            const videoEl = document.querySelector('#qr-reader video');
+            if (videoEl) {
+                if (hwZoomApplied) {
+                    videoEl.style.transform = 'none';
+                } else {
+                    videoEl.style.transform = zoomVal > 1.0 ? `scale(${zoomVal})` : 'none';
+                    videoEl.style.transformOrigin = 'center center';
+                    videoEl.style.transition = 'transform 0.2s ease-out';
+                }
             }
         }
 
@@ -901,13 +1098,40 @@
         }
 
         function triggerFocus() {
-            if (!html5QrCode || !html5QrCode.isScanning) return;
-            html5QrCode.applyVideoConstraints({
-                focusMode: "continuous",
-                advanced: [{ focusMode: "continuous" }]
-            }).catch(() => {});
+            // Visual pulse hijau pada viewfinder
+            const vf = document.querySelector('.viewfinder-box');
+            if (vf) {
+                vf.classList.remove('pulse-focus');
+                void vf.offsetWidth;
+                vf.classList.add('pulse-focus');
+                setTimeout(() => vf.classList.remove('pulse-focus'), 650);
+            }
 
-            const btn = event ? event.currentTarget : null;
+            const track = getCameraTrack();
+            if (track) {
+                try {
+                    const caps = track.getCapabilities ? track.getCapabilities() : {};
+                    if (caps.focusMode) {
+                        // Switch focus mode ke manual sejenak lalu balik ke continuous untuk paksa lensa refocus
+                        track.applyConstraints({ advanced: [{ focusMode: 'manual' }] })
+                            .then(() => {
+                                setTimeout(() => {
+                                    track.applyConstraints({ advanced: [{ focusMode: 'continuous' }] }).catch(() => {});
+                                }, 120);
+                            })
+                            .catch(() => {
+                                track.applyConstraints({ advanced: [{ focusMode: 'continuous' }] }).catch(() => {});
+                            });
+                    }
+                } catch (e) {}
+            } else if (html5QrCode && html5QrCode.isScanning) {
+                html5QrCode.applyVideoConstraints({
+                    focusMode: "continuous",
+                    advanced: [{ focusMode: "continuous" }]
+                }).catch(() => {});
+            }
+
+            const btn = document.querySelector('#cameraControlsBar button[onclick="triggerFocus()"]');
             if (btn) {
                 const orig = btn.innerHTML;
                 btn.innerHTML = '<i class="fa-solid fa-check text-success me-1"></i> Terfokus';
@@ -974,14 +1198,25 @@
 
         async function stopScanner() {
             isStarting = false;
+            if (nativeDetectorInterval) {
+                clearInterval(nativeDetectorInterval);
+                nativeDetectorInterval = null;
+            }
+
             const ph = document.getElementById('scannerPlaceholder');
             const loading = document.getElementById('scannerLoading');
             const btnStart = document.getElementById('btnStartScan');
             const btnStop = document.getElementById('btnStopScan');
             const controlsBar = document.getElementById('cameraControlsBar');
+            const overlay = document.getElementById('scannerOverlay');
 
             if (loading) loading.classList.add('d-none');
             if (controlsBar) controlsBar.classList.add('d-none');
+            if (overlay) overlay.classList.add('d-none');
+
+            const videoEl = document.querySelector('#qr-reader video');
+            if (videoEl) videoEl.style.transform = 'none';
+
             if (btnStart) {
                 btnStart.classList.remove('d-none');
                 btnStart.disabled = false;
