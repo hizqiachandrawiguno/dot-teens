@@ -847,6 +847,8 @@
                 isStarting = false;
 
                 if (loading) loading.classList.add('d-none');
+                const ph = document.getElementById('scannerPlaceholder');
+                if (ph) ph.classList.add('d-none');
                 if (btnStart) {
                     btnStart.classList.add('d-none');
                     btnStart.disabled = false;
@@ -935,28 +937,20 @@
             }
 
             if (isMobile) {
-                // Di smartphone: Utamakan kamera belakang (environment) dengan resolusi HD ideal (1280x720)
-                const hdConstraints = {
-                    facingMode: { ideal: "environment" },
-                    width: { ideal: 1280, min: 640 },
-                    height: { ideal: 720, min: 480 }
-                };
-
-                html5QrCode.start(hdConstraints, config, onScanSuccess, () => {})
+                // Gunakan standard facingMode environment murni yang 100% didukung library html5-qrcode
+                html5QrCode.start({ facingMode: "environment" }, config, onScanSuccess, () => {})
                     .then(onCameraStarted)
                     .catch(errEnv => {
-                        console.warn("Gagal kamera environment dengan constraint HD, fallback ke facingMode standard...", errEnv);
+                        console.warn("Gagal kamera environment, coba kamera user...", errEnv);
                         if (errEnv.name === 'NotAllowedError' || errEnv.name === 'PermissionDeniedError') {
                             handleCameraError(errEnv);
                             return;
                         }
-                        html5QrCode.start({ facingMode: "environment" }, config, onScanSuccess, () => {})
+                        try { html5QrCode.clear(); } catch(e) {}
+                        html5QrCode = new QrClass("qr-reader", { verbose: false });
+                        html5QrCode.start({ facingMode: "user" }, config, onScanSuccess, () => {})
                             .then(onCameraStarted)
-                            .catch(() => {
-                                html5QrCode.start({ facingMode: "user" }, config, onScanSuccess, () => {})
-                                    .then(onCameraStarted)
-                                    .catch(handleCameraError);
-                            });
+                            .catch(handleCameraError);
                     });
             } else {
                 // Di Laptop / Desktop
