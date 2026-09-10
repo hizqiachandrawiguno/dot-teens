@@ -41,9 +41,28 @@ class PublicController extends Controller
             // Kolom lainnya opsional
         ]);
 
+        $cleanPhone = preg_replace('/[^0-9]/', '', $request->phone_number);
+        if (str_starts_with($cleanPhone, '62')) {
+            $cleanPhone = substr($cleanPhone, 2);
+        } elseif (str_starts_with($cleanPhone, '0')) {
+            $cleanPhone = substr($cleanPhone, 1);
+        }
+        $formattedPhone = '+62' . $cleanPhone;
+
+        $parentPhone = null;
+        if ($request->filled('parent_phone')) {
+            $cleanParent = preg_replace('/[^0-9]/', '', $request->parent_phone);
+            if (str_starts_with($cleanParent, '62')) {
+                $cleanParent = substr($cleanParent, 2);
+            } elseif (str_starts_with($cleanParent, '0')) {
+                $cleanParent = substr($cleanParent, 1);
+            }
+            $parentPhone = '+62' . $cleanParent;
+        }
+
         Member::create([
             'name'         => $request->name,
-            'phone_number' => $request->phone_number,
+            'phone_number' => $formattedPhone,
             'birth_date'   => $request->birth_date,
             'address'      => $request->address,
             'fire_cell'    => $request->fire_cell,
@@ -51,7 +70,7 @@ class PublicController extends Controller
             'instagram'    => $request->instagram,
             'email'        => $request->email,
             'parent_name'  => $request->parent_name,
-            'parent_phone' => $request->parent_phone,
+            'parent_phone' => $parentPhone,
             'school'       => $request->school,
             'is_joined'    => $request->fire_cell ? true : false, // Jika langsung isi fire cell, is_joined = true
         ]);

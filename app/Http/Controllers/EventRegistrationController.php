@@ -57,12 +57,20 @@ class EventRegistrationController extends Controller
             'category.required' => 'Kategori (SMP/SMA/Umum) wajib dipilih.',
         ]);
 
+        // Normalisasi format nomor WhatsApp agar konsisten berawalan +62
+        $digits = preg_replace('/[^0-9]/', '', $request->phone);
+        if (str_starts_with($digits, '62')) {
+            $digits = substr($digits, 2);
+        } elseif (str_starts_with($digits, '0')) {
+            $digits = substr($digits, 1);
+        }
+        $formattedPhone = '+62' . $digits;
+
         // Cek apakah nomor telepon sudah terdaftar di event yang sama
-        $cleanPhone = preg_replace('/[^0-9]/', '', $request->phone);
         $existing = EventRegistration::where('event_id', $request->event_id)
-            ->where(function($q) use ($request, $cleanPhone) {
-                $q->where('phone', $request->phone)
-                  ->orWhere('phone', 'like', '%' . substr($cleanPhone, -8));
+            ->where(function($q) use ($formattedPhone, $digits) {
+                $q->where('phone', $formattedPhone)
+                  ->orWhere('phone', 'like', '%' . substr($digits, -8));
             })->first();
 
         if ($existing) {
@@ -86,17 +94,17 @@ class EventRegistrationController extends Controller
             if ($request->ajax() || $request->wantsJson()) {
                 return response()->json([
                     'success' => true,
-                    'already_registered' => true,
-                    'message' => 'Nomor ini sudah terdaftar sebelumnya! Berikut adalah e-tiket Anda.',
+                    'is_existing' => true,
+                    'message' => "Nomor WhatsApp ini sudah terdaftar atas nama {$existing->name}. Berikut adalah E-Tiket Anda.",
                     'ticket' => $ticketData,
                 ]);
             }
 
             return redirect()->route('event.ticket', $existing->ticket_code)
-                ->with('info', 'Anda sudah pernah mendaftar! Ini adalah E-Tiket Anda.');
+                ->with('info', 'Nomor Anda sudah terdaftar sebelumnya.');
         }
 
-        // Generate Kode Tiket Unik (Format: DRN-XXXXX atau DOT-XXXXX)
+        // Generate kode tiket unik format: DRN-XXXXX
         $prefix = 'DRN-';
         do {
             $code = $prefix . strtoupper(Str::random(5));
@@ -106,11 +114,11 @@ class EventRegistrationController extends Controller
             'event_id' => $request->event_id,
             'ticket_code' => $code,
             'name' => trim($request->name),
-            'phone' => trim($request->phone),
+            'phone' => $formattedPhone,
             'email' => $request->email ? trim($request->email) : null,
             'category' => $request->category,
             'origin' => $request->origin ? trim($request->origin) : 'Umum',
-            'notes' => $request->notes,
+            'notes' => $request->notes ?? null,
             'status' => 'registered',
         ]);
 

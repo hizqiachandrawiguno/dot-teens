@@ -705,7 +705,7 @@
         .event-form-label {
             font-size: 13.5px !important;
             font-weight: 600 !important;
-            color: #F1F5F9 !important;
+            color: #94A3B8 !important;
             margin-bottom: 7px !important;
             display: flex;
             align-items: center;
@@ -1519,7 +1519,12 @@
                                     </div>
                                     <div class="col-md-6">
                                         <label class="text-ice small fw-bold mb-1">No. WhatsApp Aktif *</label>
-                                        <input type="tel" inputmode="numeric" name="phone_number" class="form-control form-control-youth" placeholder="08xxxxxxxxxx" required>
+                                        <div class="input-group">
+                                            <span class="input-group-text border-0 fw-bold" style="background: rgba(56, 189, 248, 0.15); color: #22C55E; border-top-left-radius: 12px; border-bottom-left-radius: 12px; font-size: 14px;">
+                                                <i class="fa-brands fa-whatsapp me-1"></i> +62
+                                            </span>
+                                            <input type="tel" inputmode="numeric" name="phone_number" class="form-control form-control-youth phone-next-input" style="border-top-left-radius: 0; border-bottom-left-radius: 0; border-left: none !important;" placeholder="81234567890" required>
+                                        </div>
                                     </div>
                                     <div class="col-md-6">
                                         <label class="text-ice small fw-bold mb-1">Tanggal Lahir *</label>
@@ -1553,8 +1558,13 @@
                                         <input type="text" name="parent_name" class="form-control form-control-youth" placeholder="Nama ayah / ibu">
                                     </div>
                                     <div class="col-md-6">
-                                        <label class="text-ice small fw-bold mb-1">No. Telp Orang Tua</label>
-                                        <input type="tel" inputmode="numeric" name="parent_phone" class="form-control form-control-youth" placeholder="08xxxxxxxxxx">
+                                        <label class="text-ice small fw-bold mb-1">No. Telp / WhatsApp Orang Tua</label>
+                                        <div class="input-group">
+                                            <span class="input-group-text border-0 fw-bold" style="background: rgba(56, 189, 248, 0.15); color: #22C55E; border-top-left-radius: 12px; border-bottom-left-radius: 12px; font-size: 14px;">
+                                                <i class="fa-brands fa-whatsapp me-1"></i> +62
+                                            </span>
+                                            <input type="tel" inputmode="numeric" name="parent_phone" class="form-control form-control-youth phone-next-input" style="border-top-left-radius: 0; border-bottom-left-radius: 0; border-left: none !important;" placeholder="81234567890">
+                                        </div>
                                     </div>
                                     <div class="col-md-6">
                                         <label class="text-ice small fw-bold mb-1">Asal Sekolah</label>
@@ -1882,11 +1892,13 @@
                         <div class="mb-3">
                             <label class="event-form-label">Nomor WhatsApp / HP <span class="text-req">*</span></label>
                             <div class="input-group event-input-group">
-                                <span class="input-group-text" style="color: #22C55E;"><i class="fa-brands fa-whatsapp"></i></span>
-                                <input type="tel" name="phone" id="regPhone" class="form-control event-form-control" placeholder="08xxxxxxxxxx" required>
+                                <span class="input-group-text fw-bold" style="color: #22C55E; font-size: 14px;">
+                                    <i class="fa-brands fa-whatsapp me-1.5"></i> +62
+                                </span>
+                                <input type="tel" name="phone" id="regPhone" class="form-control event-form-control phone-next-input" placeholder="81234567890" required>
                             </div>
                             <div class="event-helper-text">
-                                <i class="fa-solid fa-circle-info me-1"></i> E-Tiket dan QR Code akan terhubung dengan nomor ini.
+                                <i class="fa-solid fa-circle-info me-1"></i> E-Tiket dan QR Code akan terhubung dengan nomor WhatsApp ini.
                             </div>
                         </div>
 
@@ -1906,14 +1918,9 @@
                             </div>
                         </div>
 
-                        <div class="mb-3">
+                        <div class="mb-4">
                             <label class="event-form-label">Asal Sekolah / Cool / Gereja</label>
                             <input type="text" name="origin" id="regOrigin" class="form-control event-form-control" placeholder="cth: SMPN 1 Sawangan / Cool 2009">
-                        </div>
-
-                        <div class="mb-4">
-                            <label class="event-form-label">Pokok Doa / Harapan (Opsional)</label>
-                            <textarea name="notes" id="regNotes" rows="2" class="form-control event-form-control" placeholder="Tuliskan harapan atau pokok doamu..."></textarea>
                         </div>
 
                         <button type="submit" id="btnSubmitReg" class="btn w-100 py-3 fw-bold rounded-pill text-white shadow-lg" style="background: linear-gradient(135deg, #0284C7 0%, #2563EB 100%); font-size: 15.5px; border: none;">
@@ -2053,6 +2060,19 @@
                     }, 800);
                 }
             @endif
+
+            // Auto-format input nomor WA agar jemaat yang mengetik 08 atau 628 otomatis bersih
+            document.querySelectorAll('.phone-next-input').forEach(input => {
+                input.addEventListener('input', function() {
+                    let val = this.value.replace(/[^0-9]/g, '');
+                    if (val.startsWith('0')) {
+                        val = val.substring(1);
+                    } else if (val.startsWith('62')) {
+                        val = val.substring(2);
+                    }
+                    this.value = val;
+                });
+            });
 
             const navLinks = document.querySelectorAll('#navbarMain .nav-link, #navbarMain .btn, .footer-links a');
             const navbarCollapse = document.getElementById('navbarNav');

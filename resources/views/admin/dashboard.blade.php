@@ -711,7 +711,12 @@
                                     </div>
                                     <div class="mb-4">
                                         <label class="small text-secondary fw-semibold mb-1">No. WhatsApp Leader *</label>
-                                        <input type="tel" inputmode="numeric" name="leader_phone" class="form-control" placeholder="08xxxxxxxxxx" required>
+                                        <div class="input-group">
+                                            <span class="input-group-text border-0 fw-bold" style="background: rgba(56, 189, 248, 0.15); color: #22C55E; border-top-left-radius: 12px; border-bottom-left-radius: 12px; font-size: 14px;">
+                                                <i class="fa-brands fa-whatsapp me-1"></i> +62
+                                            </span>
+                                            <input type="tel" inputmode="numeric" name="leader_phone" class="form-control phone-next-input" style="border-top-left-radius: 0; border-bottom-left-radius: 0; border-left: none !important;" placeholder="81234567890" required>
+                                        </div>
                                     </div>
                                     <button type="submit" class="btn btn-info text-dark w-100 rounded-pill fw-bold py-2 shadow">
                                         <i class="fa-solid fa-paper-plane me-1"></i> Simpan & Publikasikan
@@ -1048,6 +1053,18 @@
                     });
                 });
             }
+
+            document.querySelectorAll('.phone-next-input').forEach(input => {
+                input.addEventListener('input', function() {
+                    let val = this.value.replace(/[^0-9]/g, '');
+                    if (val.startsWith('0')) {
+                        val = val.substring(1);
+                    } else if (val.startsWith('62')) {
+                        val = val.substring(2);
+                    }
+                    this.value = val;
+                });
+            });
         });
     </script>
 </body>

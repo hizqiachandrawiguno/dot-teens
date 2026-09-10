@@ -218,7 +218,12 @@
                             <div class="row mb-3">
                                 <div class="col-md-6">
                                     <label class="form-label text-light small fw-semibold">No. WhatsApp Aktif</label>
-                                    <input type="number" name="phone_number" class="form-control p-3" placeholder="08..." required>
+                                    <div class="input-group">
+                                        <span class="input-group-text border-0 fw-bold" style="background: rgba(56, 189, 248, 0.15); color: #22C55E; border-top-left-radius: 12px; border-bottom-left-radius: 12px; font-size: 14px;">
+                                            <i class="fa-brands fa-whatsapp me-1"></i> +62
+                                        </span>
+                                        <input type="tel" name="phone_number" class="form-control p-3 phone-next-input" style="border-top-left-radius: 0; border-bottom-left-radius: 0; border-left: none !important;" placeholder="81234567890" required>
+                                    </div>
                                 </div>
                                 <div class="col-md-6 mt-3 mt-md-0">
                                     <label class="form-label text-light small fw-semibold">Tanggal Lahir</label>
@@ -246,6 +251,18 @@
     <script src="https://unpkg.com/aos@2.3.1/dist/aos.js"></script>
     <script>
         AOS.init({ once: true, offset: 100 });
+
+        document.querySelectorAll('.phone-next-input').forEach(input => {
+            input.addEventListener('input', function() {
+                let val = this.value.replace(/[^0-9]/g, '');
+                if (val.startsWith('0')) {
+                    val = val.substring(1);
+                } else if (val.startsWith('62')) {
+                    val = val.substring(2);
+                }
+                this.value = val;
+            });
+        });
     </script>
 
     <footer class="text-center py-4 mt-5" style="border-top: 1px solid rgba(255,255,255,0.05);">
