@@ -15,13 +15,13 @@
     <meta property="og:description" content="Tempat nongkrong & bertumbuh paling asik buat anak muda SMP-SMA. Come as you are, you belong here!">
     <meta property="og:image" content="{{ asset('images/logo.png') }}">
     
-    <meta name="theme-color" content="#FFFFFF">
+    <meta name="theme-color" content="#5B9EC9">
     <meta name="apple-mobile-web-app-status-bar-style" content="default">
     <link rel="icon" href="{{ asset('images/logo.png') }}" type="image/png">
     <link rel="shortcut icon" href="{{ asset('images/logo.png') }}" type="image/png">
     <link rel="apple-touch-icon" href="{{ asset('images/logo.png') }}">
 
-    <!-- Google Fonts: Plus Jakarta Sans & Outfit for youthful cheerful clean vibe -->
+    <!-- Google Fonts: Outfit & Plus Jakarta Sans -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@500;600;700;800&family=Plus+Jakarta+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
@@ -33,18 +33,20 @@
     
     <style>
         :root {
-            --bg-page: #F8FAFC;
-            --bg-card: #FFFFFF;
-            --text-main: #0F172A;
-            --text-muted: #475569;
-            --text-sub: #64748B;
-            --border-soft: #E2E8F0;
-            --color-primary: #6366F1;
-            --color-primary-dark: #4F46E5;
-            --color-sky: #0EA5E9;
-            --color-pink: #EC4899;
-            --color-amber: #F59E0B;
-            --color-emerald: #10B981;
+            --sky-blue-top: #5296C2;
+            --sky-blue-mid: #6DAED5;
+            --sky-blue-light: #8DC7E9;
+            --sky-bg-page: #F0F7FD;
+            --sky-card: #FFFFFF;
+            --text-navy: #0F2A44;
+            --text-navy-muted: #3B5875;
+            --text-navy-sub: #627D98;
+            --border-sky: #BAE6FD;
+            --border-soft: #E0F2FE;
+            --color-azure: #0284C7;
+            --color-azure-dark: #0369A1;
+            --color-sky-bright: #38BDF8;
+            --color-tangerine: #EA580C;
             --font-heading: 'Outfit', sans-serif;
             --font-body: 'Plus Jakarta Sans', sans-serif;
         }
@@ -60,12 +62,11 @@
             margin: 0;
             padding: 0;
             position: relative;
-            background-color: var(--bg-page);
-            color: var(--text-main);
+            background-color: var(--sky-bg-page);
+            color: var(--text-navy);
             font-family: var(--font-body);
         }
 
-        /* Prevent Bootstrap horizontal row margin leak */
         .row {
             margin-left: 0 !important;
             margin-right: 0 !important;
@@ -73,188 +74,30 @@
 
         h1, h2, h3, h4, h5, h6, .brand-font {
             font-family: var(--font-heading);
-            color: var(--text-main);
+            color: var(--text-navy);
             letter-spacing: -0.02em;
         }
 
-        /* AMBIENT PASTEL GLOW (BRIGHT & CHEERFUL) */
-        .ambient-layer {
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 100vw;
-            height: 100vh;
-            pointer-events: none;
-            z-index: 0;
-            overflow: hidden;
-        }
-
-        .ambient-blob {
-            position: absolute;
-            border-radius: 50%;
-            filter: blur(100px);
-            opacity: 0.55;
-            pointer-events: none;
-        }
-
-        .blob-1 {
-            width: 550px;
-            height: 550px;
-            background: radial-gradient(circle, rgba(99, 102, 241, 0.12) 0%, rgba(99, 102, 241, 0) 70%);
-            top: -10%;
-            left: -10%;
-        }
-
-        .blob-2 {
-            width: 500px;
-            height: 500px;
-            background: radial-gradient(circle, rgba(236, 72, 153, 0.10) 0%, rgba(236, 72, 153, 0) 70%);
-            top: 40%;
-            right: -10%;
-        }
-
-        .blob-3 {
-            width: 480px;
-            height: 480px;
-            background: radial-gradient(circle, rgba(14, 165, 233, 0.10) 0%, rgba(14, 165, 233, 0) 70%);
-            bottom: 5%;
-            left: 10%;
-        }
-
         /* VIBRANT GRADIENT TEXTS */
-        .text-gradient {
-            background: linear-gradient(135deg, #6366F1 0%, #EC4899 100%);
-            -webkit-background-clip: text;
-            -webkit-text-fill-color: transparent;
-        }
-
         .text-gradient-sky {
-            background: linear-gradient(135deg, #0EA5E9 0%, #6366F1 100%);
+            background: linear-gradient(135deg, #0284C7 0%, #0EA5E9 100%);
             -webkit-background-clip: text;
             -webkit-text-fill-color: transparent;
         }
 
-        .text-gradient-sun {
-            background: linear-gradient(135deg, #F59E0B 0%, #EC4899 100%);
+        .text-gradient-warm {
+            background: linear-gradient(135deg, #EA580C 0%, #F59E0B 100%);
             -webkit-background-clip: text;
             -webkit-text-fill-color: transparent;
         }
 
-        /* WHITE CLEAN CARDS */
-        .clean-card {
-            background: var(--bg-card);
-            border: 1px solid var(--border-soft);
-            border-radius: 24px;
-            padding: 36px;
-            box-shadow: 0 10px 30px -5px rgba(15, 23, 42, 0.05), 0 4px 10px -2px rgba(15, 23, 42, 0.02);
-            transition: transform 0.3s cubic-bezier(0.2, 0.8, 0.2, 1), box-shadow 0.3s, border-color 0.3s;
-            position: relative;
-            z-index: 1;
-        }
-
-        .clean-card:hover {
-            transform: translateY(-4px);
-            border-color: #CBD5E1;
-            box-shadow: 0 20px 35px -8px rgba(99, 102, 241, 0.12);
-        }
-
-        /* CHEERFUL BADGES (CLEAN, NO OVERLOAD) */
-        .badge-pill-cheerful {
-            display: inline-flex;
-            align-items: center;
-            gap: 8px;
-            padding: 8px 18px;
-            border-radius: 9999px;
-            font-size: 0.82rem;
-            font-weight: 700;
-            letter-spacing: 0.02em;
-            text-transform: uppercase;
-            box-shadow: 0 2px 6px rgba(0, 0, 0, 0.03);
-            margin-bottom: 16px;
-        }
-
-        .pill-indigo {
-            background: #EEF2FF;
-            color: #4F46E5;
-            border: 1px solid #C7D2FE;
-        }
-
-        .pill-pink {
-            background: #FDF2F8;
-            color: #DB2777;
-            border: 1px solid #FBCFE8;
-        }
-
-        .pill-sky {
-            background: #F0F9FF;
-            color: #0284C7;
-            border: 1px solid #BAE6FD;
-        }
-
-        .pill-amber {
-            background: #FFFBEB;
-            color: #D97706;
-            border: 1px solid #FDE68A;
-        }
-
-        .pill-emerald {
-            background: #ECFDF5;
-            color: #059669;
-            border: 1px solid #A7F3D0;
-        }
-
-        /* BUTTONS */
-        .btn-gradient {
-            background: linear-gradient(135deg, #6366F1 0%, #EC4899 100%);
-            border: none;
-            color: #FFFFFF !important;
-            font-weight: 700;
-            padding: 13px 32px;
-            border-radius: 9999px;
-            box-shadow: 0 6px 20px rgba(99, 102, 241, 0.28);
-            transition: all 0.3s cubic-bezier(0.2, 0.8, 0.2, 1);
-            display: inline-flex;
-            align-items: center;
-            justify-content: center;
-            gap: 8px;
-            text-decoration: none;
-        }
-
-        .btn-gradient:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 10px 25px rgba(236, 72, 153, 0.38);
-            color: #FFFFFF !important;
-        }
-
-        .btn-outline-soft {
-            background: #FFFFFF;
-            border: 1px solid #CBD5E1;
-            color: var(--text-main) !important;
-            font-weight: 600;
-            padding: 13px 28px;
-            border-radius: 9999px;
-            transition: all 0.25s ease;
-            display: inline-flex;
-            align-items: center;
-            justify-content: center;
-            gap: 8px;
-            text-decoration: none;
-            box-shadow: 0 2px 6px rgba(0,0,0,0.02);
-        }
-
-        .btn-outline-soft:hover {
-            background: #F1F5F9;
-            border-color: #94A3B8;
-            transform: translateY(-2px);
-        }
-
-        /* ONE-PAGE NAVBAR */
+        /* ONE-PAGE NAVBAR (FROSTED SKY GLASS) */
         .navbar-custom {
-            background: rgba(255, 255, 255, 0.90);
-            backdrop-filter: blur(18px);
-            -webkit-backdrop-filter: blur(18px);
-            border-bottom: 1px solid var(--border-soft);
-            box-shadow: 0 4px 20px rgba(15, 23, 42, 0.03);
+            background: rgba(76, 146, 192, 0.88);
+            backdrop-filter: blur(20px);
+            -webkit-backdrop-filter: blur(20px);
+            border-bottom: 1px solid rgba(255, 255, 255, 0.28);
+            box-shadow: 0 4px 25px rgba(15, 42, 68, 0.12);
             transition: all 0.3s ease;
             z-index: 1050;
         }
@@ -270,61 +113,208 @@
         }
 
         .navbar-nav .nav-link {
-            color: #334155 !important;
+            color: #FFFFFF !important;
             font-weight: 600;
-            font-size: 0.92rem;
-            padding: 8px 14px !important;
+            font-size: 0.94rem;
+            padding: 8px 16px !important;
             border-radius: 9999px;
             transition: all 0.2s ease;
+            opacity: 0.92;
         }
 
         .navbar-nav .nav-link:hover {
-            color: var(--color-primary) !important;
-            background: rgba(99, 102, 241, 0.06);
+            opacity: 1;
+            background: rgba(255, 255, 255, 0.20);
         }
 
         .navbar-nav .nav-link.active {
-            color: var(--color-primary) !important;
-            background: rgba(99, 102, 241, 0.10);
+            opacity: 1;
+            background: rgba(255, 255, 255, 0.28);
             font-weight: 700;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.06);
         }
 
-        /* GENEROUS SECTION PADDING FOR BREATHING ROOM */
+        /* HERO SECTION (ATMOSPHERIC SKY BLUE LIKE SUBLYNC) */
+        #home {
+            background: linear-gradient(180deg, #5094BF 0%, #68ACD3 40%, #88C4E8 75%, #F0F7FD 100%);
+            padding-top: 175px;
+            padding-bottom: 110px;
+            position: relative;
+        }
+
+        .hero-title {
+            color: #FFFFFF;
+            font-weight: 800;
+            line-height: 1.16;
+            letter-spacing: -0.025em;
+        }
+
+        .hero-lead {
+            color: rgba(255, 255, 255, 0.95);
+            font-size: 1.18rem;
+            line-height: 1.8;
+            max-width: 600px;
+        }
+
+        /* BUTTONS */
+        .btn-white-pill {
+            background: #FFFFFF;
+            color: var(--color-azure-dark) !important;
+            font-weight: 700;
+            padding: 13px 32px;
+            border-radius: 9999px;
+            border: none;
+            box-shadow: 0 8px 25px rgba(15, 42, 68, 0.15);
+            transition: all 0.25s cubic-bezier(0.2, 0.8, 0.2, 1);
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+            text-decoration: none;
+        }
+
+        .btn-white-pill:hover {
+            background: #F8FAFC;
+            transform: translateY(-2px);
+            box-shadow: 0 12px 30px rgba(15, 42, 68, 0.22);
+            color: #0284C7 !important;
+        }
+
+        .btn-glass-pill {
+            background: rgba(255, 255, 255, 0.20);
+            backdrop-filter: blur(12px);
+            -webkit-backdrop-filter: blur(12px);
+            border: 1px solid rgba(255, 255, 255, 0.45);
+            color: #FFFFFF !important;
+            font-weight: 600;
+            padding: 13px 28px;
+            border-radius: 9999px;
+            transition: all 0.25s ease;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+            text-decoration: none;
+        }
+
+        .btn-glass-pill:hover {
+            background: rgba(255, 255, 255, 0.32);
+            border-color: #FFFFFF;
+            transform: translateY(-2px);
+        }
+
+        .btn-azure-pill {
+            background: linear-gradient(135deg, #0284C7 0%, #0369A1 100%);
+            color: #FFFFFF !important;
+            font-weight: 700;
+            padding: 13px 32px;
+            border-radius: 9999px;
+            border: none;
+            box-shadow: 0 6px 20px rgba(2, 132, 199, 0.28);
+            transition: all 0.25s ease;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+            text-decoration: none;
+        }
+
+        .btn-azure-pill:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 25px rgba(2, 132, 199, 0.4);
+            color: #FFFFFF !important;
+        }
+
+        .btn-outline-azure {
+            background: #FFFFFF;
+            border: 1px solid var(--border-sky);
+            color: var(--color-azure-dark) !important;
+            font-weight: 600;
+            padding: 13px 28px;
+            border-radius: 9999px;
+            transition: all 0.25s ease;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+            text-decoration: none;
+            box-shadow: 0 2px 8px rgba(2, 132, 199, 0.04);
+        }
+
+        .btn-outline-azure:hover {
+            background: #F0F9FF;
+            border-color: #7DD3FC;
+            transform: translateY(-2px);
+        }
+
+        /* PILL BADGES */
+        .pill-badge {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            padding: 8px 18px;
+            border-radius: 9999px;
+            font-size: 0.82rem;
+            font-weight: 700;
+            letter-spacing: 0.02em;
+            text-transform: uppercase;
+            margin-bottom: 16px;
+        }
+
+        .pill-badge-hero {
+            background: rgba(255, 255, 255, 0.24);
+            backdrop-filter: blur(12px);
+            border: 1px solid rgba(255, 255, 255, 0.45);
+            color: #FFFFFF;
+        }
+
+        .pill-badge-sky {
+            background: #E0F2FE;
+            color: #0369A1;
+            border: 1px solid #BAE6FD;
+        }
+
+        .pill-badge-orange {
+            background: #FFEDD5;
+            color: #C2410C;
+            border: 1px solid #FED7AA;
+        }
+
+        /* SECTIONS SPACING */
         section {
             padding: 130px 0;
             position: relative;
             z-index: 1;
         }
 
-        /* SECTION HEADERS SPACING */
         .section-header {
             margin-bottom: 70px;
         }
 
-        /* HERO SECTION */
-        #home {
-            padding-top: 170px;
-            padding-bottom: 120px;
+        /* SKY CARDS */
+        .sky-card {
+            background: var(--sky-card);
+            border: 1px solid var(--border-sky);
+            border-radius: 24px;
+            padding: 36px;
+            box-shadow: 0 10px 30px -5px rgba(15, 42, 68, 0.06), 0 4px 12px -2px rgba(15, 42, 68, 0.03);
+            transition: transform 0.3s cubic-bezier(0.2, 0.8, 0.2, 1), box-shadow 0.3s, border-color 0.3s;
+            position: relative;
+            z-index: 1;
         }
 
+        .sky-card:hover {
+            transform: translateY(-4px);
+            border-color: #7DD3FC;
+            box-shadow: 0 20px 40px -10px rgba(2, 132, 199, 0.16);
+        }
+
+        /* HERO IMAGE */
         .hero-art-wrapper {
             position: relative;
             display: inline-block;
             max-width: 440px;
             width: 100%;
-        }
-
-        .hero-art-glow {
-            position: absolute;
-            top: 50%;
-            left: 50%;
-            width: 90%;
-            height: 90%;
-            transform: translate(-50%, -50%);
-            background: radial-gradient(circle, rgba(99, 102, 241, 0.18) 0%, rgba(236, 72, 153, 0.12) 50%, transparent 75%);
-            filter: blur(40px);
-            z-index: 0;
-            border-radius: 50%;
         }
 
         .hero-art-img {
@@ -333,7 +323,7 @@
             width: 100%;
             height: auto;
             max-width: 390px;
-            filter: drop-shadow(0 15px 25px rgba(99, 102, 241, 0.15));
+            filter: drop-shadow(0 20px 35px rgba(15, 42, 68, 0.2));
             transition: transform 0.3s ease;
         }
 
@@ -341,7 +331,7 @@
             transform: scale(1.03);
         }
 
-        /* STATS BAR */
+        /* STAT BAR */
         .stat-item {
             text-align: center;
             padding: 24px 16px;
@@ -352,22 +342,23 @@
             font-size: 2.3rem;
             font-weight: 800;
             line-height: 1;
+            color: var(--color-azure-dark);
             margin-bottom: 6px;
         }
 
-        /* TEAM AVATARS */
+        /* TEAM AVATAR */
         .team-avatar-box {
             width: 110px;
             height: 110px;
             margin: 0 auto 16px;
             border-radius: 50%;
             padding: 4px;
-            background: linear-gradient(135deg, #6366F1, #EC4899);
-            box-shadow: 0 6px 18px rgba(99, 102, 241, 0.2);
+            background: linear-gradient(135deg, #0284C7, #38BDF8);
+            box-shadow: 0 6px 18px rgba(2, 132, 199, 0.22);
             transition: transform 0.3s ease;
         }
 
-        .clean-card:hover .team-avatar-box {
+        .sky-card:hover .team-avatar-box {
             transform: scale(1.06);
         }
 
@@ -379,15 +370,15 @@
             border: 3px solid #FFFFFF;
         }
 
-        /* GALLERY CARDS */
+        /* GALLERY CARD */
         .gallery-card {
             border-radius: 20px;
             overflow: hidden;
             position: relative;
             aspect-ratio: 4 / 3;
             cursor: pointer;
-            border: 1px solid var(--border-soft);
-            box-shadow: 0 8px 25px rgba(15, 23, 42, 0.05);
+            border: 1px solid var(--border-sky);
+            box-shadow: 0 8px 25px rgba(15, 42, 68, 0.06);
             background: #FFFFFF;
             transition: all 0.3s ease;
         }
@@ -406,7 +397,7 @@
         .gallery-overlay {
             position: absolute;
             inset: 0;
-            background: linear-gradient(to top, rgba(15, 23, 42, 0.85) 0%, rgba(15, 23, 42, 0.15) 60%, transparent 100%);
+            background: linear-gradient(to top, rgba(15, 42, 68, 0.88) 0%, rgba(15, 42, 68, 0.2) 60%, transparent 100%);
             display: flex;
             flex-direction: column;
             justify-content: flex-end;
@@ -418,7 +409,7 @@
         /* CELL SCHEDULE CARD */
         .cell-schedule-card {
             background: #FFFFFF;
-            border-left: 5px solid #6366F1;
+            border-left: 5px solid #0284C7;
             border-radius: 16px;
             padding: 20px 24px;
             margin-bottom: 14px;
@@ -430,15 +421,15 @@
         }
 
         .cell-schedule-card:hover {
-            background: #F8FAFC;
+            background: #F0F9FF;
             transform: translateX(6px);
-            box-shadow: 0 6px 20px rgba(99, 102, 241, 0.08);
+            box-shadow: 0 6px 20px rgba(2, 132, 199, 0.10);
         }
 
         /* CELL GROUP CHIP */
         .cell-group-chip {
             background: #FFFFFF;
-            border: 1px solid var(--border-soft);
+            border: 1px solid var(--border-sky);
             border-radius: 20px;
             padding: 24px 18px;
             text-align: center;
@@ -449,23 +440,23 @@
 
         .cell-group-chip:hover {
             transform: translateY(-4px);
-            border-color: #C7D2FE;
-            box-shadow: 0 10px 25px rgba(99, 102, 241, 0.10);
+            border-color: #38BDF8;
+            box-shadow: 0 10px 25px rgba(2, 132, 199, 0.12);
         }
 
         /* ACCORDION FAQ */
         .accordion-item {
             background: #FFFFFF !important;
-            border: 1px solid var(--border-soft) !important;
+            border: 1px solid var(--border-sky) !important;
             margin-bottom: 16px;
             border-radius: 18px !important;
-            box-shadow: 0 4px 12px rgba(0,0,0,0.02);
+            box-shadow: 0 4px 15px rgba(15, 42, 68, 0.03);
             overflow: hidden;
         }
 
         .accordion-button {
             background: #FFFFFF !important;
-            color: var(--text-main) !important;
+            color: var(--text-navy) !important;
             font-weight: 700;
             font-family: var(--font-heading);
             padding: 22px 24px;
@@ -474,12 +465,12 @@
         }
 
         .accordion-button:not(.collapsed) {
-            background: #EEF2FF !important;
-            color: #4F46E5 !important;
+            background: #E0F2FE !important;
+            color: #0369A1 !important;
         }
 
         .accordion-body {
-            color: var(--text-muted);
+            color: var(--text-navy-muted);
             font-size: 0.98rem;
             line-height: 1.75;
             padding: 0 24px 24px;
@@ -488,8 +479,8 @@
         /* FORM INPUT STYLING */
         .form-control-youth {
             background: #FFFFFF !important;
-            border: 1px solid #CBD5E1 !important;
-            color: var(--text-main) !important;
+            border: 1px solid #BAE6FD !important;
+            color: var(--text-navy) !important;
             border-radius: 14px !important;
             padding: 13px 18px !important;
             font-size: 0.95rem;
@@ -497,13 +488,9 @@
         }
 
         .form-control-youth:focus {
-            border-color: #6366F1 !important;
-            box-shadow: 0 0 0 3px rgba(99, 102, 241, 0.15) !important;
+            border-color: #0284C7 !important;
+            box-shadow: 0 0 0 3px rgba(2, 132, 199, 0.18) !important;
             background: #FFFFFF !important;
-        }
-
-        .form-control-youth::placeholder {
-            color: #94A3B8;
         }
 
         /* FLOATING WHATSAPP & BACK TO TOP */
@@ -537,9 +524,9 @@
             bottom: 30px;
             left: 30px;
             background: #FFFFFF;
-            border: 1px solid var(--border-soft);
-            box-shadow: 0 6px 20px rgba(0,0,0,0.08);
-            color: #475569;
+            border: 1px solid var(--border-sky);
+            box-shadow: 0 6px 20px rgba(15, 42, 68, 0.08);
+            color: var(--color-azure-dark);
             width: 46px;
             height: 46px;
             border-radius: 50%;
@@ -560,15 +547,15 @@
         }
 
         .back-to-top:hover {
-            background: var(--color-primary);
+            background: var(--color-azure);
             color: white;
             transform: translateY(-3px);
         }
 
-        /* COMPREHENSIVE FOOTER STYLING */
+        /* FOOTER */
         .site-footer {
             background: #FFFFFF;
-            border-top: 1px solid var(--border-soft);
+            border-top: 1px solid var(--border-sky);
             padding-top: 80px;
             padding-bottom: 35px;
             position: relative;
@@ -578,7 +565,7 @@
         .footer-heading {
             font-size: 1.05rem;
             font-weight: 700;
-            color: var(--text-main);
+            color: var(--text-navy);
             margin-bottom: 20px;
         }
 
@@ -593,7 +580,7 @@
         }
 
         .footer-links a {
-            color: var(--text-muted);
+            color: var(--text-navy-muted);
             text-decoration: none;
             font-size: 0.95rem;
             transition: color 0.2s ease, transform 0.2s ease;
@@ -601,19 +588,18 @@
         }
 
         .footer-links a:hover {
-            color: var(--color-primary);
+            color: var(--color-azure);
             transform: translateX(4px);
         }
 
-        /* RESPONSIVENESS */
         @media (max-width: 991px) {
             .navbar-collapse {
-                background: #FFFFFF;
-                border: 1px solid var(--border-soft);
+                background: #4C92C0;
+                border: 1px solid rgba(255, 255, 255, 0.25);
                 border-radius: 20px;
                 padding: 20px;
                 margin-top: 15px;
-                box-shadow: 0 15px 35px rgba(0,0,0,0.08);
+                box-shadow: 0 15px 35px rgba(15, 42, 68, 0.2);
             }
         }
 
@@ -624,7 +610,7 @@
             .section-header {
                 margin-bottom: 45px;
             }
-            .clean-card {
+            .sky-card {
                 padding: 24px;
             }
             .navbar-logo {
@@ -651,14 +637,7 @@
 </head>
 <body>
 
-    <!-- AMBIENT PASTEL GLOW LAYER -->
-    <div class="ambient-layer">
-        <div class="ambient-blob blob-1"></div>
-        <div class="ambient-blob blob-2"></div>
-        <div class="ambient-blob blob-3"></div>
-    </div>
-
-    <!-- ONE-PAGE FIXED NAVBAR (LIGHT & CLEAN) -->
+    <!-- ONE-PAGE FIXED NAVBAR (SKY BLUE FROSTED) -->
     <nav id="navbarMain" class="navbar navbar-expand-lg navbar-custom fixed-top py-2">
         <div class="container px-3 px-md-4">
             <a class="navbar-brand d-flex align-items-center" href="#home">
@@ -666,8 +645,8 @@
             </a>
 
             <!-- Mobile Toggle -->
-            <button class="navbar-toggler border-0 shadow-none px-2" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
-                <i class="fa-solid fa-bars fs-3 text-dark"></i>
+            <button class="navbar-toggler border-0 shadow-none px-2 text-white" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
+                <i class="fa-solid fa-bars fs-2 text-white"></i>
             </button>
 
             <!-- One-Page Navigation Items -->
@@ -684,21 +663,21 @@
 
                     @auth
                         <li class="nav-item mt-2 mt-lg-0 ms-lg-2">
-                            <a class="btn btn-outline-soft btn-sm rounded-pill px-3" href="/admin/dashboard">
-                                <i class="fa-solid fa-gauge-high text-primary me-1"></i> Dashboard
+                            <a class="btn btn-white-pill btn-sm rounded-pill px-3" href="/admin/dashboard">
+                                <i class="fa-solid fa-gauge-high me-1"></i> Dashboard
                             </a>
                         </li>
                         <li class="nav-item mt-2 mt-lg-0">
                             <form action="{{ route('logout') }}" method="POST" class="d-inline">
                                 @csrf
-                                <button type="submit" class="btn btn-outline-danger btn-sm rounded-pill px-3" title="Logout">
+                                <button type="submit" class="btn btn-outline-light btn-sm rounded-pill px-3" title="Logout">
                                     <i class="fa-solid fa-power-off"></i>
                                 </button>
                             </form>
                         </li>
                     @else
                         <li class="nav-item mt-3 mt-lg-0 ms-lg-2">
-                            <a class="btn btn-gradient rounded-pill px-4 py-2" href="#join">
+                            <a class="btn btn-white-pill rounded-pill px-4 py-2" href="#join">
                                 Gabung Sekarang
                             </a>
                         </li>
@@ -708,39 +687,36 @@
         </div>
     </nav>
 
-    <!-- SECTION 1: HERO (#home) -->
+    <!-- SECTION 1: HERO (#home) (ATMOSPHERIC SKY BLUE) -->
     <section id="home">
         <div class="container">
             <div class="row align-items-center g-5">
-                <!-- Left: Headline & Copy -->
                 <div class="col-lg-7 text-center text-lg-start" data-aos="fade-right" data-aos-duration="800">
-                    <span class="badge-pill-cheerful pill-indigo mb-3">
+                    <span class="pill-badge pill-badge-hero mb-3">
                         GBI ERC SAWANGAN • DEPARTMENT OF TEENS
                     </span>
 
-                    <h1 class="display-4 fw-bold mb-4" style="line-height: 1.18; font-weight: 800;">
+                    <h1 class="display-4 hero-title mb-4">
                         Tempat Nongkrong & Bertumbuh <br class="d-none d-md-block">
-                        <span class="text-gradient">Paling Asik Buat Kamu!</span>
+                        Paling Asik Buat Kamu!
                     </h1>
 
-                    <p class="lead text-secondary mb-4 mx-auto mx-lg-0" style="max-width: 580px; line-height: 1.8; font-size: 1.15rem;">
+                    <p class="lead hero-lead mb-4 mx-auto mx-lg-0">
                         Komunitas anak muda SMP - SMA yang seru, positif, bebas dari pergaulan toxic, dan siap nemenin perjalanan imanmu bareng Kristus. Kamu tidak sendiri, mari bertumbuh bersama!
                     </p>
 
                     <div class="d-flex flex-column flex-sm-row gap-3 justify-content-center justify-content-lg-start pt-2">
-                        <a href="#join" class="btn btn-gradient py-3 px-4 fs-6">
+                        <a href="#join" class="btn btn-white-pill py-3 px-4 fs-6">
                             Daftar Anggota Sekarang
                         </a>
-                        <a href="#about" class="btn btn-outline-soft py-3 px-4 fs-6">
+                        <a href="#about" class="btn btn-glass-pill py-3 px-4 fs-6">
                             Kenalan Dulu Yuk
                         </a>
                     </div>
                 </div>
 
-                <!-- Right: Clean Hero Illustration -->
                 <div class="col-lg-5 text-center" data-aos="zoom-in" data-aos-duration="900">
                     <div class="hero-art-wrapper mx-auto">
-                        <div class="hero-art-glow"></div>
                         <picture>
                             <source srcset="{{ asset('images/header.webp') }}" type="image/webp">
                             <img src="{{ asset('images/header.png') }}" alt="DOT Teens Illustration" class="hero-art-img" width="390" height="320">
@@ -749,29 +725,29 @@
                 </div>
             </div>
 
-            <!-- Clean Stats Bar -->
+            <!-- Stats Bar (Sky Cards) -->
             <div class="row g-4 justify-content-center mt-5 pt-3" data-aos="fade-up" data-aos-delay="150">
                 <div class="col-6 col-md-3">
-                    <div class="clean-card stat-item h-100">
-                        <div class="stat-number text-gradient">4+ Thn</div>
+                    <div class="sky-card stat-item h-100">
+                        <div class="stat-number">4+ Thn</div>
                         <div class="small text-secondary fw-semibold">Melayani Generasi Muda</div>
                     </div>
                 </div>
                 <div class="col-6 col-md-3">
-                    <div class="clean-card stat-item h-100">
-                        <div class="stat-number text-gradient-sky">9 Cool</div>
+                    <div class="sky-card stat-item h-100">
+                        <div class="stat-number" style="color: #0284C7;">9 Cool</div>
                         <div class="small text-secondary fw-semibold">Komunitas Sel Sebaya</div>
                     </div>
                 </div>
                 <div class="col-6 col-md-3">
-                    <div class="clean-card stat-item h-100">
-                        <div class="stat-number text-gradient">100+</div>
+                    <div class="sky-card stat-item h-100">
+                        <div class="stat-number">100+</div>
                         <div class="small text-secondary fw-semibold">Teens Terhubung</div>
                     </div>
                 </div>
                 <div class="col-6 col-md-3">
-                    <div class="clean-card stat-item h-100">
-                        <div class="stat-number text-gradient-sun">1 Family</div>
+                    <div class="sky-card stat-item h-100">
+                        <div class="stat-number" style="color: #EA580C;">1 Family</div>
                         <div class="small text-secondary fw-semibold">Bersatu dalam Kristus</div>
                     </div>
                 </div>
@@ -783,10 +759,10 @@
     <section id="about" style="background: #FFFFFF;">
         <div class="container">
             <div class="text-center section-header" data-aos="fade-up">
-                <span class="badge-pill-cheerful pill-sky">Tentang Kami</span>
+                <span class="pill-badge pill-badge-sky">Tentang Kami</span>
                 <h2 class="display-5 fw-bold mb-3">
                     Bukan Sekadar Ibadah, <br>
-                    <span class="text-gradient">Ini Rumah Kedua Kamu!</span>
+                    <span class="text-gradient-sky">Ini Rumah Kedua Kamu!</span>
                 </h2>
                 <p class="text-secondary mx-auto fs-5" style="max-width: 650px;">
                     Department of Teens (DOT) GBI ERC Sawangan adalah wadah keluarga bagi generasi muda untuk menemukan tujuan hidup di dalam Kristus.
@@ -796,8 +772,8 @@
             <!-- 3 Core Pillars -->
             <div class="row g-4 mb-5">
                 <div class="col-md-4" data-aos="fade-up" data-aos-delay="100">
-                    <div class="clean-card h-100 text-center p-4">
-                        <div class="d-inline-flex p-3 rounded-circle mb-3" style="background: #EEF2FF; color: #4F46E5;">
+                    <div class="sky-card h-100 text-center p-4">
+                        <div class="d-inline-flex p-3 rounded-circle mb-3" style="background: #E0F2FE; color: #0284C7;">
                             <i class="fa-solid fa-heart-pulse fs-3"></i>
                         </div>
                         <h4 class="fw-bold mb-2">1. Faith (Iman Kuat)</h4>
@@ -807,8 +783,8 @@
                     </div>
                 </div>
                 <div class="col-md-4" data-aos="fade-up" data-aos-delay="200">
-                    <div class="clean-card h-100 text-center p-4">
-                        <div class="d-inline-flex p-3 rounded-circle mb-3" style="background: #FDF2F8; color: #DB2777;">
+                    <div class="sky-card h-100 text-center p-4">
+                        <div class="d-inline-flex p-3 rounded-circle mb-3" style="background: #E0F2FE; color: #0369A1;">
                             <i class="fa-solid fa-users fs-3"></i>
                         </div>
                         <h4 class="fw-bold mb-2">2. Fellowship (Sahabat Sejati)</h4>
@@ -818,8 +794,8 @@
                     </div>
                 </div>
                 <div class="col-md-4" data-aos="fade-up" data-aos-delay="300">
-                    <div class="clean-card h-100 text-center p-4">
-                        <div class="d-inline-flex p-3 rounded-circle mb-3" style="background: #F0FDF4; color: #059669;">
+                    <div class="sky-card h-100 text-center p-4">
+                        <div class="d-inline-flex p-3 rounded-circle mb-3" style="background: #FFEDD5; color: #EA580C;">
                             <i class="fa-solid fa-rocket fs-3"></i>
                         </div>
                         <h4 class="fw-bold mb-2">3. Fun & Impact</h4>
@@ -833,16 +809,16 @@
             <!-- Visi & Misi Box -->
             <div class="row g-4 mb-5 pt-2">
                 <div class="col-lg-6" data-aos="fade-right">
-                    <div class="clean-card h-100 p-4 p-md-5" style="border-left: 5px solid #6366F1;">
-                        <h4 class="fw-bold text-primary mb-3">Visi Kami</h4>
+                    <div class="sky-card h-100 p-4 p-md-5" style="border-left: 5px solid #0284C7;">
+                        <h4 class="fw-bold mb-3" style="color: #0284C7;">Visi Kami</h4>
                         <p class="text-secondary fs-6 mb-0" style="line-height: 1.8;">
                             "Menjadi generasi muda yang radikal bagi Kristus, berakar kuat dalam kebenaran firman, hidup berkemenangan, dan bersinar terang di tengah lingkungan keluarga, sekolah, serta pergaulan sehari-hari."
                         </p>
                     </div>
                 </div>
                 <div class="col-lg-6" data-aos="fade-left">
-                    <div class="clean-card h-100 p-4 p-md-5" style="border-left: 5px solid #EC4899;">
-                        <h4 class="fw-bold mb-3" style="color: #EC4899;">Misi Kami</h4>
+                    <div class="sky-card h-100 p-4 p-md-5" style="border-left: 5px solid #EA580C;">
+                        <h4 class="fw-bold mb-3" style="color: #EA580C;">Misi Kami</h4>
                         <ul class="list-unstyled text-secondary mb-0" style="line-height: 2;">
                             <li><i class="fa-solid fa-check text-success me-2"></i> Membangun gaya hidup doa, pujian, dan penyembahan yang intim.</li>
                             <li><i class="fa-solid fa-check text-success me-2"></i> Memuridkan generasi muda melalui komunitas sel (Cool) yang hangat.</li>
@@ -854,16 +830,16 @@
 
             <!-- The Dream Team -->
             <div class="text-center pt-5 mb-4" data-aos="fade-up">
-                <span class="badge-pill-cheerful pill-pink">Kepengurusan</span>
+                <span class="pill-badge pill-badge-sky">Kepengurusan</span>
                 <h3 class="fw-bold mb-2">DOT Leadership Team</h3>
                 <p class="text-secondary">Kakak-kakak pembina & pengurus yang siap melayani dengan kasih:</p>
             </div>
 
             <div class="row g-4 justify-content-center">
                 <div class="col-6 col-md-3" data-aos="fade-up" data-aos-delay="100">
-                    <div class="clean-card text-center h-100 p-3 p-md-4">
+                    <div class="sky-card text-center h-100 p-3 p-md-4">
                         <div class="team-avatar-box">
-                            <img src="{{ file_exists(public_path('images/hizqia.jpg')) ? asset('images/hizqia.jpg') : 'https://ui-avatars.com/api/?name=Hizqia&background=EEF2FF&color=4F46E5&size=200&bold=true' }}" alt="Ka Hizqia" class="team-avatar-img" loading="lazy">
+                            <img src="{{ file_exists(public_path('images/hizqia.jpg')) ? asset('images/hizqia.jpg') : 'https://ui-avatars.com/api/?name=Hizqia&background=E0F2FE&color=0369A1&size=200&bold=true' }}" alt="Ka Hizqia" class="team-avatar-img" loading="lazy">
                         </div>
                         <h5 class="fw-bold mb-1">Ka Hizqia</h5>
                         <p class="small fw-semibold text-primary mb-0">Ketua Dept</p>
@@ -871,9 +847,9 @@
                 </div>
 
                 <div class="col-6 col-md-3" data-aos="fade-up" data-aos-delay="200">
-                    <div class="clean-card text-center h-100 p-3 p-md-4">
+                    <div class="sky-card text-center h-100 p-3 p-md-4">
                         <div class="team-avatar-box">
-                            <img src="{{ file_exists(public_path('images/dyto.jpeg')) ? asset('images/dyto.jpeg') : 'https://ui-avatars.com/api/?name=Dyto&background=EEF2FF&color=4F46E5&size=200&bold=true' }}" alt="Ka Dyto" class="team-avatar-img" loading="lazy">
+                            <img src="{{ file_exists(public_path('images/dyto.jpeg')) ? asset('images/dyto.jpeg') : 'https://ui-avatars.com/api/?name=Dyto&background=E0F2FE&color=0369A1&size=200&bold=true' }}" alt="Ka Dyto" class="team-avatar-img" loading="lazy">
                         </div>
                         <h5 class="fw-bold mb-1">Ka Dyto</h5>
                         <p class="small fw-semibold text-primary mb-0">Wakil Ketua</p>
@@ -881,19 +857,19 @@
                 </div>
 
                 <div class="col-6 col-md-3" data-aos="fade-up" data-aos-delay="300">
-                    <div class="clean-card text-center h-100 p-3 p-md-4">
-                        <div class="team-avatar-box">
-                            <img src="{{ file_exists(public_path('images/veli.jpg')) ? asset('images/veli.jpg') : 'https://ui-avatars.com/api/?name=Veli&background=FDF2F8&color=DB2777&size=200&bold=true' }}" alt="Ka Veli" class="team-avatar-img" loading="lazy">
+                    <div class="sky-card text-center h-100 p-3 p-md-4">
+                        <div class="team-avatar-box" style="background: linear-gradient(135deg, #0284C7, #38BDF8);">
+                            <img src="{{ file_exists(public_path('images/veli.jpg')) ? asset('images/veli.jpg') : 'https://ui-avatars.com/api/?name=Veli&background=E0F2FE&color=0369A1&size=200&bold=true' }}" alt="Ka Veli" class="team-avatar-img" loading="lazy">
                         </div>
                         <h5 class="fw-bold mb-1">Ka Veli</h5>
-                        <p class="small fw-semibold text-danger mb-0">Sekretaris</p>
+                        <p class="small fw-semibold text-primary mb-0">Sekretaris</p>
                     </div>
                 </div>
 
                 <div class="col-6 col-md-3" data-aos="fade-up" data-aos-delay="400">
-                    <div class="clean-card text-center h-100 p-3 p-md-4">
-                        <div class="team-avatar-box">
-                            <img src="https://ui-avatars.com/api/?name=Kezia&background=FFFBEB&color=D97706&size=200&bold=true" alt="Ka Kezia" class="team-avatar-img" loading="lazy">
+                    <div class="sky-card text-center h-100 p-3 p-md-4">
+                        <div class="team-avatar-box" style="background: linear-gradient(135deg, #EA580C, #F59E0B);">
+                            <img src="https://ui-avatars.com/api/?name=Kezia&background=FFEDD5&color=C2410C&size=200&bold=true" alt="Ka Kezia" class="team-avatar-img" loading="lazy">
                         </div>
                         <h5 class="fw-bold mb-1">Ka Kezia</h5>
                         <p class="small fw-semibold text-warning mb-0">Bendahara</p>
@@ -906,14 +882,14 @@
     <!-- SECTION 3: MORNING DEVOTION (#devotion) -->
     <section id="devotion">
         <div class="container">
-            <div class="clean-card p-4 p-md-5" data-aos="fade-up" style="border-left: 6px solid #F59E0B;">
+            <div class="sky-card p-4 p-md-5" data-aos="fade-up" style="border-left: 6px solid #0284C7;">
                 <div class="row align-items-center g-4">
                     <div class="col-lg-5 text-center text-lg-start">
                         <img src="{{ asset('images/md.png') }}" alt="Morning Devotion DOT" class="img-fluid rounded-4 shadow-sm" style="max-height: 270px; object-fit: cover;" loading="lazy">
                     </div>
 
                     <div class="col-lg-7">
-                        <span class="badge-pill-cheerful pill-amber mb-3">
+                        <span class="pill-badge pill-badge-sky mb-3">
                             Doa & Renungan Pagi
                         </span>
                         <h2 class="fw-bold mb-3">Morning Devotion (MD)</h2>
@@ -922,7 +898,7 @@
                         </p>
 
                         <div class="d-flex flex-wrap align-items-center gap-3">
-                            <a href="https://meet.google.com/zny-jonm-etv" target="_blank" class="btn btn-gradient py-3 px-4 fw-bold">
+                            <a href="https://meet.google.com/zny-jonm-etv" target="_blank" class="btn btn-azure-pill py-3 px-4 fw-bold">
                                 <i class="fa-solid fa-video me-1"></i> Buka Google Meet
                             </a>
                             <span class="text-secondary small fw-semibold">
@@ -939,9 +915,9 @@
     <section id="events" style="background: #FFFFFF;">
         <div class="container">
             <div class="text-center section-header" data-aos="fade-up">
-                <span class="badge-pill-cheerful pill-emerald">Jadwal Acara</span>
+                <span class="pill-badge pill-badge-sky">Jadwal Acara</span>
                 <h2 class="display-5 fw-bold mb-3">
-                    Kegiatan & <span class="text-gradient">Acara Mendatang</span>
+                    Kegiatan & <span class="text-gradient-sky">Acara Mendatang</span>
                 </h2>
                 <p class="text-secondary mx-auto fs-5" style="max-width: 600px;">
                     Jangan lewatkan momen persekutuan seru dan acara spesial DOT!
@@ -951,7 +927,7 @@
             <div class="row g-4 justify-content-center">
                 @forelse($events as $event)
                     <div class="col-md-6 col-lg-4" data-aos="fade-up" data-aos-delay="100">
-                        <div class="clean-card h-100 p-4 d-flex flex-column" style="border-top: 4px solid #10B981;">
+                        <div class="sky-card h-100 p-4 d-flex flex-column" style="border-top: 4px solid #0284C7;">
                             @if($event->image)
                                 <div class="mb-3 overflow-hidden rounded-4" style="aspect-ratio: 16/9;">
                                     <img src="{{ asset('uploads/events/' . $event->image) }}" alt="{{ $event->title }}" class="w-100 h-100 object-fit-cover" loading="lazy">
@@ -959,13 +935,13 @@
                             @endif
 
                             <div class="d-flex align-items-center gap-3 mb-3">
-                                <div class="rounded-3 p-2 text-center text-white" style="background: #10B981; min-width: 65px;">
+                                <div class="rounded-3 p-2 text-center text-white" style="background: #0284C7; min-width: 65px;">
                                     <span class="d-block fw-bold fs-4" style="line-height: 1;">{{ date('d', strtotime($event->event_date)) }}</span>
                                     <span class="d-block small text-uppercase fw-bold" style="font-size: 0.70rem;">{{ date('M Y', strtotime($event->event_date)) }}</span>
                                 </div>
                                 <div>
                                     <h5 class="fw-bold mb-1">{{ $event->title }}</h5>
-                                    <span class="badge bg-success bg-opacity-10 text-success small border border-success border-opacity-25 rounded-pill px-2 py-1">
+                                    <span class="badge bg-primary bg-opacity-10 text-primary small border border-primary border-opacity-25 rounded-pill px-2 py-1">
                                         DOT Event
                                     </span>
                                 </div>
@@ -977,7 +953,7 @@
 
                             <div class="border-top pt-3 mt-auto">
                                 <div class="small text-secondary mb-1">
-                                    <i class="fa-solid fa-clock text-success me-2"></i> Pukul {{ date('H:i', strtotime($event->event_waktu)) }} WIB
+                                    <i class="fa-solid fa-clock text-primary me-2"></i> Pukul {{ date('H:i', strtotime($event->event_waktu)) }} WIB
                                 </div>
                                 <div class="small text-secondary">
                                     <i class="fa-solid fa-location-dot text-danger me-2"></i> {{ $event->location }}
@@ -987,12 +963,12 @@
                     </div>
                 @empty
                     <div class="col-lg-8 text-center" data-aos="fade-up">
-                        <div class="clean-card p-5">
+                        <div class="sky-card p-5">
                             <h4 class="fw-bold mb-2">Event Baru Sedang Dipersiapkan</h4>
                             <p class="text-secondary mb-4">
                                 Pantau terus website atau follow Instagram kami di <a href="https://instagram.com/dot_teens" target="_blank" class="text-primary fw-bold text-decoration-none">@dot_teens</a> untuk pengumuman kegiatan selanjutnya.
                             </p>
-                            <a href="#join" class="btn btn-outline-soft rounded-pill px-4">Daftar Komunitas Sekarang</a>
+                            <a href="#join" class="btn btn-outline-azure rounded-pill px-4">Daftar Komunitas Sekarang</a>
                         </div>
                     </div>
                 @endforelse
@@ -1004,9 +980,9 @@
     <section id="cells">
         <div class="container">
             <div class="text-center section-header" data-aos="fade-up">
-                <span class="badge-pill-cheerful pill-pink">Kelompok Sel</span>
+                <span class="pill-badge pill-badge-sky">Kelompok Sel</span>
                 <h2 class="display-5 fw-bold mb-3">
-                    Komunitas Sel <span class="text-gradient">(Cool & Cell)</span>
+                    Komunitas Sel <span class="text-gradient-sky">(Cool & Cell)</span>
                 </h2>
                 <p class="text-secondary mx-auto fs-5" style="max-width: 650px;">
                     Penempatan Cell dibagi berdasarkan tahun kelahiran agar kamu bisa ngobrol dan bergaul dengan teman sebaya seumuranmu.
@@ -1015,18 +991,18 @@
 
             <!-- Active Cell Schedules -->
             @if(isset($cellSchedules) && count($cellSchedules) > 0)
-                <div class="clean-card p-4 mb-5" data-aos="fade-up">
+                <div class="sky-card p-4 mb-5" data-aos="fade-up">
                     <div class="d-flex align-items-center justify-content-between mb-4 flex-wrap gap-2">
                         <div>
                             <h4 class="fw-bold mb-1">Jadwal Pertemuan Terdekat</h4>
                             <p class="text-secondary small mb-0">Yuk kumpul dan sharing santai bareng teman-teman!</p>
                         </div>
-                        <a href="#join" class="btn btn-outline-soft btn-sm rounded-pill">Belum Tergabung Cell? Klik Di Sini</a>
+                        <a href="#join" class="btn btn-outline-azure btn-sm rounded-pill">Belum Tergabung Cell? Klik Di Sini</a>
                     </div>
 
                     @foreach($cellSchedules as $index => $schedule)
                         @php
-                            $colors = ['#6366F1', '#EC4899', '#10B981', '#0EA5E9', '#F59E0B'];
+                            $colors = ['#0284C7', '#0EA5E9', '#0284C7', '#0369A1', '#EA580C'];
                             $color = $colors[$index % count($colors)];
                             $hariEng = date('l', strtotime($schedule->meeting_date));
                             $namaHari = ['Sunday'=>'MINGGU', 'Monday'=>'SENIN', 'Tuesday'=>'SELASA', 'Wednesday'=>'RABU', 'Thursday'=>'KAMIS', 'Friday'=>'JUMAT', 'Saturday'=>'SABTU'];
@@ -1034,7 +1010,7 @@
                         @endphp
                         <div class="cell-schedule-card d-flex flex-column flex-md-row align-items-md-center justify-content-between gap-3" style="border-left-color: {{ $color }};">
                             <div class="d-flex align-items-center gap-3">
-                                <div class="text-center px-3 py-2 rounded-3" style="background: #F1F5F9; min-width: 90px;">
+                                <div class="text-center px-3 py-2 rounded-3" style="background: #E0F2FE; min-width: 90px;">
                                     <span class="fw-bold d-block" style="color: {{ $color }}; font-size: 0.9rem;">{{ $hariFix }}</span>
                                     <span class="small text-secondary">{{ date('d M Y', strtotime($schedule->meeting_date)) }}</span>
                                 </div>
@@ -1047,7 +1023,7 @@
                                 </div>
                             </div>
                             @if(!empty($schedule->leader_phone))
-                                <a href="https://wa.me/{{ preg_replace('/^0/', '62', $schedule->leader_phone) }}?text=Halo%20kak,%20aku%20mau%20tanya%20jadwal%20Cool%20{{ urlencode($schedule->cell_group_name) }}" target="_blank" class="btn btn-sm btn-outline-soft rounded-pill px-4">
+                                <a href="https://wa.me/{{ preg_replace('/^0/', '62', $schedule->leader_phone) }}?text=Halo%20kak,%20aku%20mau%20tanya%20jadwal%20Cool%20{{ urlencode($schedule->cell_group_name) }}" target="_blank" class="btn btn-sm btn-outline-azure rounded-pill px-4">
                                     <i class="fa-brands fa-whatsapp text-success me-1"></i> Tanya Kakak Cell
                                 </a>
                             @endif
@@ -1137,7 +1113,7 @@
             </div>
 
             <div class="text-center mt-5" data-aos="fade-up">
-                <a href="#join" class="btn btn-gradient py-3 px-5 fs-6">
+                <a href="#join" class="btn btn-azure-pill py-3 px-5 fs-6">
                     Daftar Masuk Cell Group
                 </a>
             </div>
@@ -1148,9 +1124,9 @@
     <section id="gallery" style="background: #FFFFFF;">
         <div class="container">
             <div class="text-center section-header" data-aos="fade-up">
-                <span class="badge-pill-cheerful pill-sky">Dokumentasi</span>
+                <span class="pill-badge pill-badge-sky">Dokumentasi</span>
                 <h2 class="display-5 fw-bold mb-3">
-                    Keseruan Ibadah & <span class="text-gradient">Fellowship</span>
+                    Keseruan Ibadah & <span class="text-gradient-sky">Fellowship</span>
                 </h2>
                 <p class="text-secondary mx-auto fs-5" style="max-width: 600px;">
                     Momen-momen indah kebersamaan kami di DOT. Klik foto untuk melihat lebih jelas!
@@ -1176,7 +1152,7 @@
             </div>
 
             <div class="text-center mt-4" data-aos="fade-up">
-                <a href="/gallery" class="btn btn-outline-soft rounded-pill px-5 py-3 fs-6">
+                <a href="/gallery" class="btn btn-outline-azure rounded-pill px-5 py-3 fs-6">
                     Buka Halaman Galeri Lengkap
                 </a>
             </div>
@@ -1188,12 +1164,12 @@
         <div class="container">
             <div class="row g-5 align-items-center mb-5 pb-3">
                 <div class="col-lg-6" data-aos="fade-right">
-                    <span class="badge-pill-cheerful pill-indigo mb-3">Waktu & Tempat</span>
+                    <span class="pill-badge pill-badge-sky mb-3">Waktu & Tempat</span>
                     <h3 class="display-6 fw-bold mb-4">
-                        Jadwal & Lokasi <span class="text-gradient">Ibadah Raya</span>
+                        Jadwal & Lokasi <span class="text-gradient-sky">Ibadah Raya</span>
                     </h3>
 
-                    <div class="clean-card mb-4 p-4" style="border-left: 5px solid #6366F1;">
+                    <div class="sky-card mb-4 p-4" style="border-left: 5px solid #0284C7;">
                         <h4 class="fw-bold mb-1">Ibadah Raya Teens</h4>
                         <p class="text-primary fw-semibold mb-2">Setiap Hari Minggu &bull; Pukul 12.00 WIB</p>
                         <p class="small text-secondary mb-0">
@@ -1209,13 +1185,13 @@
                         </div>
                     </div>
 
-                    <a href="https://maps.app.goo.gl/QpW5g" target="_blank" class="btn btn-outline-soft btn-sm rounded-pill px-4 mt-2">
+                    <a href="https://maps.app.goo.gl/QpW5g" target="_blank" class="btn btn-outline-azure btn-sm rounded-pill px-4 mt-2">
                         Buka di Google Maps
                     </a>
                 </div>
 
                 <div class="col-lg-6" data-aos="fade-left">
-                    <div class="clean-card p-2 rounded-4 overflow-hidden">
+                    <div class="sky-card p-2 rounded-4 overflow-hidden">
                         <iframe 
                             src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3964.9078405950004!2d106.74111851139088!3d-6.405873162625553!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x2e69e895a4248df7%3A0x2c11ce4bbad8f048!2sGbi%20Sawangan!5e0!3m2!1sid!2sid!4v1775558282012!5m2!1sid!2sid"
                             width="100%" 
@@ -1232,7 +1208,7 @@
             <!-- FAQ Accordion -->
             <div class="row g-5 align-items-start pt-4">
                 <div class="col-lg-5" data-aos="fade-right">
-                    <span class="badge-pill-cheerful pill-amber mb-3">Tanya Jawab</span>
+                    <span class="pill-badge pill-badge-orange mb-3">Tanya Jawab</span>
                     <h2 class="display-6 fw-bold mb-3">
                         Pertanyaan yang Sering Diajukan
                     </h2>
@@ -1311,16 +1287,16 @@
                 </div>
             @endif
 
-            <div class="clean-card mx-auto p-5 text-center" style="max-width: 820px; border-left: 6px solid #6366F1;" data-aos="fade-up">
-                <span class="badge-pill-cheerful pill-indigo mb-3">Dukungan Doa</span>
+            <div class="sky-card mx-auto p-5 text-center" style="max-width: 820px; border-left: 6px solid #0284C7;" data-aos="fade-up">
+                <span class="pill-badge pill-badge-sky mb-3">Dukungan Doa</span>
                 <h2 class="display-6 fw-bold mb-3">
-                    Butuh Teman Curhat atau <span class="text-gradient">Dukungan Doa?</span>
+                    Butuh Teman Curhat atau <span class="text-gradient-sky">Dukungan Doa?</span>
                 </h2>
                 <p class="text-secondary mx-auto fs-6 mb-4" style="max-width: 620px; line-height: 1.8;">
                     Apapun yang sedang kamu hadapi—tentang studi, keluarga, pertemanan, atau masa depan—kamu tidak sendirian. Tim doa DOT siap berdiri bersamamu dan mendoakan secara rahasia.
                 </p>
                 <div>
-                    <button class="btn btn-gradient py-3 px-5 fs-6" data-bs-toggle="modal" data-bs-target="#modalDoa">
+                    <button class="btn btn-azure-pill py-3 px-5 fs-6" data-bs-toggle="modal" data-bs-target="#modalDoa">
                         Kirim Pokok Doa Rahasia
                     </button>
                 </div>
@@ -1333,9 +1309,9 @@
         <div class="container">
             <div class="row justify-content-center">
                 <div class="col-lg-8 text-center section-header" data-aos="fade-up">
-                    <span class="badge-pill-cheerful pill-pink mb-3">Pendaftaran Anggota</span>
+                    <span class="pill-badge pill-badge-orange mb-3">Pendaftaran Anggota</span>
                     <h2 class="display-5 fw-bold mb-3">
-                        Jadilah Bagian dari <span class="text-gradient">Keluarga DOT!</span>
+                        Jadilah Bagian dari <span class="text-gradient-sky">Keluarga DOT!</span>
                     </h2>
                     <p class="text-secondary fs-5">
                         Isi form singkat di bawah ini. Kami sangat menantikan kehadiranmu!
@@ -1355,7 +1331,7 @@
 
                 <div class="col-lg-8" data-aos="fade-up" data-aos-delay="100">
                     @if($isJoinFormActive == '1')
-                        <div class="clean-card p-4 p-md-5">
+                        <div class="sky-card p-4 p-md-5">
                             <form action="{{ route('join.submit') }}" method="POST">
                                 @csrf
                                 <div class="row g-4 text-start">
@@ -1418,7 +1394,7 @@
                                     </div>
 
                                     <div class="col-12 mt-4 text-center">
-                                        <button type="submit" class="btn btn-gradient w-100 py-3 fs-5">
+                                        <button type="submit" class="btn btn-azure-pill w-100 py-3 fs-5">
                                             Kirim Pendaftaran
                                         </button>
                                     </div>
@@ -1426,12 +1402,12 @@
                             </form>
                         </div>
                     @else
-                        <div class="clean-card text-center p-5">
+                        <div class="sky-card text-center p-5">
                             <h3 class="fw-bold mb-2">Form Pendaftaran Sedang Ditutup</h3>
                             <p class="text-secondary mb-4">
                                 Silakan hubungi pengurus kami via WhatsApp untuk pertanyaan seputar ibadah atau pendaftaran manual.
                             </p>
-                            <a href="https://wa.me/6285173280626?text=Halo%20kak,%20aku%20mau%20tanya%20gabung%20DOT%20Teens" target="_blank" class="btn btn-gradient rounded-pill px-4">
+                            <a href="https://wa.me/6285173280626?text=Halo%20kak,%20aku%20mau%20tanya%20gabung%20DOT%20Teens" target="_blank" class="btn btn-azure-pill rounded-pill px-4">
                                 Hubungi via WhatsApp
                             </a>
                         </div>
@@ -1454,7 +1430,7 @@
                 <form action="{{ route('prayer.submit') }}" method="POST">
                     @csrf
                     <div class="modal-body px-4 pt-3">
-                        <div class="p-3 rounded-3 mb-3" style="background: #EEF2FF; border-left: 3px solid #6366F1;">
+                        <div class="p-3 rounded-3 mb-3" style="background: #E0F2FE; border-left: 3px solid #0284C7;">
                             <p class="text-secondary small mb-0" style="line-height: 1.6;">
                                 Pokok doa Anda akan dijaga kerahasiaannya dan hanya didoakan oleh Tim Prayer DOT.
                             </p>
@@ -1469,7 +1445,7 @@
                         </div>
                     </div>
                     <div class="modal-footer border-0 pt-0 pb-4 px-4">
-                        <button type="submit" class="btn btn-gradient w-100 py-2">
+                        <button type="submit" class="btn btn-azure-pill w-100 py-2">
                             Kirim ke Tim Doa
                         </button>
                     </div>
@@ -1501,30 +1477,28 @@
         <i class="fa-solid fa-arrow-up"></i>
     </a>
 
-    <!-- PROPER COMPREHENSIVE FOOTER -->
+    <!-- COMPREHENSIVE FOOTER -->
     <footer class="site-footer">
         <div class="container">
             <div class="row g-5 pb-5 border-bottom">
-                <!-- Col 1: Brand & Bio -->
                 <div class="col-lg-4 col-md-6">
                     <img src="{{ asset('images/logo.png') }}" alt="DOT Teens" class="mb-3" style="height: 65px; object-fit: contain;">
                     <p class="text-secondary small mb-4" style="line-height: 1.8;">
                         <strong>Department of Teens (DOT) GBI ERC Sawangan</strong> adalah wadah ibadah, komunitas sel, dan keluarga rohani bagi anak-anak usia SMP hingga SMA untuk bertumbuh dan bersinar bagi Kristus.
                     </p>
                     <div class="d-flex gap-2">
-                        <a href="https://instagram.com/dot_teens" target="_blank" class="btn btn-sm btn-outline-soft rounded-circle" style="width: 38px; height: 38px;" title="Instagram">
+                        <a href="https://instagram.com/dot_teens" target="_blank" class="btn btn-sm btn-outline-azure rounded-circle" style="width: 38px; height: 38px;" title="Instagram">
                             <i class="fa-brands fa-instagram text-danger"></i>
                         </a>
-                        <a href="https://tiktok.com/@dot_teens" target="_blank" class="btn btn-sm btn-outline-soft rounded-circle" style="width: 38px; height: 38px;" title="TikTok">
+                        <a href="https://tiktok.com/@dot_teens" target="_blank" class="btn btn-sm btn-outline-azure rounded-circle" style="width: 38px; height: 38px;" title="TikTok">
                             <i class="fa-brands fa-tiktok text-dark"></i>
                         </a>
-                        <a href="https://wa.me/6285173280626" target="_blank" class="btn btn-sm btn-outline-soft rounded-circle" style="width: 38px; height: 38px;" title="WhatsApp">
+                        <a href="https://wa.me/6285173280626" target="_blank" class="btn btn-sm btn-outline-azure rounded-circle" style="width: 38px; height: 38px;" title="WhatsApp">
                             <i class="fa-brands fa-whatsapp text-success"></i>
                         </a>
                     </div>
                 </div>
 
-                <!-- Col 2: Navigation Links -->
                 <div class="col-lg-2 col-md-6 col-6">
                     <h6 class="footer-heading">Navigasi</h6>
                     <ul class="footer-links">
@@ -1537,7 +1511,6 @@
                     </ul>
                 </div>
 
-                <!-- Col 3: Service Schedule & Location -->
                 <div class="col-lg-3 col-md-6 col-6">
                     <h6 class="footer-heading">Jadwal Ibadah</h6>
                     <ul class="footer-links">
@@ -1556,7 +1529,6 @@
                     </ul>
                 </div>
 
-                <!-- Col 4: Admin Access & Contact -->
                 <div class="col-lg-3 col-md-6">
                     <h6 class="footer-heading">Akses Pengurus</h6>
                     <p class="text-secondary small mb-3">
@@ -1564,18 +1536,17 @@
                     </p>
                     
                     @auth
-                        <a href="/admin/dashboard" class="btn btn-primary rounded-pill px-4 py-2 small fw-bold">
+                        <a href="/admin/dashboard" class="btn btn-azure-pill rounded-pill px-4 py-2 small fw-bold">
                             <i class="fa-solid fa-gauge-high me-1"></i> Buka Dashboard
                         </a>
                     @else
-                        <a href="/login" class="btn btn-outline-dark rounded-pill px-4 py-2 small fw-bold">
+                        <a href="/login" class="btn btn-outline-azure rounded-pill px-4 py-2 small fw-bold">
                             <i class="fa-solid fa-lock me-2 text-primary"></i> Login Admin
                         </a>
                     @endauth
                 </div>
             </div>
 
-            <!-- Bottom Copyright -->
             <div class="d-flex flex-column flex-md-row align-items-center justify-content-between pt-4 gap-2">
                 <p class="small text-secondary mb-0">
                     &copy; {{ date('Y') }} <strong>Department of Teens (DOT)</strong> &bull; GBI ERC Sawangan. All rights reserved.
@@ -1591,7 +1562,6 @@
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
     <script src="https://unpkg.com/aos@2.3.1/dist/aos.js"></script>
     <script>
-        // Init AOS
         AOS.init({
             once: true,
             offset: 60,
@@ -1599,7 +1569,6 @@
             easing: 'ease-out-cubic'
         });
 
-        // One-Page Smooth Scroll & Auto-Collapse Mobile Navbar
         document.addEventListener('DOMContentLoaded', function() {
             const navLinks = document.querySelectorAll('#navbarMain .nav-link, #navbarMain .btn, .footer-links a');
             const navbarCollapse = document.getElementById('navbarNav');
@@ -1629,7 +1598,6 @@
                 });
             });
 
-            // Back to top & Scrollspy
             const backToTopBtn = document.getElementById('backToTop');
             const sections = document.querySelectorAll('section[id]');
             const links = document.querySelectorAll('#navbarMain .nav-link');
@@ -1663,7 +1631,6 @@
             });
         });
 
-        // Lightbox Modal
         function openLightbox(src, title) {
             document.getElementById('lightboxImg').src = src;
             document.getElementById('lightboxCaption').textContent = title || '';

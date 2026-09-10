@@ -13,37 +13,49 @@
     
     <style>
         body {
-            background-color: #0F172A;
-            color: #F3F4F6;
+            background-color: #F0F7FD;
+            color: #0F2A44;
             font-family: 'Poppins', sans-serif;
+            background-image: radial-gradient(circle at 10% 10%, rgba(2, 132, 199, 0.08), transparent 40%),
+                              radial-gradient(circle at 90% 80%, rgba(56, 189, 248, 0.08), transparent 40%);
+            min-height: 100vh;
         }
         .navbar-custom {
-            background: rgba(15, 23, 42, 0.95);
-            border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+            background: linear-gradient(135deg, #0284C7 0%, #0369A1 100%);
+            border-bottom: 1px solid rgba(255, 255, 255, 0.2);
+            box-shadow: 0 4px 20px rgba(2, 132, 199, 0.18);
         }
         .text-gradient { 
-            background: linear-gradient(90deg, #60A5FA, #8B5CF6); 
+            background: linear-gradient(90deg, #0284C7, #0EA5E9); 
             -webkit-background-clip: text; 
             -webkit-text-fill-color: transparent; 
         }
         .glass-card { 
-            background: rgba(255, 255, 255, 0.03); 
-            border: 1px solid rgba(255, 255, 255, 0.1); 
-            border-radius: 15px; 
+            background: #FFFFFF; 
+            border: 1px solid #BAE6FD; 
+            border-radius: 20px; 
             padding: 25px; 
+            box-shadow: 0 4px 20px rgba(15, 42, 68, 0.04);
+        }
+        .glass-card .text-white,
+        .modal-content .text-white {
+            color: #0F2A44 !important;
+        }
+        .glass-card .text-secondary {
+            color: #475569 !important;
         }
         .btn-gradient { 
-            background: linear-gradient(90deg, #60A5FA, #8B5CF6); 
+            background: linear-gradient(135deg, #0284C7, #0EA5E9); 
             border: none; color: white; font-weight: 600; 
         }
-        .btn-gradient:hover { background: linear-gradient(90deg, #8B5CF6, #EC4899); color: white; }
-        .table { color: #D1D5DB; }
-        .table th { color: #fff; border-bottom: 1px solid rgba(255,255,255,0.1); background: transparent; }
-        .table td { border-bottom: 1px solid rgba(255,255,255,0.05); background: transparent; vertical-align: middle; }
+        .btn-gradient:hover { background: linear-gradient(135deg, #0369A1, #0284C7); color: white; }
+        .table { color: #1E293B; }
+        .table th { color: #0369A1; border-bottom: 1px solid #BAE6FD; background: #E0F2FE; }
+        .table td { border-bottom: 1px solid #E0F2FE; background: transparent; vertical-align: middle; color: #334155; }
         .form-control, .form-control:focus {
-            background: rgba(255,255,255,0.05);
-            border: 1px solid rgba(255,255,255,0.1);
-            color: white;
+            background: #FFFFFF;
+            border: 1px solid #BAE6FD;
+            color: #0F2A44;
         }
     </style>
 </head>
@@ -193,17 +205,17 @@
             <!-- MODAL DETAIL JEMAAT PASTORAL -->
             <div class="modal fade text-start" id="detailPastoral{{ $m->id }}" tabindex="-1" aria-hidden="true">
                 <div class="modal-dialog modal-dialog-centered modal-lg">
-                    <div class="modal-content rounded-4 shadow-lg border-secondary" style="background: #0F172A; border: 1px solid rgba(255, 255, 255, 0.1);">
-                        <div class="modal-header border-bottom border-secondary border-opacity-25 pb-3 pt-4 px-4">
+                    <div class="modal-content rounded-4 shadow-lg" style="background: #FFFFFF; border: 1px solid #BAE6FD;">
+                        <div class="modal-header border-bottom pb-3 pt-4 px-4" style="border-color: #E0F2FE !important;">
                             <div>
-                                <span class="badge bg-primary bg-opacity-20 text-info border border-info border-opacity-25 rounded-pill px-3 py-1 mb-1">
+                                <span class="badge rounded-pill px-3 py-1 mb-1" style="background: #E0F2FE; color: #0284C7; border: 1px solid #BAE6FD;">
                                     Profil Lengkap Jemaat
                                 </span>
-                                <h5 class="modal-title text-white fw-bold mb-0">
-                                    <i class="fa-solid fa-user me-2 text-info"></i> {{ $m->name }}
+                                <h5 class="modal-title fw-bold mb-0" style="color: #0F2A44;">
+                                    <i class="fa-solid fa-user me-2 text-primary"></i> {{ $m->name }}
                                 </h5>
                             </div>
-                            <button type="button" class="btn-close btn-close-white shadow-none" data-bs-dismiss="modal"></button>
+                            <button type="button" class="btn-close shadow-none" data-bs-dismiss="modal"></button>
                         </div>
                         <div class="modal-body p-4">
                             <div class="row g-4">

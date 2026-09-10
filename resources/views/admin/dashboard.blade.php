@@ -15,41 +15,43 @@
     
     <style>
         :root {
-            --primary-accent: #60A5FA;
-            --purple-accent: #8B5CF6;
-            --pink-accent: #EC4899;
+            --primary-accent: #0284C7;
+            --azure-accent: #0369A1;
+            --sky-bright: #38BDF8;
             --emerald-accent: #10B981;
-            --amber-accent: #F59E0B;
-            --bg-dark: #0F172A;
-            --card-bg: rgba(255, 255, 255, 0.03);
-            --card-border: rgba(255, 255, 255, 0.08);
+            --amber-accent: #EA580C;
+            --bg-sky: #F0F7FD;
+            --card-bg: #FFFFFF;
+            --card-border: #BAE6FD;
+            --text-navy: #0F2A44;
+            --text-muted: #3B5875;
         }
 
         body { 
-            background-color: var(--bg-dark); 
-            color: #F3F4F6; 
+            background-color: var(--bg-sky); 
+            color: var(--text-navy); 
             font-family: 'Poppins', sans-serif; 
             overflow-x: hidden;
-            background-image: radial-gradient(circle at 10% 20%, rgba(139, 92, 246, 0.08), transparent 40%),
-                              radial-gradient(circle at 90% 80%, rgba(96, 165, 250, 0.08), transparent 40%);
+            background-image: radial-gradient(circle at 10% 10%, rgba(2, 132, 199, 0.08), transparent 40%),
+                              radial-gradient(circle at 90% 80%, rgba(56, 189, 248, 0.08), transparent 40%);
             min-height: 100vh;
         }
         
         .navbar-custom { 
-            background: rgba(15, 23, 42, 0.9); 
-            backdrop-filter: blur(15px);
-            border-bottom: 1px solid var(--card-border); 
+            background: linear-gradient(135deg, #0284C7 0%, #0369A1 100%); 
+            border-bottom: 1px solid rgba(255, 255, 255, 0.2); 
+            box-shadow: 0 4px 20px rgba(2, 132, 199, 0.18);
             z-index: 1050;
         }
 
         .text-gradient {
-            background: linear-gradient(90deg, #60A5FA, #8B5CF6);
+            background: linear-gradient(90deg, #0284C7, #0EA5E9);
             -webkit-background-clip: text;
             -webkit-text-fill-color: transparent;
         }
 
         .text-gradient-animated {
-            background: linear-gradient(270deg, #60A5FA, #8B5CF6, #EC4899, #60A5FA);
+            background: linear-gradient(270deg, #FFFFFF, #E0F2FE, #BAE6FD, #FFFFFF);
             background-size: 300% 300%;
             -webkit-background-clip: text;
             -webkit-text-fill-color: transparent;
@@ -63,17 +65,17 @@
         }
 
         .glass-card { 
-            background: var(--card-bg); 
+            background: #FFFFFF; 
             border: 1px solid var(--card-border); 
             border-radius: 20px; 
             padding: 24px; 
             margin-bottom: 24px; 
-            backdrop-filter: blur(12px);
+            box-shadow: 0 4px 20px rgba(15, 42, 68, 0.04);
             transition: all 0.3s ease; 
         }
         .glass-card:hover { 
-            border-color: rgba(255, 255, 255, 0.18); 
-            box-shadow: 0 12px 32px rgba(0, 0, 0, 0.35); 
+            border-color: #7DD3FC; 
+            box-shadow: 0 12px 30px rgba(2, 132, 199, 0.12); 
         }
 
         /* STAT CARDS */
@@ -81,19 +83,20 @@
             position: relative;
             overflow: hidden;
             border-radius: 20px;
-            background: rgba(255, 255, 255, 0.025);
+            background: #FFFFFF;
             border: 1px solid var(--card-border);
             padding: 24px;
+            box-shadow: 0 4px 15px rgba(15, 42, 68, 0.04);
             transition: transform 0.3s ease, box-shadow 0.3s ease, border-color 0.3s ease;
         }
         .stat-card:hover {
-            transform: translateY(-5px);
-            box-shadow: 0 15px 30px rgba(0, 0, 0, 0.4);
+            transform: translateY(-4px);
+            box-shadow: 0 12px 28px rgba(2, 132, 199, 0.14);
         }
-        .stat-card-blue:hover { border-color: #60A5FA; }
+        .stat-card-blue:hover { border-color: #0284C7; }
         .stat-card-green:hover { border-color: #10B981; }
-        .stat-card-pink:hover { border-color: #EC4899; }
-        .stat-card-amber:hover { border-color: #F59E0B; }
+        .stat-card-pink:hover { border-color: #0EA5E9; }
+        .stat-card-amber:hover { border-color: #EA580C; }
 
         .stat-icon {
             width: 52px;
@@ -114,40 +117,40 @@
             margin-bottom: 28px;
         }
         .nav-pills-custom .nav-link {
-            background: rgba(255, 255, 255, 0.03);
-            color: #94A3B8;
+            background: #FFFFFF;
+            color: #3B5875;
             border: 1px solid var(--card-border);
             border-radius: 50px;
             padding: 10px 22px;
             font-weight: 600;
             font-size: 0.92rem;
-            transition: all 0.3s ease;
+            transition: all 0.25s ease;
             display: inline-flex;
             align-items: center;
             gap: 8px;
         }
         .nav-pills-custom .nav-link:hover {
-            color: #fff;
-            background: rgba(255, 255, 255, 0.07);
-            border-color: rgba(139, 92, 246, 0.4);
+            color: #0284C7;
+            background: #E0F2FE;
+            border-color: #7DD3FC;
         }
         .nav-pills-custom .nav-link.active {
-            background: linear-gradient(90deg, #60A5FA, #8B5CF6);
-            color: #fff;
+            background: linear-gradient(135deg, #0284C7, #0EA5E9);
+            color: #FFFFFF;
             border-color: transparent;
-            box-shadow: 0 4px 18px rgba(139, 92, 246, 0.35);
+            box-shadow: 0 4px 16px rgba(2, 132, 199, 0.35);
         }
 
         /* TABLES */
         .table-custom { 
-            color: #E2E8F0; 
+            color: #1E293B; 
             margin-bottom: 0;
         }
         .table-custom th { 
-            background: rgba(15, 23, 42, 0.7); 
-            color: #94A3B8; 
-            font-weight: 600;
-            font-size: 0.8rem;
+            background: #E0F2FE; 
+            color: #0369A1; 
+            font-weight: 700;
+            font-size: 0.82rem;
             text-transform: uppercase;
             letter-spacing: 0.05em;
             border-bottom: 1px solid var(--card-border);
@@ -155,50 +158,62 @@
         }
         .table-custom td { 
             background: transparent; 
-            border-bottom: 1px solid rgba(255, 255, 255, 0.04); 
-            color: #CBD5E1; 
+            border-bottom: 1px solid #E0F2FE; 
+            color: #334155; 
             vertical-align: middle; 
             padding: 14px 16px;
         }
         .table-custom tr:hover td {
-            background: rgba(255, 255, 255, 0.02);
+            background: #F0F9FF;
         }
         
         .form-control, .form-select { 
-            background: rgba(255, 255, 255, 0.04); 
+            background: #FFFFFF; 
             border: 1px solid var(--card-border); 
-            color: #fff; 
+            color: #0F2A44; 
             border-radius: 12px; 
             padding: 10px 14px;
         }
         .form-control:focus, .form-select:focus { 
-            background: rgba(255, 255, 255, 0.08); 
-            color: #fff; 
-            box-shadow: 0 0 15px rgba(139, 92, 246, 0.3); 
-            border-color: #8B5CF6; 
+            background: #FFFFFF; 
+            color: #0F2A44; 
+            box-shadow: 0 0 0 3px rgba(2, 132, 199, 0.18); 
+            border-color: #0284C7; 
         }
 
         .btn-gradient-sm {
-            background: linear-gradient(90deg, #60A5FA, #8B5CF6);
+            background: linear-gradient(135deg, #0284C7, #0EA5E9);
             border: none;
             color: white;
             font-weight: 600;
             padding: 8px 20px;
             border-radius: 50px;
-            transition: all 0.3s ease;
+            transition: all 0.25s ease;
         }
         .btn-gradient-sm:hover {
-            background: linear-gradient(90deg, #8B5CF6, #EC4899);
+            background: linear-gradient(135deg, #0369A1, #0284C7);
             transform: translateY(-2px);
             color: white;
-            box-shadow: 0 4px 15px rgba(236, 72, 153, 0.3);
+            box-shadow: 0 4px 15px rgba(2, 132, 199, 0.3);
+        }
+
+        /* TEXT OVERRIDES FOR CARD READABILITY */
+        .glass-card .text-white,
+        .stat-card .text-white,
+        .modal-content .text-white {
+            color: #0F2A44 !important;
+        }
+
+        .glass-card .text-secondary,
+        .stat-card .text-secondary {
+            color: #475569 !important;
         }
 
         /* SCROLLBAR */
         ::-webkit-scrollbar { width: 6px; height: 6px; }
-        ::-webkit-scrollbar-track { background: rgba(15, 23, 42, 0.6); }
-        ::-webkit-scrollbar-thumb { background: rgba(255, 255, 255, 0.15); border-radius: 10px; }
-        ::-webkit-scrollbar-thumb:hover { background: rgba(255, 255, 255, 0.3); }
+        ::-webkit-scrollbar-track { background: #E0F2FE; }
+        ::-webkit-scrollbar-thumb { background: #BAE6FD; border-radius: 10px; }
+        ::-webkit-scrollbar-thumb:hover { background: #7DD3FC; }
     </style>
 </head>
 <body>
@@ -791,17 +806,17 @@
                                             <!-- MODAL DETAIL DATA JEMAAT BARU -->
                                             <div class="modal fade text-start" id="detailMember{{ $member->id }}" tabindex="-1" aria-hidden="true">
                                                 <div class="modal-dialog modal-dialog-centered modal-lg">
-                                                    <div class="modal-content rounded-4 shadow-lg border-secondary" style="background: rgba(15, 23, 42, 0.98); backdrop-filter: blur(20px); border: 1px solid rgba(255, 255, 255, 0.1);">
-                                                        <div class="modal-header border-bottom border-secondary border-opacity-25 pb-3 pt-4 px-4">
+                                                    <div class="modal-content rounded-4 shadow-lg" style="background: #FFFFFF; border: 1px solid #BAE6FD;">
+                                                        <div class="modal-header border-bottom pb-3 pt-4 px-4" style="border-color: #E0F2FE !important;">
                                                             <div>
-                                                                <span class="badge bg-info bg-opacity-20 text-info border border-info border-opacity-25 rounded-pill px-3 py-1 mb-1">
+                                                                <span class="badge rounded-pill px-3 py-1 mb-1" style="background: #E0F2FE; color: #0284C7; border: 1px solid #BAE6FD;">
                                                                     Data Pendaftaran Jemaat Baru
                                                                 </span>
-                                                                <h5 class="modal-title text-white fw-bold mb-0">
-                                                                    <i class="fa-solid fa-user me-2 text-info"></i> {{ $member->name }}
+                                                                <h5 class="modal-title fw-bold mb-0" style="color: #0F2A44;">
+                                                                    <i class="fa-solid fa-user me-2 text-primary"></i> {{ $member->name }}
                                                                 </h5>
                                                             </div>
-                                                            <button type="button" class="btn-close btn-close-white shadow-none" data-bs-dismiss="modal"></button>
+                                                            <button type="button" class="btn-close shadow-none" data-bs-dismiss="modal"></button>
                                                         </div>
                                                         <div class="modal-body p-4">
                                                             <div class="row g-4">
