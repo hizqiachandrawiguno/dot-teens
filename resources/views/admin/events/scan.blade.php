@@ -13,13 +13,30 @@
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
 
-    <!-- HTML5 QR Code Scanner Library -->
-    <script src="{{ asset('js/html5-qrcode.min.js') }}"></script>
+    <!-- HTML5 QR Code Scanner Library (Multi-CDN & Local Fallback) -->
+    <script src="https://unpkg.com/html5-qrcode@2.3.8/html5-qrcode.min.js"></script>
     <script>
-        if (typeof window.Html5Qrcode === 'undefined' && typeof window.__Html5QrcodeLibrary__ !== 'undefined') {
-            window.Html5Qrcode = window.__Html5QrcodeLibrary__.Html5Qrcode;
-            window.Html5QrcodeScanner = window.__Html5QrcodeLibrary__.Html5QrcodeScanner;
+        if (typeof Html5Qrcode === 'undefined') {
+            document.write('<script src="https://cdnjs.cloudflare.com/ajax/libs/html5-qrcode/2.3.8/html5-qrcode.min.js"><\/script>');
         }
+    </script>
+    <script>
+        if (typeof Html5Qrcode === 'undefined') {
+            document.write('<script src="https://cdn.jsdelivr.net/npm/html5-qrcode@2.3.8/html5-qrcode.min.js"><\/script>');
+        }
+    </script>
+    <script>
+        if (typeof Html5Qrcode === 'undefined') {
+            document.write('<script src="{{ asset('js/html5-qrcode.min.js') }}"><\/script>');
+        }
+    </script>
+    <script>
+        window.addEventListener('DOMContentLoaded', function() {
+            if (typeof window.Html5Qrcode === 'undefined' && typeof window.__Html5QrcodeLibrary__ !== 'undefined') {
+                window.Html5Qrcode = window.__Html5QrcodeLibrary__.Html5Qrcode;
+                window.Html5QrcodeScanner = window.__Html5QrcodeLibrary__.Html5QrcodeScanner;
+            }
+        });
     </script>
 
     <meta name="csrf-token" content="{{ csrf_token() }}">
@@ -462,13 +479,48 @@
             return window.Html5Qrcode || (typeof Html5Qrcode !== 'undefined' ? Html5Qrcode : null) || (window.__Html5QrcodeLibrary__ ? window.__Html5QrcodeLibrary__.Html5Qrcode : null);
         }
 
-        function handleFileScan(event) {
+        function ensureQrLibrary() {
+            return new Promise((resolve, reject) => {
+                const cls = getQrClass();
+                if (cls) return resolve(cls);
+
+                const cdnUrls = [
+                    'https://unpkg.com/html5-qrcode@2.3.8/html5-qrcode.min.js',
+                    'https://cdnjs.cloudflare.com/ajax/libs/html5-qrcode/2.3.8/html5-qrcode.min.js',
+                    'https://cdn.jsdelivr.net/npm/html5-qrcode@2.3.8/html5-qrcode.min.js'
+                ];
+
+                let idx = 0;
+                function loadNext() {
+                    if (idx >= cdnUrls.length) {
+                        return reject(new Error("Semua CDN library scanner gagal dimuat."));
+                    }
+                    const s = document.createElement('script');
+                    s.src = cdnUrls[idx++];
+                    s.onload = () => {
+                        const loadedCls = getQrClass();
+                        if (loadedCls) {
+                            resolve(loadedCls);
+                        } else {
+                            loadNext();
+                        }
+                    };
+                    s.onerror = () => loadNext();
+                    document.head.appendChild(s);
+                }
+                loadNext();
+            });
+        }
+
+        async function handleFileScan(event) {
             const file = event.target.files[0];
             if (!file) return;
 
-            const QrClass = getQrClass();
-            if (!QrClass) {
-                alert("Library scanner belum siap. Silakan refresh halaman.");
+            let QrClass;
+            try {
+                QrClass = await ensureQrLibrary();
+            } catch (e) {
+                alert("Library scanner belum siap. Periksa koneksi internet Anda.");
                 return;
             }
 
@@ -494,26 +546,29 @@
                 });
         }
 
-        function startScanner() {
-            const QrClass = getQrClass();
-            if (!QrClass) {
-                showCameraError("Library scanner belum termuat sempurna. Silakan periksa koneksi internet dan refresh halaman.");
-                return;
-            }
-
+        async function startScanner() {
             const btnStart = document.getElementById('btnStartScan');
             const placeholder = document.getElementById('scannerPlaceholder');
             const loading = document.getElementById('scannerLoading');
             const btnStop = document.getElementById('btnStopScan');
 
-            // Cek navigator mediaDevices (Chrome mematikan API ini di non-secure HTTP seperti dot-teens.test)
-            if (!navigator.mediaDevices || !navigator.mediaDevices.getUserMedia) {
-                const localScanUrl = "{{ route('admin.events.scan', $selectedEvent->id) }}".replace(/https?:\/\/[^\/]+/, 'http://localhost' + (location.port ? ':' + location.port : ''));
+            // Cek protokol HTTPS / secure context di browser Chrome/Safari
+            if (location.protocol !== 'https:' && location.hostname !== 'localhost' && location.hostname !== '127.0.0.1') {
+                const httpsUrl = 'https://' + location.host + location.pathname + location.search;
                 showCameraError(
-                    "Google Chrome membatasi izin kamera pada alamat HTTP biasa (" + location.hostname + ").<br><br>" +
-                    "<strong>Solusi Mudah (Pilih Salah Satu):</strong><br>" +
-                    "1. <a href='" + localScanUrl + "' class='text-info fw-bold text-decoration-underline'>Klik di sini untuk Buka via Localhost</a> (Chrome mengizinkan webcam di localhost)<br>" +
-                    "2. Atau gunakan tombol <strong>'Scan dari Foto QR'</strong> di atas untuk memindai tiket dari file foto/screenshot QR."
+                    "Browser HP mewajibkan koneksi <strong>HTTPS aman</strong> untuk mengakses kamera.<br><br>" +
+                    "Silakan akses halaman ini menggunakan tautan HTTPS berikut:<br>" +
+                    "<a href='" + httpsUrl + "' class='text-info fw-bold text-decoration-underline'>Buka via HTTPS Aman</a>"
+                );
+                return;
+            }
+
+            // Cek navigator mediaDevices
+            if (!navigator.mediaDevices || !navigator.mediaDevices.getUserMedia) {
+                showCameraError(
+                    "Browser pada perangkat ini tidak mengizinkan akses kamera langsung.<br><br>" +
+                    "Pastikan Anda menggunakan Google Chrome atau Safari versi terbaru dan situs dibuka via <strong>HTTPS</strong>.<br>" +
+                    "Anda juga dapat menggunakan tombol <strong>'Scan dari Foto QR'</strong> untuk memilih foto tiket dari galeri."
                 );
                 return;
             }
@@ -523,7 +578,16 @@
             if (loading) loading.classList.remove('d-none');
             if (btnStart) {
                 btnStart.disabled = true;
-                btnStart.innerHTML = '<span class="spinner-border spinner-border-sm me-1"></span> Menghubungkan...';
+                btnStart.innerHTML = '<span class="spinner-border spinner-border-sm me-1"></span> Menghubungkan Kamera...';
+            }
+
+            let QrClass;
+            try {
+                QrClass = await ensureQrLibrary();
+            } catch (err) {
+                console.error("Gagal memuat library:", err);
+                showCameraError("Library scanner belum termuat sempurna. Silakan periksa koneksi internet Anda dan tekan 'Coba Lagi'.");
+                return;
             }
 
             if (!html5QrCode) {
@@ -531,7 +595,7 @@
                     html5QrCode = new QrClass("qr-reader");
                 } catch (e) {
                     console.error("Init scanner error:", e);
-                    showCameraError("Gagal memulai scanner: " + e.message);
+                    showCameraError("Gagal menginisialisasi scanner: " + e.message);
                     return;
                 }
             }
@@ -542,41 +606,11 @@
                     const minEdge = Math.min(viewfinderWidth, viewfinderHeight);
                     const qrboxSize = Math.floor(minEdge * 0.75);
                     return { width: qrboxSize, height: qrboxSize };
-                }
+                },
+                aspectRatio: 1.0
             };
 
-            QrClass.getCameras().then(devices => {
-                if (devices && devices.length) {
-                    availableCameras = devices;
-                    const wrapper = document.getElementById('cameraSelectWrapper');
-                    const selectEl = document.getElementById('cameraSelect');
-                    if (selectEl) {
-                        selectEl.innerHTML = '';
-                        devices.forEach((dev, idx) => {
-                            const opt = document.createElement('option');
-                            opt.value = dev.id;
-                            opt.text = dev.label || `Kamera ${idx + 1}`;
-                            selectEl.appendChild(opt);
-                        });
-                        if (devices.length > 1 && wrapper) {
-                            wrapper.classList.remove('d-none');
-                        }
-                    }
-
-                    currentCameraId = currentCameraId || devices[0].id;
-                    if (selectEl) selectEl.value = currentCameraId;
-
-                    return html5QrCode.start(
-                        currentCameraId,
-                        config,
-                        onScanSuccess,
-                        (errorMessage) => { /* frame */ }
-                    );
-                } else {
-                    return fallbackStartFacingMode(config);
-                }
-            }).then(() => {
-                // Kamera aktif!
+            function onCameraStarted() {
                 if (loading) loading.classList.add('d-none');
                 if (btnStart) {
                     btnStart.classList.add('d-none');
@@ -584,54 +618,73 @@
                     btnStart.innerHTML = '<i class="fa-solid fa-play me-1"></i> Buka Kamera';
                 }
                 if (btnStop) btnStop.classList.remove('d-none');
-            }).catch(err => {
-                console.warn("Mencoba fallback mode:", err);
-                fallbackStartFacingMode(config).then(() => {
-                    if (loading) loading.classList.add('d-none');
-                    if (btnStart) {
-                        btnStart.classList.add('d-none');
-                        btnStart.disabled = false;
-                        btnStart.innerHTML = '<i class="fa-solid fa-play me-1"></i> Buka Kamera';
-                    }
-                    if (btnStop) btnStop.classList.remove('d-none');
-                }).catch(fallbackErr => {
-                    console.error("Gagal start webcam:", fallbackErr);
-                    let userMsg = "Tidak dapat mengakses kamera webcam.";
-                    if (fallbackErr.name === 'NotAllowedError' || fallbackErr.name === 'PermissionDeniedError') {
-                        userMsg = "Izin webcam ditolak oleh browser. Silakan klik ikon gembok / kamera di sebelah kiri kolom URL browser, ubah menjadi <strong>'Allow'</strong>, lalu refresh halaman.";
-                    } else if (fallbackErr.name === 'NotFoundError' || fallbackErr.name === 'DevicesNotFoundError') {
-                        userMsg = "Perangkat kamera tidak ditemukan di laptop ini. Pastikan webcam terpasang.";
-                    } else if (fallbackErr.name === 'NotReadableError' || fallbackErr.name === 'TrackStartError') {
-                        userMsg = "Kamera sedang dipakai aplikasi lain (Zoom, Google Meet, Teams, atau Kamera Windows). Silakan tutup aplikasi tersebut.";
-                    } else if (fallbackErr.message) {
-                        userMsg += " (" + fallbackErr.message + ")";
-                    }
-                    showCameraError(userMsg);
-                });
-            });
-        }
 
-        function fallbackStartFacingMode(config) {
-            config = config || { fps: 15, qrbox: { width: 250, height: 250 } };
-            return html5QrCode.start(
-                { facingMode: "user" },
-                config,
-                onScanSuccess,
-                (errorMessage) => { /* frame */ }
-            ).catch(() => {
-                return html5QrCode.start(
-                    { facingMode: "environment" },
-                    config,
-                    onScanSuccess,
-                    (errorMessage) => { /* frame */ }
-                );
-            });
+                // Izin sudah aktif, ambil daftar kamera untuk opsi ganti kamera
+                QrClass.getCameras().then(devices => {
+                    if (devices && devices.length > 1) {
+                        availableCameras = devices;
+                        const wrapper = document.getElementById('cameraSelectWrapper');
+                        const selectEl = document.getElementById('cameraSelect');
+                        if (selectEl) {
+                            selectEl.innerHTML = '';
+                            devices.forEach((dev, idx) => {
+                                const opt = document.createElement('option');
+                                opt.value = dev.id;
+                                opt.text = dev.label || `Kamera ${idx + 1}`;
+                                if (currentCameraId && dev.id === currentCameraId) opt.selected = true;
+                                selectEl.appendChild(opt);
+                            });
+                            if (wrapper) wrapper.classList.remove('d-none');
+                        }
+                    }
+                }).catch(() => {});
+            }
+
+            function handleCameraError(err) {
+                console.error("Gagal start kamera:", err);
+                let userMsg = "Tidak dapat mengakses kamera.";
+                if (err.name === 'NotAllowedError' || err.name === 'PermissionDeniedError') {
+                    userMsg = "<strong>Izin Kamera Ditolak / Belum Diizinkan:</strong><br><br>" +
+                        "1. Di <strong>Google Chrome HP</strong>: Ketuk ikon <strong>Gembok / Pengaturan Situs</strong> di sebelah kiri kolom URL (atau titik tiga > Setelan Situs > Kamera), lalu ubah menjadi <strong>'Izinkan' (Allow)</strong>.<br>" +
+                        "2. Di <strong>Safari iPhone</strong>: Buka Pengaturan HP > Safari > Kamera > Izinkan.<br>" +
+                        "3. Setelah itu, ketuk tombol <strong>'Coba Lagi'</strong> di bawah ini.";
+                } else if (err.name === 'NotFoundError' || err.name === 'DevicesNotFoundError') {
+                    userMsg = "Kamera tidak terdeteksi pada perangkat ini.";
+                } else if (err.name === 'NotReadableError' || err.name === 'TrackStartError') {
+                    userMsg = "Kamera sedang digunakan oleh aplikasi lain. Tutup aplikasi kamera lain lalu coba lagi.";
+                } else if (err.message) {
+                    userMsg += " (" + err.message + ")";
+                }
+                showCameraError(userMsg);
+            }
+
+            // Jika user secara manual memilih kamera tertentu
+            if (currentCameraId) {
+                html5QrCode.start(currentCameraId, config, onScanSuccess, () => {})
+                    .then(onCameraStarted)
+                    .catch(handleCameraError);
+                return;
+            }
+
+            // Di smartphone / browser, prioritaskan kamera belakang (facingMode: "environment")
+            html5QrCode.start({ facingMode: "environment" }, config, onScanSuccess, () => {})
+                .then(onCameraStarted)
+                .catch(errEnv => {
+                    console.warn("Kamera belakang tidak tersedia, mencoba kamera depan...", errEnv);
+                    html5QrCode.start({ facingMode: "user" }, config, onScanSuccess, () => {})
+                        .then(onCameraStarted)
+                        .catch(errUser => {
+                            handleCameraError(errEnv.name === 'NotAllowedError' ? errEnv : errUser);
+                        });
+                });
         }
 
         function onCameraChange(cameraId) {
             currentCameraId = cameraId;
             if (html5QrCode && html5QrCode.isScanning) {
                 html5QrCode.stop().then(() => {
+                    startScanner();
+                }).catch(() => {
                     startScanner();
                 });
             }
@@ -642,7 +695,24 @@
             const ph = document.getElementById('scannerPlaceholder');
             const loading = document.getElementById('scannerLoading');
             if (loading) loading.classList.add('d-none');
-            const localScanUrl = "{{ route('admin.events.scan', $selectedEvent->id) }}".replace(/https?:\/\/[^\/]+/, 'http://localhost' + (location.port ? ':' + location.port : ''));
+
+            let extraButton = '';
+            if (location.protocol !== 'https:' && location.hostname !== 'localhost' && location.hostname !== '127.0.0.1') {
+                const httpsUrl = 'https://' + location.host + location.pathname + location.search;
+                extraButton = `
+                    <a href="${httpsUrl}" class="btn btn-sm btn-outline-warning rounded-pill px-3">
+                        <i class="fa-solid fa-lock me-1"></i> Buka via HTTPS Aman
+                    </a>
+                `;
+            } else if (location.hostname.includes('.test') || location.hostname.includes('192.168.')) {
+                const localScanUrl = "{{ route('admin.events.scan', $selectedEvent->id) }}".replace(/https?:\/\/[^\/]+/, 'http://localhost' + (location.port ? ':' + location.port : ''));
+                extraButton = `
+                    <a href="${localScanUrl}" class="btn btn-sm btn-outline-light rounded-pill px-3">
+                        <i class="fa-solid fa-server me-1"></i> Buka via Localhost
+                    </a>
+                `;
+            }
+
             if (ph) {
                 ph.classList.remove('d-none');
                 ph.innerHTML = `
@@ -659,9 +729,7 @@
                             <button class="btn btn-sm btn-outline-info rounded-pill px-3" onclick="triggerFileInput()">
                                 <i class="fa-solid fa-file-image me-1"></i> Scan dari Foto QR
                             </button>
-                            <a href="${localScanUrl}" class="btn btn-sm btn-outline-light rounded-pill px-3">
-                                <i class="fa-solid fa-server me-1"></i> Buka via Localhost
-                            </a>
+                            ${extraButton}
                         </div>
                     </div>
                 `;
