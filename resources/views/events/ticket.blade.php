@@ -147,6 +147,26 @@
             color: #F8FAFC;
         }
 
+        @media (max-width: 380px) {
+            .info-grid {
+                grid-template-columns: 1fr !important;
+                gap: 10px;
+                padding: 12px;
+            }
+            .info-grid > div[style*="grid-column"] {
+                grid-column: span 1 !important;
+            }
+            .ticket-card {
+                border-radius: 20px;
+            }
+            .ticket-header {
+                padding: 20px 16px 18px;
+            }
+            .ticket-body {
+                padding: 18px 14px;
+            }
+        }
+
         .btn-print {
             background: linear-gradient(135deg, #0284C7 0%, #2563EB 100%);
             color: #FFFFFF;

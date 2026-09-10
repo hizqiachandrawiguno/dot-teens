@@ -1751,21 +1751,21 @@
                     $bannerImage = asset('images/' . $featuredEvent->image);
                 }
             }
-            if (!$bannerImage && file_exists(public_path('images/drn.jpeg'))) {
+            if (!$bannerImage && stripos($featuredEvent->title, 'Revival') !== false && file_exists(public_path('images/drn.jpeg'))) {
                 $bannerImage = asset('images/drn.jpeg');
             }
         @endphp
 
-        <div id="floatingEventPill" class="position-fixed bottom-0 start-0 m-3 z-3" style="cursor: pointer;" onclick="openUpcomingPopup()">
-            <div class="badge rounded-pill p-2 pe-3 d-flex align-items-center gap-2 shadow-lg" style="background: rgba(17, 34, 64, 0.95); border: 1px solid var(--cyan-electric); backdrop-filter: blur(10px);">
+        <div id="floatingEventPill" class="position-fixed bottom-0 start-0 m-3 z-3" style="cursor: pointer; max-width: calc(100vw - 30px);" onclick="openUpcomingPopup()">
+            <div class="badge rounded-pill p-2 pe-3 d-flex align-items-center gap-2 shadow-lg" style="background: rgba(17, 34, 64, 0.95); border: 1px solid var(--cyan-electric); backdrop-filter: blur(10px); max-width: 100%;">
                 @if($bannerImage)
-                    <img src="{{ $bannerImage }}" alt="Banner" class="rounded-circle" style="width: 32px; height: 32px; object-fit: cover; border: 2px solid var(--cyan-electric);">
+                    <img src="{{ $bannerImage }}" alt="Banner" class="rounded-circle flex-shrink-0" style="width: 32px; height: 32px; object-fit: cover; border: 2px solid var(--cyan-electric);">
                 @else
-                    <span class="badge bg-danger rounded-circle p-2" style="box-shadow: 0 0 10px rgba(239, 68, 68, 0.7);"><i class="fa-solid fa-fire text-white"></i></span>
+                    <span class="badge bg-danger rounded-circle p-2 flex-shrink-0" style="box-shadow: 0 0 10px rgba(239, 68, 68, 0.7);"><i class="fa-solid fa-fire text-white"></i></span>
                 @endif
-                <div class="text-start">
-                    <div class="text-white fw-bold" style="font-size: 12px;">{{ $featuredEvent->title }}</div>
-                    <div class="small text-info" style="font-size: 10px;"><i class="fa-regular fa-calendar me-1"></i>{{ date('d M Y', strtotime($featuredEvent->event_date)) }} &bull; Klik untuk Banner & Tiket</div>
+                <div class="text-start text-truncate" style="max-width: 240px;">
+                    <div class="text-white fw-bold text-truncate" style="font-size: 12px;">{{ $featuredEvent->title }}</div>
+                    <div class="small text-info text-truncate" style="font-size: 10px;"><i class="fa-regular fa-calendar me-1"></i>{{ date('d M Y', strtotime($featuredEvent->event_date)) }} &bull; Klik untuk Info & Tiket</div>
                 </div>
             </div>
         </div>
@@ -1778,7 +1778,7 @@
                     <!-- BANNER POSTER EVENT RESMI -->
                     @if($bannerImage)
                         <div class="position-relative overflow-hidden text-center" style="background: #060D18;">
-                            <img src="{{ $bannerImage }}" alt="{{ $featuredEvent->title }} Banner" class="w-100" style="max-height: 320px; object-fit: cover; object-position: center 15%; display: block; cursor: pointer;" onclick="openLightbox('{{ $bannerImage }}', 'Poster Resmi {{ addslashes($featuredEvent->title) }}', true)" title="Klik untuk melihat poster penuh">
+                            <img src="{{ $bannerImage }}" alt="{{ $featuredEvent->title }} Banner" class="w-100" style="max-height: clamp(200px, 35vh, 320px); object-fit: cover; object-position: center 15%; display: block; cursor: pointer;" onclick="openLightbox('{{ $bannerImage }}', 'Poster Resmi {{ addslashes($featuredEvent->title) }}', true)" title="Klik untuk melihat poster penuh">
                             
                             <!-- Gradient Fade Overlay -->
                             <div class="position-absolute start-0 end-0 bottom-0" style="height: 100px; background: linear-gradient(to top, #112240 15%, rgba(17, 34, 64, 0.7) 60%, transparent 100%); pointer-events: none;"></div>
@@ -1806,7 +1806,7 @@
                             </span>
                         @endif
 
-                        <h2 class="fw-bold text-white mb-1" style="font-family: 'Outfit', sans-serif; font-size: 26px; line-height: 1.2;">
+                        <h2 class="fw-bold text-white mb-1" style="font-family: 'Outfit', sans-serif; font-size: clamp(20px, 5vw, 26px); line-height: 1.2;">
                             {{ $featuredEvent->title }}
                         </h2>
                         

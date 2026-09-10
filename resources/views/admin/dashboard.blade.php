@@ -399,15 +399,26 @@
                                 <div class="mb-3">
                                     <div class="d-flex justify-content-between align-items-center mb-1">
                                         <h6 class="text-white fw-bold mb-0"><i class="fa-solid fa-calendar-days me-2" style="color: #10B981;"></i> Ruang Acara & Event</h6>
-                                        <span class="badge bg-primary bg-opacity-25 text-info border border-info" style="font-size: 10px;">Revival 10 Okt</span>
+                                        @php
+                                            $activePopup = \App\Models\Event::where('is_popup', true)->first();
+                                        @endphp
+                                        @if($activePopup)
+                                            <span class="badge bg-warning bg-opacity-25 text-warning border border-warning" style="font-size: 10px;" title="Pop Up Banner Aktif di Awal Website">
+                                                <i class="fa-solid fa-star me-1"></i> Pop Up: {{ Str::limit($activePopup->title, 14) }}
+                                            </span>
+                                        @else
+                                            <span class="badge bg-secondary bg-opacity-25 text-secondary border border-secondary" style="font-size: 10px;">
+                                                Pop Up: Nonaktif
+                                            </span>
+                                        @endif
                                     </div>
-                                    <p class="text-secondary small mb-0">Posting event, buka Scanner QR kehadiran, dan kelola pendaftar Disciples Revival Night.</p>
+                                    <p class="text-secondary small mb-0">Posting event, pilih Pop Up Banner awal website, dan scan tiket QR kehadiran peserta.</p>
                                 </div>
                                 <div class="d-flex gap-2 flex-wrap">
-                                    <a href="/admin/events" class="btn btn-sm text-white fw-semibold rounded-pill px-3 py-2" style="background: #10B981;">
+                                    <a href="{{ url('/admin/events') }}" class="btn btn-sm text-white fw-semibold rounded-pill px-3 py-2" style="background: #10B981;">
                                         Kelola Acara <i class="fa-solid fa-arrow-right ms-1"></i>
                                     </a>
-                                    <a href="/admin/events/scan" class="btn btn-sm btn-outline-info rounded-pill px-3 py-2 fw-semibold">
+                                    <a href="{{ route('admin.events.scan') }}" class="btn btn-sm btn-outline-info rounded-pill px-3 py-2 fw-semibold shadow-sm">
                                         <i class="fa-solid fa-qrcode me-1"></i> Scanner QR
                                     </a>
                                 </div>
@@ -996,10 +1007,15 @@
             @if($user->role == 'div_acara')
                 <div class="glass-card p-4">
                     <h4 class="fw-bold mb-3" style="color: #10B981;"><i class="fa-solid fa-calendar-days me-2"></i> Ruang Kendali Divisi Acara</h4>
-                    <p class="text-secondary mb-4">Kelola dan publikasikan jadwal acara, event spesial, dan poster kegiatan di website utama.</p>
-                    <a href="/admin/events" class="btn btn-gradient-sm px-4 py-2">
-                        Buka Manajemen Acara <i class="fa-solid fa-arrow-right ms-1"></i>
-                    </a>
+                    <p class="text-secondary mb-4">Kelola dan publikasikan jadwal acara, ubah Pop Up Banner awal website, dan scan QR kehadiran peserta.</p>
+                    <div class="d-flex gap-2 flex-wrap">
+                        <a href="{{ url('/admin/events') }}" class="btn btn-gradient-sm px-4 py-2">
+                            Buka Manajemen Acara <i class="fa-solid fa-arrow-right ms-1"></i>
+                        </a>
+                        <a href="{{ route('admin.events.scan') }}" class="btn btn-sm btn-outline-info rounded-pill px-3 py-2 fw-semibold">
+                            <i class="fa-solid fa-qrcode me-1"></i> Buka Scanner QR
+                        </a>
+                    </div>
                 </div>
             @endif
 

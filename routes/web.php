@@ -18,23 +18,8 @@ Route::get('/', function () {
     $cellSchedules = \App\Models\CellSchedule::where('meeting_date', '>=', now()->toDateString())->orderBy('meeting_date', 'asc')->get();
     $galleries = \App\Models\Gallery::orderBy('created_at', 'desc')->take(6)->get(); 
     
-    // Ambil event terdekat (utamakan Disciples Revival Night jika ada)
-    $featuredEvent = $events->first(function($e) {
-        return stripos($e->title, 'Revival') !== false;
-    }) ?? $events->first();
-
-    // Jika belum ada di database, gunakan default instance Disciples Revival Night (10 Oktober)
-    if (!$featuredEvent) {
-        $featuredEvent = (object)[
-            'id' => 1,
-            'title' => 'Disciples Revival Night',
-            'description' => 'Malam Kebangunan Rohani & Revival DRP Outstanding Teens (DOT)! Saatnya generasi muda mengalami perjumpaan pribadi dengan Roh Kudus, dipulihkan, dan dibangkitkan menjadi murid Kristus yang berani bersinar di sekolah dan keluarga.',
-            'event_date' => '2026-10-10',
-            'time_formatted' => '17:30',
-            'location' => 'Main Sanctuary GBI ERC Sawangan',
-            'image' => 'drn.jpeg',
-        ];
-    }
+    // Ambil event yang dipilih Admin sebagai Pop Up Banner Beranda (is_popup = true)
+    $featuredEvent = \App\Models\Event::where('is_popup', true)->first();
 
     // Cek status saklar dari file
     $path = storage_path('app/form_status.txt');
@@ -246,6 +231,9 @@ Route::middleware('auth')->group(function () {
     Route::post('/admin/events/participants/{id}/toggle', [EventRegistrationController::class, 'toggleAttendance'])->name('admin.events.participants.toggle')->whereNumber('id');
     Route::delete('/admin/events/participants/{id}', [EventRegistrationController::class, 'destroyParticipant'])->name('admin.events.participants.delete')->whereNumber('id');
     Route::get('/admin/events/{event_id}/export', [EventRegistrationController::class, 'exportCsv'])->name('admin.events.export')->whereNumber('event_id');
+
+    // Fitur Toggle Pop Up Banner Beranda
+    Route::post('/admin/events/{id}/toggle-popup', [EventController::class, 'togglePopup'])->name('admin.events.toggle_popup')->whereNumber('id');
 
     // Fitur Admin Event Kalender
     Route::resource('admin/events', EventController::class)->whereNumber('event');

@@ -79,6 +79,7 @@
         .table-custom {
             --bs-table-bg: transparent;
             color: #CBD5E1;
+            min-width: 820px;
         }
         .table-custom th {
             color: #94A3B8;
@@ -87,12 +88,16 @@
             border-bottom: 1px solid rgba(56, 189, 248, 0.2);
             text-transform: uppercase;
             padding: 14px 12px;
+            background-color: rgba(10, 22, 40, 0.6) !important;
         }
         .table-custom td {
             border-bottom: 1px solid rgba(255, 255, 255, 0.05);
             font-size: 13px;
             padding: 12px;
             vertical-align: middle;
+        }
+        .table-custom tbody tr:hover td {
+            background-color: rgba(56, 189, 248, 0.04) !important;
         }
 
         .btn-cyan {
@@ -113,22 +118,22 @@
 <body>
 
     <!-- NAVBAR -->
-    <nav class="navbar navbar-dark navbar-custom py-3 sticky-top">
-        <div class="container-fluid px-3 px-lg-4">
-            <div class="d-flex align-items-center gap-3">
-                <a class="btn btn-sm btn-outline-secondary text-light rounded-pill px-3" href="/admin/dashboard">
-                    <i class="fa-solid fa-arrow-left me-1"></i> Dashboard
+    <nav class="navbar navbar-dark navbar-custom py-2.5 sticky-top">
+        <div class="container-fluid px-3 px-lg-4 d-flex justify-content-between align-items-center">
+            <div class="d-flex align-items-center gap-2 gap-sm-3">
+                <a class="btn btn-sm btn-outline-secondary text-light rounded-pill px-2.5 px-sm-3" href="{{ route('dashboard') }}">
+                    <i class="fa-solid fa-arrow-left me-1"></i> <span class="d-none d-sm-inline">Dashboard</span>
                 </a>
-                <span class="fw-bold text-white fs-5">
-                    <i class="fa-solid fa-users text-info me-2"></i> Data Pendaftar Event
+                <span class="fw-bold text-white fs-6 fs-md-5 text-truncate" style="max-width: 45vw;">
+                    <i class="fa-solid fa-users text-info me-1 me-sm-2"></i> <span class="d-none d-sm-inline">Data Pendaftar </span>Event
                 </span>
             </div>
             <div class="d-flex gap-2">
                 <a href="{{ route('admin.events.scan', $event->id) }}" class="btn btn-sm btn-cyan">
-                    <i class="fa-solid fa-qrcode me-1"></i> Buka Scanner QR
+                    <i class="fa-solid fa-qrcode me-1"></i> <span class="d-none d-sm-inline">Buka </span>Scanner
                 </a>
-                <a href="{{ route('admin.events.export', $event->id) }}" class="btn btn-sm btn-outline-success rounded-pill px-3">
-                    <i class="fa-solid fa-file-csv me-1"></i> Download CSV
+                <a href="{{ route('admin.events.export', $event->id) }}" class="btn btn-sm btn-outline-success rounded-pill px-2.5 px-sm-3">
+                    <i class="fa-solid fa-file-csv me-1"></i> <span class="d-none d-sm-inline">Export </span>CSV
                 </a>
             </div>
         </div>
@@ -161,19 +166,19 @@
 
         <!-- STATS -->
         <div class="row g-3 mb-4">
-            <div class="col-md-4">
+            <div class="col-12 col-sm-4">
                 <div class="stat-card">
                     <div class="text-secondary small mb-1">Total Peserta Terdaftar</div>
                     <div class="stat-val text-white">{{ $totalRegistered }}</div>
                 </div>
             </div>
-            <div class="col-md-4">
+            <div class="col-12 col-sm-4">
                 <div class="stat-card" style="border-color: rgba(34, 197, 94, 0.3);">
                     <div class="text-success small mb-1"><i class="fa-solid fa-circle-check me-1"></i> Sudah Hadir (Check-in)</div>
                     <div class="stat-val text-success">{{ $totalAttended }}</div>
                 </div>
             </div>
-            <div class="col-md-4">
+            <div class="col-12 col-sm-4">
                 <div class="stat-card" style="border-color: rgba(245, 158, 11, 0.3);">
                     <div class="text-warning small mb-1"><i class="fa-solid fa-hourglass-half me-1"></i> Belum Hadir</div>
                     <div class="stat-val text-warning">{{ $totalPending }}</div>

@@ -13,11 +13,12 @@
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
 
-    <!-- HTML5 QR Code Scanner Library (Local with CDN Fallback) -->
+    <!-- HTML5 QR Code Scanner Library -->
     <script src="{{ asset('js/html5-qrcode.min.js') }}"></script>
     <script>
-        if (typeof Html5Qrcode === 'undefined') {
-            document.write('<script src="https://unpkg.com/html5-qrcode@2.3.8/html5-qrcode.min.js"><\/script>');
+        if (typeof window.Html5Qrcode === 'undefined' && typeof window.__Html5QrcodeLibrary__ !== 'undefined') {
+            window.Html5Qrcode = window.__Html5QrcodeLibrary__.Html5Qrcode;
+            window.Html5QrcodeScanner = window.__Html5QrcodeLibrary__.Html5QrcodeScanner;
         }
     </script>
 
@@ -90,7 +91,7 @@
 
         .stat-val {
             font-family: 'Plus Jakarta Sans', sans-serif;
-            font-size: 28px;
+            font-size: clamp(20px, 4.5vw, 28px);
             font-weight: 800;
             line-height: 1.2;
         }
@@ -139,6 +140,7 @@
         .table-custom {
             --bs-table-bg: transparent;
             color: #CBD5E1;
+            min-width: 360px;
         }
         .table-custom th {
             color: #94A3B8;
@@ -151,24 +153,27 @@
             border-bottom: 1px solid rgba(255, 255, 255, 0.05);
             font-size: 13px;
         }
+        .table-custom tbody tr:hover td {
+            background-color: rgba(56, 189, 248, 0.05) !important;
+        }
     </style>
 </head>
 <body>
 
     <!-- NAVBAR -->
-    <nav class="navbar navbar-dark navbar-custom py-3 sticky-top">
-        <div class="container-fluid px-3 px-lg-4">
-            <div class="d-flex align-items-center gap-3">
-                <a class="btn btn-sm btn-outline-secondary text-light rounded-pill px-3" href="/admin/dashboard">
-                    <i class="fa-solid fa-arrow-left me-1"></i> Dashboard
+    <nav class="navbar navbar-dark navbar-custom py-2.5 sticky-top">
+        <div class="container-fluid px-3 px-lg-4 d-flex justify-content-between align-items-center">
+            <div class="d-flex align-items-center gap-2 gap-sm-3">
+                <a class="btn btn-sm btn-outline-secondary text-light rounded-pill px-2.5 px-sm-3" href="{{ route('dashboard') }}">
+                    <i class="fa-solid fa-arrow-left me-1"></i> <span class="d-none d-sm-inline">Dashboard</span>
                 </a>
-                <span class="fw-bold text-white fs-5">
-                    <i class="fa-solid fa-qrcode text-info me-2"></i> Scanner Kehadiran Event
+                <span class="fw-bold text-white fs-6 fs-md-5 text-truncate" style="max-width: 45vw;">
+                    <i class="fa-solid fa-qrcode text-info me-1 me-sm-2"></i> <span class="d-none d-sm-inline">Scanner Kehadiran </span>Event
                 </span>
             </div>
             <div>
-                <a href="{{ route('admin.events.participants', $selectedEvent->id) }}" class="btn btn-sm btn-outline-info rounded-pill px-3">
-                    <i class="fa-solid fa-users me-1"></i> Data Peserta ({{ $totalRegistered }})
+                <a href="{{ route('admin.events.participants', $selectedEvent->id) }}" class="btn btn-sm btn-outline-info rounded-pill px-2.5 px-sm-3 fw-semibold">
+                    <i class="fa-solid fa-users me-1"></i> <span class="d-none d-md-inline">Data Peserta</span> ({{ $totalRegistered }})
                 </a>
             </div>
         </div>
@@ -453,17 +458,22 @@
             if (fi) fi.click();
         }
 
+        function getQrClass() {
+            return window.Html5Qrcode || (typeof Html5Qrcode !== 'undefined' ? Html5Qrcode : null) || (window.__Html5QrcodeLibrary__ ? window.__Html5QrcodeLibrary__.Html5Qrcode : null);
+        }
+
         function handleFileScan(event) {
             const file = event.target.files[0];
             if (!file) return;
 
-            if (typeof Html5Qrcode === 'undefined') {
+            const QrClass = getQrClass();
+            if (!QrClass) {
                 alert("Library scanner belum siap. Silakan refresh halaman.");
                 return;
             }
 
             if (!html5QrCode) {
-                html5QrCode = new Html5Qrcode("qr-reader");
+                html5QrCode = new QrClass("qr-reader");
             }
 
             const feedbackCard = document.getElementById('scanFeedbackCard');
@@ -485,7 +495,8 @@
         }
 
         function startScanner() {
-            if (typeof Html5Qrcode === 'undefined') {
+            const QrClass = getQrClass();
+            if (!QrClass) {
                 showCameraError("Library scanner belum termuat sempurna. Silakan periksa koneksi internet dan refresh halaman.");
                 return;
             }
@@ -497,11 +508,12 @@
 
             // Cek navigator mediaDevices (Chrome mematikan API ini di non-secure HTTP seperti dot-teens.test)
             if (!navigator.mediaDevices || !navigator.mediaDevices.getUserMedia) {
+                const localScanUrl = "{{ route('admin.events.scan', $selectedEvent->id) }}".replace(/https?:\/\/[^\/]+/, 'http://localhost' + (location.port ? ':' + location.port : ''));
                 showCameraError(
-                    "Google Chrome mengunci webcam pada alamat HTTP biasa (" + location.hostname + ").<br><br>" +
-                    "<strong>Cara Mudah Mengaktifkan:</strong><br>" +
-                    "1. <a href='http://localhost/dot-teens/public/admin/events/scan/" + eventId + "' class='text-info fw-bold text-decoration-underline'>Klik di sini untuk Buka via Localhost</a> (Chrome mengizinkan webcam di localhost)<br>" +
-                    "2. Atau gunakan tombol <strong>'Scan dari Foto QR'</strong> di atas untuk memindai tiket dari file gambar."
+                    "Google Chrome membatasi izin kamera pada alamat HTTP biasa (" + location.hostname + ").<br><br>" +
+                    "<strong>Solusi Mudah (Pilih Salah Satu):</strong><br>" +
+                    "1. <a href='" + localScanUrl + "' class='text-info fw-bold text-decoration-underline'>Klik di sini untuk Buka via Localhost</a> (Chrome mengizinkan webcam di localhost)<br>" +
+                    "2. Atau gunakan tombol <strong>'Scan dari Foto QR'</strong> di atas untuk memindai tiket dari file foto/screenshot QR."
                 );
                 return;
             }
@@ -516,7 +528,7 @@
 
             if (!html5QrCode) {
                 try {
-                    html5QrCode = new Html5Qrcode("qr-reader");
+                    html5QrCode = new QrClass("qr-reader");
                 } catch (e) {
                     console.error("Init scanner error:", e);
                     showCameraError("Gagal memulai scanner: " + e.message);
@@ -533,7 +545,7 @@
                 }
             };
 
-            Html5Qrcode.getCameras().then(devices => {
+            QrClass.getCameras().then(devices => {
                 if (devices && devices.length) {
                     availableCameras = devices;
                     const wrapper = document.getElementById('cameraSelectWrapper');
@@ -630,6 +642,7 @@
             const ph = document.getElementById('scannerPlaceholder');
             const loading = document.getElementById('scannerLoading');
             if (loading) loading.classList.add('d-none');
+            const localScanUrl = "{{ route('admin.events.scan', $selectedEvent->id) }}".replace(/https?:\/\/[^\/]+/, 'http://localhost' + (location.port ? ':' + location.port : ''));
             if (ph) {
                 ph.classList.remove('d-none');
                 ph.innerHTML = `
@@ -640,13 +653,13 @@
                             ${msg}
                         </div>
                         <div class="d-flex justify-content-center gap-2 flex-wrap">
-                            <button class="btn btn-sm btn-cyan px-3" onclick="startScanner()">
+                            <button class="btn btn-sm btn-cyan px-3 fw-bold shadow" onclick="startScanner()">
                                 <i class="fa-solid fa-rotate me-1"></i> Coba Lagi
                             </button>
                             <button class="btn btn-sm btn-outline-info rounded-pill px-3" onclick="triggerFileInput()">
                                 <i class="fa-solid fa-file-image me-1"></i> Scan dari Foto QR
                             </button>
-                            <a href="http://localhost/dot-teens/public/admin/events/scan/${eventId}" class="btn btn-sm btn-outline-light rounded-pill px-3">
+                            <a href="${localScanUrl}" class="btn btn-sm btn-outline-light rounded-pill px-3">
                                 <i class="fa-solid fa-server me-1"></i> Buka via Localhost
                             </a>
                         </div>

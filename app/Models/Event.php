@@ -16,7 +16,12 @@ class Event extends Model
         'event_waktu',
         'event_time',
         'location', 
-        'image'
+        'image',
+        'is_popup'
+    ];
+
+    protected $casts = [
+        'is_popup' => 'boolean',
     ];
 
     public function registrations()
