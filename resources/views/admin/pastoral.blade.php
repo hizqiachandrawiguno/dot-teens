@@ -13,49 +13,49 @@
     
     <style>
         body {
-            background-color: #F0F7FD;
-            color: #0F2A44;
+            background-color: #0A1628;
+            color: #E2E8F0;
             font-family: 'Poppins', sans-serif;
-            background-image: radial-gradient(circle at 10% 10%, rgba(2, 132, 199, 0.08), transparent 40%),
-                              radial-gradient(circle at 90% 80%, rgba(56, 189, 248, 0.08), transparent 40%);
+            background-image: radial-gradient(circle at 10% 10%, rgba(56, 189, 248, 0.07), transparent 40%),
+                              radial-gradient(circle at 90% 80%, rgba(37, 99, 235, 0.06), transparent 40%);
             min-height: 100vh;
         }
         .navbar-custom {
-            background: linear-gradient(135deg, #0284C7 0%, #0369A1 100%);
-            border-bottom: 1px solid rgba(255, 255, 255, 0.2);
-            box-shadow: 0 4px 20px rgba(2, 132, 199, 0.18);
+            background: #0D1C33;
+            border-bottom: 1px solid rgba(56, 189, 248, 0.18);
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.5);
         }
         .text-gradient { 
-            background: linear-gradient(90deg, #0284C7, #0EA5E9); 
+            background: linear-gradient(90deg, #38BDF8, #60A5FA); 
             -webkit-background-clip: text; 
             -webkit-text-fill-color: transparent; 
         }
         .glass-card { 
-            background: #FFFFFF; 
-            border: 1px solid #BAE6FD; 
+            background: #112340; 
+            border: 1px solid rgba(56, 189, 248, 0.18); 
             border-radius: 20px; 
             padding: 25px; 
-            box-shadow: 0 4px 20px rgba(15, 42, 68, 0.04);
+            box-shadow: 0 8px 30px rgba(0, 0, 0, 0.3);
         }
         .glass-card .text-white,
         .modal-content .text-white {
-            color: #0F2A44 !important;
+            color: #FFFFFF !important;
         }
         .glass-card .text-secondary {
-            color: #475569 !important;
+            color: #94A3B8 !important;
         }
         .btn-gradient { 
-            background: linear-gradient(135deg, #0284C7, #0EA5E9); 
+            background: linear-gradient(135deg, #0284C7, #2563EB); 
             border: none; color: white; font-weight: 600; 
         }
-        .btn-gradient:hover { background: linear-gradient(135deg, #0369A1, #0284C7); color: white; }
-        .table { color: #1E293B; }
-        .table th { color: #0369A1; border-bottom: 1px solid #BAE6FD; background: #E0F2FE; }
-        .table td { border-bottom: 1px solid #E0F2FE; background: transparent; vertical-align: middle; color: #334155; }
+        .btn-gradient:hover { background: linear-gradient(135deg, #38BDF8, #1D4ED8); color: white; }
+        .table { color: #E2E8F0; }
+        .table th { color: #38BDF8; border-bottom: 1px solid rgba(56, 189, 248, 0.18); background: #0D1C33; }
+        .table td { border-bottom: 1px solid rgba(56, 189, 248, 0.1); background: transparent; vertical-align: middle; color: #CBD5E1; }
         .form-control, .form-control:focus {
-            background: #FFFFFF;
-            border: 1px solid #BAE6FD;
-            color: #0F2A44;
+            background: #0B182B;
+            border: 1px solid rgba(56, 189, 248, 0.22);
+            color: #FFFFFF;
         }
     </style>
 </head>

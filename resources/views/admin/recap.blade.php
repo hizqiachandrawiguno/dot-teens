@@ -7,17 +7,19 @@
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <style>
-        body { background-color: #121212; color: #fff; }
-        .glass-card { background: rgba(255, 255, 255, 0.05); backdrop-filter: blur(10px); border: 1px solid rgba(255, 255, 255, 0.1); border-radius: 1rem; padding: 1.5rem; }
-        .text-gradient { background: linear-gradient(90deg, #60A5FA, #8B5CF6); -webkit-background-clip: text; -webkit-text-fill-color: transparent; }
-        .table { color: white; }
-        .table th { background-color: rgba(255,255,255,0.05); color: #60A5FA; border-bottom: 1px solid rgba(255,255,255,0.1); }
-        .table td { border-bottom: 1px solid rgba(255,255,255,0.05); vertical-align: middle; }
+        body { background-color: #0A1628; color: #E2E8F0; font-family: 'Poppins', sans-serif; min-height: 100vh; }
+        .navbar-custom { background: #0D1C33; border-bottom: 1px solid rgba(56, 189, 248, 0.18); box-shadow: 0 4px 20px rgba(0, 0, 0, 0.5); }
+        .glass-card { background: #112340; border: 1px solid rgba(56, 189, 248, 0.18); border-radius: 1.25rem; padding: 1.5rem; box-shadow: 0 8px 30px rgba(0, 0, 0, 0.3); }
+        .text-gradient { background: linear-gradient(90deg, #38BDF8, #60A5FA); -webkit-background-clip: text; -webkit-text-fill-color: transparent; }
+        .table { color: #E2E8F0; }
+        .table th { background-color: #0D1C33; color: #38BDF8; border-bottom: 1px solid rgba(56, 189, 248, 0.18); }
+        .table td { border-bottom: 1px solid rgba(56, 189, 248, 0.1); vertical-align: middle; color: #CBD5E1; }
+        .form-control, .form-select { background: #0B182B; border: 1px solid rgba(56, 189, 248, 0.22); color: #FFFFFF; }
     </style>
 </head>
 <body>
 
-    <nav class="navbar navbar-expand-lg navbar-dark py-3" style="background: rgba(0,0,0,0.2);">
+    <nav class="navbar navbar-expand-lg navbar-dark navbar-custom py-3">
         <div class="container-fluid px-4">
             <a class="navbar-brand fw-bold" href="/admin/pastoral"><i class="fa-solid fa-arrow-left me-2 text-info"></i>Kembali ke Pastoral</a>
         </div>

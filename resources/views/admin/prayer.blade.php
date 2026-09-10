@@ -11,14 +11,14 @@
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     
     <style>
-        body { background-color: #0F172A; color: #F3F4F6; font-family: 'Poppins', sans-serif; }
-        .navbar-custom { background: rgba(15, 23, 42, 0.95); border-bottom: 1px solid rgba(255, 255, 255, 0.05); }
-        .text-gradient { background: linear-gradient(90deg, #60A5FA, #8B5CF6); -webkit-background-clip: text; -webkit-text-fill-color: transparent; }
-        .prayer-column { background: rgba(255, 255, 255, 0.02); border: 1px solid rgba(255, 255, 255, 0.05); border-radius: 15px; padding: 20px; min-height: 500px; }
-        .prayer-card { background: rgba(255, 255, 255, 0.05); border-left: 4px solid #60A5FA; border-radius: 10px; padding: 15px; margin-bottom: 15px; transition: 0.3s; }
-        .prayer-card:hover { transform: translateY(-3px); background: rgba(255, 255, 255, 0.08); }
+        body { background-color: #0A1628; color: #E2E8F0; font-family: 'Poppins', sans-serif; min-height: 100vh; }
+        .navbar-custom { background: #0D1C33; border-bottom: 1px solid rgba(56, 189, 248, 0.18); box-shadow: 0 4px 20px rgba(0, 0, 0, 0.5); }
+        .text-gradient { background: linear-gradient(90deg, #38BDF8, #60A5FA); -webkit-background-clip: text; -webkit-text-fill-color: transparent; }
+        .prayer-column { background: #112340; border: 1px solid rgba(56, 189, 248, 0.18); border-radius: 18px; padding: 20px; min-height: 500px; box-shadow: 0 8px 25px rgba(0, 0, 0, 0.25); }
+        .prayer-card { background: #0B182B; border: 1px solid rgba(56, 189, 248, 0.15); border-left: 4px solid #38BDF8; border-radius: 12px; padding: 16px; margin-bottom: 15px; transition: 0.3s; }
+        .prayer-card:hover { transform: translateY(-3px); background: #12243F; border-color: #38BDF8; }
         .prayer-card.didoakan { border-left-color: #F59E0B; }
-        .prayer-card.terjawab { border-left-color: #10B981; opacity: 0.7; }
+        .prayer-card.terjawab { border-left-color: #10B981; opacity: 0.85; }
     </style>
 </head>
 <body>
