@@ -1886,7 +1886,7 @@
                 </div>
                 
                 <div class="modal-body event-modal-body pt-2">
-                    <div id="regErrorAlert" class="alert alert-danger d-none py-2 px-3 small rounded-3 mb-3"></div>
+                    <div id="regErrorAlert" class="alert d-none p-3 rounded-4 mb-3 shadow" style="background: rgba(239, 68, 68, 0.15); border: 1px solid rgba(239, 68, 68, 0.4); font-size: 13px;"></div>
 
                     <form id="eventRegisterForm" onsubmit="submitEventRegistration(event)">
                         @csrf
@@ -1896,8 +1896,9 @@
                             <label class="event-form-label">Nama Lengkap <span class="text-req">*</span></label>
                             <div class="input-group event-input-group">
                                 <span class="input-group-text"><i class="fa-solid fa-user"></i></span>
-                                <input type="text" name="name" id="regName" class="form-control event-form-control" placeholder="Nama lengkap kamu..." required>
+                                <input type="text" name="name" id="regName" class="form-control event-form-control" placeholder="Nama lengkap kamu..." required oninput="checkNameAvailability(this.value)">
                             </div>
+                            <div id="nameCheckFeedback" class="small mt-1.5 d-none" style="font-size: 12px; line-height: 1.4;"></div>
                         </div>
 
                         <div class="mb-3">
@@ -2247,13 +2248,80 @@
             }
         }
 
+        let nameCheckTimer = null;
+        function checkNameAvailability(nameVal) {
+            clearTimeout(nameCheckTimer);
+            const feedback = document.getElementById('nameCheckFeedback');
+            const input = document.getElementById('regName');
+            const eventId = document.getElementById('formEventId') ? document.getElementById('formEventId').value : '';
+
+            if (!nameVal || nameVal.trim().length < 2 || !eventId) {
+                if (feedback) {
+                    feedback.classList.add('d-none');
+                    feedback.innerHTML = '';
+                }
+                if (input) input.style.borderColor = '';
+                return;
+            }
+
+            nameCheckTimer = setTimeout(() => {
+                fetch('{{ route("event.check-name") }}', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]') ? document.querySelector('meta[name="csrf-token"]').getAttribute('content') : ''
+                    },
+                    body: JSON.stringify({
+                        event_id: eventId,
+                        name: nameVal.trim()
+                    })
+                })
+                .then(res => res.json())
+                .then(data => {
+                    if (data.exists) {
+                        if (feedback) {
+                            feedback.classList.remove('d-none');
+                            feedback.innerHTML = `<span class="text-danger fw-bold"><i class="fa-solid fa-triangle-exclamation me-1"></i> Peringatan: Nama "${escapeHtml(nameVal.trim())}" sudah terdaftar di acara ini!</span>` +
+                                (data.ticket_url ? ` <a href="${data.ticket_url}" target="_blank" class="text-info text-decoration-underline ms-1 fw-bold">Lihat Tiket</a>` : '');
+                        }
+                        if (input) input.style.borderColor = '#EF4444';
+                    } else {
+                        if (feedback) {
+                            feedback.classList.remove('d-none');
+                            feedback.innerHTML = `<span class="text-success small"><i class="fa-solid fa-circle-check me-1"></i> Nama tersedia untuk didaftarkan</span>`;
+                        }
+                        if (input) input.style.borderColor = '#22C55E';
+                    }
+                })
+                .catch(() => {});
+            }, 350);
+        }
+
+        function escapeHtml(text) {
+            const div = document.createElement('div');
+            div.textContent = text;
+            return div.innerHTML;
+        }
+
         function openEventRegistration(eventId, title, date, time, location) {
             if (upcomingModalInstance) upcomingModalInstance.hide();
 
             document.getElementById('formEventId').value = eventId;
             document.getElementById('regModalTitle').innerText = 'Daftar: ' + title;
             document.getElementById('regModalSubtitle').innerText = date + ' • ' + time + ' • ' + location;
-            document.getElementById('regErrorAlert').classList.add('d-none');
+            
+            const alertBox = document.getElementById('regErrorAlert');
+            if (alertBox) {
+                alertBox.classList.add('d-none');
+                alertBox.innerHTML = '';
+            }
+            const feedback = document.getElementById('nameCheckFeedback');
+            if (feedback) {
+                feedback.classList.add('d-none');
+                feedback.innerHTML = '';
+            }
+            const nameInp = document.getElementById('regName');
+            if (nameInp) nameInp.style.borderColor = '';
             
             if (regModalInstance) {
                 regModalInstance.show();
@@ -2266,11 +2334,13 @@
             const spinner = document.getElementById('btnRegSpinner');
             const icon = document.getElementById('btnRegIcon');
             const alertBox = document.getElementById('regErrorAlert');
+            const feedback = document.getElementById('nameCheckFeedback');
 
             btn.disabled = true;
             spinner.classList.remove('d-none');
             icon.classList.add('d-none');
             alertBox.classList.add('d-none');
+            alertBox.innerHTML = '';
 
             const form = document.getElementById('eventRegisterForm');
             const formData = new FormData(form);
@@ -2283,15 +2353,22 @@
                 },
                 body: formData
             })
-            .then(res => res.json())
-            .then(data => {
+            .then(async res => {
+                const data = await res.json();
+                return { status: res.status, ok: res.ok, data };
+            })
+            .then(({ status, ok, data }) => {
                 btn.disabled = false;
                 spinner.classList.add('d-none');
                 icon.classList.remove('d-none');
 
-                if (data.success && data.ticket) {
+                if (ok && data.success && data.ticket) {
+                    // BERHASIL: Tutup modal form dan tampilkan modal tiket
                     if (regModalInstance) regModalInstance.hide();
                     form.reset();
+                    if (feedback) feedback.classList.add('d-none');
+                    const nameInp = document.getElementById('regName');
+                    if (nameInp) nameInp.style.borderColor = '';
 
                     // Tampilkan data tiket di modal tiket
                     document.getElementById('ticketCodeDisplay').innerText = data.ticket.ticket_code;
@@ -2324,15 +2401,54 @@
                         }
                     }, 350);
                 } else {
-                    alertBox.innerText = data.message || 'Gagal melakukan pendaftaran. Silakan periksa data Anda.';
+                    // GAGAL: Berikan peringatan gagal yang sangat jelas dan mencolok
+                    const errorMsg = data.message || (data.errors ? Object.values(data.errors).flat().join('<br>') : 'Pendaftaran Gagal. Silakan periksa kembali data Anda.');
+                    let extraAction = '';
+                    if (data.ticket_url) {
+                        extraAction = `<div class="mt-2.5 pt-2 border-top border-danger border-opacity-25"><a href="${data.ticket_url}" target="_blank" class="btn btn-sm btn-outline-info rounded-pill px-3 py-1 fw-bold"><i class="fa-solid fa-arrow-up-right-from-square me-1"></i> Buka E-Tiket yang Sudah Terdaftar</a></div>`;
+                    }
+
+                    alertBox.innerHTML = `
+                        <div class="d-flex align-items-start gap-2.5">
+                            <i class="fa-solid fa-triangle-exclamation fs-4 text-danger mt-0.5"></i>
+                            <div class="flex-grow-1 text-start">
+                                <strong class="text-danger d-block mb-1" style="font-size: 14px;">Pendaftaran Gagal!</strong>
+                                <div class="text-light opacity-90">${errorMsg}</div>
+                                ${extraAction}
+                            </div>
+                        </div>
+                    `;
                     alertBox.classList.remove('d-none');
+                    alertBox.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+
+                    if (data.field === 'name') {
+                        const nameInp = document.getElementById('regName');
+                        if (nameInp) {
+                            nameInp.style.borderColor = '#EF4444';
+                            nameInp.focus();
+                        }
+                    } else if (data.field === 'phone') {
+                        const phoneInp = document.getElementById('regPhone');
+                        if (phoneInp) {
+                            phoneInp.style.borderColor = '#EF4444';
+                            phoneInp.focus();
+                        }
+                    }
                 }
             })
             .catch(err => {
                 btn.disabled = false;
                 spinner.classList.add('d-none');
                 icon.classList.remove('d-none');
-                alertBox.innerText = 'Terjadi kesalahan server saat memproses pendaftaran.';
+                alertBox.innerHTML = `
+                    <div class="d-flex align-items-start gap-2.5">
+                        <i class="fa-solid fa-circle-xmark fs-4 text-danger mt-0.5"></i>
+                        <div class="flex-grow-1 text-start">
+                            <strong class="text-danger d-block mb-1" style="font-size: 14px;">Pendaftaran Gagal!</strong>
+                            <div class="text-light opacity-90">Terjadi kesalahan koneksi server saat memproses pendaftaran. Silakan coba lagi.</div>
+                        </div>
+                    </div>
+                `;
                 alertBox.classList.remove('d-none');
             });
         }

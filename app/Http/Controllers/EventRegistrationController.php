@@ -37,6 +37,36 @@ class EventRegistrationController extends Controller
     }
 
     /**
+     * Cek apakah nama sudah terdaftar secara real-time saat mengisi form
+     */
+    public function checkName(Request $request)
+    {
+        $this->ensureTableExists();
+
+        $eventId = $request->event_id;
+        $name = trim($request->name ?? '');
+
+        if (!$eventId || mb_strlen($name) < 2) {
+            return response()->json(['exists' => false]);
+        }
+
+        $existing = EventRegistration::where('event_id', $eventId)
+            ->whereRaw('LOWER(name) = ?', [strtolower($name)])
+            ->first();
+
+        if ($existing) {
+            return response()->json([
+                'exists' => true,
+                'message' => "Nama \"{$existing->name}\" sudah terdaftar di acara ini!",
+                'ticket_code' => $existing->ticket_code,
+                'ticket_url' => url('/event/ticket/' . $existing->ticket_code),
+            ]);
+        }
+
+        return response()->json(['exists' => false]);
+    }
+
+    /**
      * Pendaftaran Peserta Event (Public via Website)
      */
     public function register(Request $request)
@@ -65,43 +95,58 @@ class EventRegistrationController extends Controller
             $digits = substr($digits, 1);
         }
         $formattedPhone = '+62' . $digits;
+        $normalizedName = trim($request->name);
 
-        // Cek apakah nomor telepon sudah terdaftar di event yang sama
-        $existing = EventRegistration::where('event_id', $request->event_id)
+        // 1. Cek apakah NAMA sudah pernah terdaftar di event yang sama
+        $existingByName = EventRegistration::where('event_id', $request->event_id)
+            ->whereRaw('LOWER(name) = ?', [strtolower($normalizedName)])
+            ->first();
+
+        if ($existingByName) {
+            $ticketUrl = url('/event/ticket/' . $existingByName->ticket_code);
+            $msg = "Pendaftaran Gagal: Nama \"{$existingByName->name}\" sudah pernah terdaftar di acara ini!";
+
+            if ($request->ajax() || $request->wantsJson()) {
+                return response()->json([
+                    'success' => false,
+                    'status' => 'already_registered',
+                    'field' => 'name',
+                    'message' => $msg,
+                    'ticket_code' => $existingByName->ticket_code,
+                    'ticket_url' => $ticketUrl,
+                ], 422);
+            }
+
+            return redirect()->back()
+                ->withInput()
+                ->withErrors(['name' => $msg]);
+        }
+
+        // 2. Cek apakah NOMOR WHATSAPP sudah terdaftar di event yang sama
+        $existingByPhone = EventRegistration::where('event_id', $request->event_id)
             ->where(function($q) use ($formattedPhone, $digits) {
                 $q->where('phone', $formattedPhone)
                   ->orWhere('phone', 'like', '%' . substr($digits, -8));
             })->first();
 
-        if ($existing) {
-            $event = $existing->event;
-            $ticketData = [
-                'id' => $existing->id,
-                'ticket_code' => $existing->ticket_code,
-                'name' => $existing->name,
-                'phone' => $existing->phone,
-                'category' => $existing->category,
-                'origin' => $existing->origin ?? '-',
-                'status' => $existing->status,
-                'attended_at' => $existing->attended_at ? $existing->attended_at->format('d M Y, H:i') . ' WIB' : null,
-                'event_title' => $event->title,
-                'event_date' => date('d M Y', strtotime($event->event_date)),
-                'event_time' => ($event->event_waktu ?? $event->event_time ?? '17:30') . ' WIB',
-                'event_location' => $event->location,
-                'ticket_url' => url('/event/ticket/' . $existing->ticket_code),
-            ];
+        if ($existingByPhone) {
+            $ticketUrl = url('/event/ticket/' . $existingByPhone->ticket_code);
+            $msg = "Pendaftaran Gagal: Nomor WhatsApp ini sudah terdaftar atas nama {$existingByPhone->name}!";
 
             if ($request->ajax() || $request->wantsJson()) {
                 return response()->json([
-                    'success' => true,
-                    'is_existing' => true,
-                    'message' => "Nomor WhatsApp ini sudah terdaftar atas nama {$existing->name}. Berikut adalah E-Tiket Anda.",
-                    'ticket' => $ticketData,
-                ]);
+                    'success' => false,
+                    'status' => 'already_registered',
+                    'field' => 'phone',
+                    'message' => $msg,
+                    'ticket_code' => $existingByPhone->ticket_code,
+                    'ticket_url' => $ticketUrl,
+                ], 422);
             }
 
-            return redirect()->route('event.ticket', $existing->ticket_code)
-                ->with('info', 'Nomor Anda sudah terdaftar sebelumnya.');
+            return redirect()->back()
+                ->withInput()
+                ->withErrors(['phone' => $msg]);
         }
 
         // Generate kode tiket unik format: DRN-XXXXX

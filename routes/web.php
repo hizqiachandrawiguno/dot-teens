@@ -55,6 +55,7 @@ Route::post('/prayer/submit', [AdminController::class, 'storePrayerPublic'])->na
 
 // Pendaftaran Event & E-Ticket Publik
 Route::post('/event/register', [EventRegistrationController::class, 'register'])->name('event.register');
+Route::post('/event/check-name', [EventRegistrationController::class, 'checkName'])->name('event.check-name');
 Route::get('/event/ticket/{ticket_code}', [EventRegistrationController::class, 'showTicket'])->name('event.ticket');
 
 // ==========================================
