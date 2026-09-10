@@ -416,6 +416,9 @@
                             </div>
                         </div>
 
+                        <!-- Toast Notifikasi Status Scanner (Feedback Zoom/Fokus) -->
+                        <div id="scannerToast" class="badge bg-dark bg-opacity-75 text-info px-3 py-2 rounded-pill d-none shadow" style="position: absolute; top: 14px; left: 50%; transform: translateX(-50%); z-index: 25; border: 1px solid rgba(56, 189, 248, 0.4); font-size: 12px; pointer-events: none; backdrop-filter: blur(8px);"></div>
+
                         <div id="scannerLoading" class="text-center p-4 d-none">
                             <div class="spinner-border text-info mb-3" style="width: 2.8rem; height: 2.8rem;"></div>
                             <h6 class="text-white fw-bold mb-1">Menghubungkan Kamera...</h6>
@@ -1033,6 +1036,18 @@
             }, 80);
         }
 
+        let toastTimeout = null;
+        function showScannerToast(msg, icon = 'fa-solid fa-circle-info') {
+            const toast = document.getElementById('scannerToast');
+            if (!toast) return;
+            toast.innerHTML = `<i class="${icon} me-1 text-info"></i> ${msg}`;
+            toast.classList.remove('d-none');
+            clearTimeout(toastTimeout);
+            toastTimeout = setTimeout(() => {
+                toast.classList.add('d-none');
+            }, 1600);
+        }
+
         async function setCameraZoom(zoomVal) {
             currentZoom = zoomVal;
             document.querySelectorAll('.btn-zoom').forEach(b => {
@@ -1045,15 +1060,20 @@
                 activeBtn.classList.remove('btn-outline-secondary', 'text-light');
             }
 
+            try { if (navigator.vibrate) navigator.vibrate(25); } catch(e) {}
+            showScannerToast(`Zoom: <strong>${zoomVal}x</strong>`, 'fa-solid fa-magnifying-glass');
+
             let hwZoomApplied = false;
             const track = getCameraTrack();
             if (track) {
                 try {
                     const caps = track.getCapabilities ? track.getCapabilities() : {};
-                    if (caps.zoom) {
+                    if (caps.zoom && caps.zoom.max > caps.zoom.min) {
                         const targetZoom = Math.max(caps.zoom.min, Math.min(caps.zoom.max, zoomVal));
                         await track.applyConstraints({ advanced: [{ zoom: targetZoom }] });
-                        hwZoomApplied = true;
+                        if (targetZoom >= zoomVal) {
+                            hwZoomApplied = true;
+                        }
                     }
                 } catch (e) {
                     hwZoomApplied = false;
@@ -1068,7 +1088,7 @@
                 } else {
                     videoEl.style.transform = zoomVal > 1.0 ? `scale(${zoomVal})` : 'none';
                     videoEl.style.transformOrigin = 'center center';
-                    videoEl.style.transition = 'transform 0.2s ease-out';
+                    videoEl.style.transition = 'transform 0.25s ease-out';
                 }
             }
         }
@@ -1080,6 +1100,7 @@
             html5QrCode.applyVideoConstraints({
                 advanced: [{ torch: isTorchActive }]
             }).then(() => {
+                showScannerToast(isTorchActive ? 'Lampu Senter ON' : 'Lampu Senter OFF', 'fa-solid fa-bolt');
                 const btn = document.getElementById('btnTorchToggle');
                 if (btn) {
                     if (isTorchActive) {
@@ -1094,10 +1115,14 @@
                 }
             }).catch(err => {
                 console.log("Torch error:", err);
+                showScannerToast('Senter tidak didukung perangkat', 'fa-solid fa-triangle-exclamation');
             });
         }
 
         function triggerFocus() {
+            try { if (navigator.vibrate) navigator.vibrate(35); } catch(e) {}
+            showScannerToast('Refokus Lensa Kamera', 'fa-solid fa-crosshairs');
+
             // Visual pulse hijau pada viewfinder
             const vf = document.querySelector('.viewfinder-box');
             if (vf) {
@@ -1209,10 +1234,12 @@
             const btnStop = document.getElementById('btnStopScan');
             const controlsBar = document.getElementById('cameraControlsBar');
             const overlay = document.getElementById('scannerOverlay');
+            const toast = document.getElementById('scannerToast');
 
             if (loading) loading.classList.add('d-none');
             if (controlsBar) controlsBar.classList.add('d-none');
             if (overlay) overlay.classList.add('d-none');
+            if (toast) toast.classList.add('d-none');
 
             const videoEl = document.querySelector('#qr-reader video');
             if (videoEl) videoEl.style.transform = 'none';
@@ -1232,8 +1259,9 @@
                     html5QrCode.clear();
                 } catch (err) {
                     console.log("Stop scanner error:", err);
+                } finally {
+                    html5QrCode = null;
                 }
-                html5QrCode = null;
             }
             if (ph) ph.classList.remove('d-none');
         }

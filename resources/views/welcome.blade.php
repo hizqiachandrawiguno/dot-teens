@@ -1945,9 +1945,9 @@
     </div>
 
     <!-- MODAL HASIL E-TIKET SETELAH MENDAFTAR -->
-    <div class="modal fade" id="eventTicketModal" tabindex="-1" aria-hidden="true">
-        <div class="modal-dialog modal-dialog-centered" style="max-width: 440px;">
-            <div class="modal-content text-center p-4" style="background: #112240; border: 1px solid rgba(56, 189, 248, 0.35); border-radius: 28px; box-shadow: 0 25px 50px rgba(0, 0, 0, 0.8);">
+    <div class="modal fade" id="eventTicketModal" tabindex="-1" aria-hidden="true" style="z-index: 1080;">
+        <div class="modal-dialog modal-dialog-centered" style="max-width: 440px; z-index: 1081; position: relative;">
+            <div class="modal-content text-center p-4 position-relative" style="background: #112240; border: 1px solid rgba(56, 189, 248, 0.35); border-radius: 28px; box-shadow: 0 25px 50px rgba(0, 0, 0, 0.8); z-index: 1082;">
                 
                 <div class="d-inline-flex p-3 rounded-circle mx-auto mb-2" style="background: rgba(16, 185, 129, 0.15); color: #10B981;">
                     <i class="fa-solid fa-circle-check fs-2"></i>
@@ -1974,11 +1974,11 @@
                 </div>
 
                 <!-- Tombol Aksi -->
-                <div class="d-flex flex-column gap-2">
-                    <a id="btnViewFullTicket" href="#" target="_blank" class="btn py-2 fw-bold text-white rounded-pill" style="background: linear-gradient(135deg, #0284C7, #2563EB);">
+                <div class="d-flex flex-column gap-2 mt-2" style="position: relative; z-index: 1085;">
+                    <a id="btnViewFullTicket" href="#" target="_blank" class="btn py-2 fw-bold text-white rounded-pill shadow-sm" style="background: linear-gradient(135deg, #0284C7, #2563EB); pointer-events: auto; cursor: pointer; text-decoration: none;" onclick="handleOpenTicketUrl(event, this)">
                         <i class="fa-solid fa-arrow-up-right-from-square me-1"></i> Buka Halaman Tiket Lengkap & Simpan
                     </a>
-                    <button type="button" class="btn btn-outline-secondary text-light rounded-pill py-2" data-bs-dismiss="modal">
+                    <button type="button" class="btn btn-outline-secondary text-light rounded-pill py-2" onclick="closeTicketModal()" style="pointer-events: auto; cursor: pointer;">
                         Tutup
                     </button>
                 </div>
@@ -2297,7 +2297,12 @@
                     document.getElementById('ticketCodeDisplay').innerText = data.ticket.ticket_code;
                     document.getElementById('ticketNameDisplay').innerText = data.ticket.name;
                     document.getElementById('ticketDetailDisplay').innerText = data.ticket.event_date + ' • ' + data.ticket.event_time;
-                    document.getElementById('btnViewFullTicket').href = data.ticket.ticket_url;
+                    
+                    const btnFull = document.getElementById('btnViewFullTicket');
+                    if (btnFull) {
+                        btnFull.href = data.ticket.ticket_url;
+                        btnFull.setAttribute('data-ticket-url', data.ticket.ticket_url);
+                    }
 
                     // Render QR Code
                     const qrContainer = document.getElementById('modalQrCode');
@@ -2311,7 +2316,13 @@
                         correctLevel : QRCode.CorrectLevel.M
                     });
 
-                    if (ticketModalInstance) ticketModalInstance.show();
+                    // Tampilkan ticket modal dengan aman setelah modal pendaftaran tertutup tuntas
+                    setTimeout(() => {
+                        document.querySelectorAll('.modal-backdrop').forEach(el => el.remove());
+                        if (ticketModalInstance) {
+                            ticketModalInstance.show();
+                        }
+                    }, 350);
                 } else {
                     alertBox.innerText = data.message || 'Gagal melakukan pendaftaran. Silakan periksa data Anda.';
                     alertBox.classList.remove('d-none');
@@ -2324,6 +2335,31 @@
                 alertBox.innerText = 'Terjadi kesalahan server saat memproses pendaftaran.';
                 alertBox.classList.remove('d-none');
             });
+        }
+
+        function handleOpenTicketUrl(e, el) {
+            e.preventDefault();
+            const url = el.getAttribute('data-ticket-url') || el.getAttribute('href');
+            if (url && url !== '#' && url !== '') {
+                window.open(url, '_blank');
+            }
+        }
+
+        function closeTicketModal() {
+            if (ticketModalInstance) {
+                try { ticketModalInstance.hide(); } catch(e) {}
+            }
+            const modalEl = document.getElementById('eventTicketModal');
+            if (modalEl) {
+                modalEl.classList.remove('show');
+                modalEl.style.display = 'none';
+                modalEl.setAttribute('aria-hidden', 'true');
+            }
+            // Bersihkan backdrop secara tuntas
+            document.querySelectorAll('.modal-backdrop').forEach(el => el.remove());
+            document.body.classList.remove('modal-open');
+            document.body.style.removeProperty('overflow');
+            document.body.style.removeProperty('padding-right');
         }
 
         function openLightbox(src, title, fromUpcoming = false) {
