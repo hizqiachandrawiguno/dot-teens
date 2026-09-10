@@ -57,9 +57,7 @@ class EventRegistrationController extends Controller
         if ($existing) {
             return response()->json([
                 'exists' => true,
-                'message' => "Nama \"{$existing->name}\" sudah terdaftar di acara ini!",
-                'ticket_code' => $existing->ticket_code,
-                'ticket_url' => url('/event/ticket/' . $existing->ticket_code),
+                'message' => 'Nama sudah terdaftar',
             ]);
         }
 
@@ -103,8 +101,7 @@ class EventRegistrationController extends Controller
             ->first();
 
         if ($existingByName) {
-            $ticketUrl = url('/event/ticket/' . $existingByName->ticket_code);
-            $msg = "Pendaftaran Gagal: Nama \"{$existingByName->name}\" sudah pernah terdaftar di acara ini!";
+            $msg = 'Nama sudah terdaftar';
 
             if ($request->ajax() || $request->wantsJson()) {
                 return response()->json([
@@ -112,8 +109,6 @@ class EventRegistrationController extends Controller
                     'status' => 'already_registered',
                     'field' => 'name',
                     'message' => $msg,
-                    'ticket_code' => $existingByName->ticket_code,
-                    'ticket_url' => $ticketUrl,
                 ], 422);
             }
 
@@ -130,8 +125,7 @@ class EventRegistrationController extends Controller
             })->first();
 
         if ($existingByPhone) {
-            $ticketUrl = url('/event/ticket/' . $existingByPhone->ticket_code);
-            $msg = "Pendaftaran Gagal: Nomor WhatsApp ini sudah terdaftar atas nama {$existingByPhone->name}!";
+            $msg = 'Nomor WhatsApp sudah terdaftar';
 
             if ($request->ajax() || $request->wantsJson()) {
                 return response()->json([
@@ -139,8 +133,6 @@ class EventRegistrationController extends Controller
                     'status' => 'already_registered',
                     'field' => 'phone',
                     'message' => $msg,
-                    'ticket_code' => $existingByPhone->ticket_code,
-                    'ticket_url' => $ticketUrl,
                 ], 422);
             }
 

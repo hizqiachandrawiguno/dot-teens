@@ -2281,14 +2281,13 @@
                     if (data.exists) {
                         if (feedback) {
                             feedback.classList.remove('d-none');
-                            feedback.innerHTML = `<span class="text-danger fw-bold"><i class="fa-solid fa-triangle-exclamation me-1"></i> Peringatan: Nama "${escapeHtml(nameVal.trim())}" sudah terdaftar di acara ini!</span>` +
-                                (data.ticket_url ? ` <a href="${data.ticket_url}" target="_blank" class="text-info text-decoration-underline ms-1 fw-bold">Lihat Tiket</a>` : '');
+                            feedback.innerHTML = `<span class="text-danger fw-bold"><i class="fa-solid fa-triangle-exclamation me-1"></i> Nama sudah terdaftar</span>`;
                         }
                         if (input) input.style.borderColor = '#EF4444';
                     } else {
                         if (feedback) {
                             feedback.classList.remove('d-none');
-                            feedback.innerHTML = `<span class="text-success small"><i class="fa-solid fa-circle-check me-1"></i> Nama tersedia untuk didaftarkan</span>`;
+                            feedback.innerHTML = `<span class="text-success small"><i class="fa-solid fa-circle-check me-1"></i> Nama tersedia</span>`;
                         }
                         if (input) input.style.borderColor = '#22C55E';
                     }
@@ -2401,20 +2400,15 @@
                         }
                     }, 350);
                 } else {
-                    // GAGAL: Berikan peringatan gagal yang sangat jelas dan mencolok
+                    // GAGAL: Berikan peringatan gagal "Nama sudah terdaftar" tanpa tautan tiket
                     const errorMsg = data.message || (data.errors ? Object.values(data.errors).flat().join('<br>') : 'Pendaftaran Gagal. Silakan periksa kembali data Anda.');
-                    let extraAction = '';
-                    if (data.ticket_url) {
-                        extraAction = `<div class="mt-2.5 pt-2 border-top border-danger border-opacity-25"><a href="${data.ticket_url}" target="_blank" class="btn btn-sm btn-outline-info rounded-pill px-3 py-1 fw-bold"><i class="fa-solid fa-arrow-up-right-from-square me-1"></i> Buka E-Tiket yang Sudah Terdaftar</a></div>`;
-                    }
 
                     alertBox.innerHTML = `
-                        <div class="d-flex align-items-start gap-2.5">
-                            <i class="fa-solid fa-triangle-exclamation fs-4 text-danger mt-0.5"></i>
+                        <div class="d-flex align-items-center gap-2.5">
+                            <i class="fa-solid fa-triangle-exclamation fs-4 text-danger"></i>
                             <div class="flex-grow-1 text-start">
-                                <strong class="text-danger d-block mb-1" style="font-size: 14px;">Pendaftaran Gagal!</strong>
+                                <strong class="text-danger d-block mb-0.5" style="font-size: 14px;">Pendaftaran Gagal!</strong>
                                 <div class="text-light opacity-90">${errorMsg}</div>
-                                ${extraAction}
                             </div>
                         </div>
                     `;
