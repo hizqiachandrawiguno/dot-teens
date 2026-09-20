@@ -161,6 +161,55 @@ class AdminController extends Controller
         return back()->with('success', 'Foto berhasil dihapus dari Galeri!');
     }
 
+    // --- FUNGSI DIVISI SOSMED: UPLOAD FRAME TWIBBON RESMI ---
+    public function uploadTwibbonFrame(Request $request)
+    {
+        $request->validate([
+            'frame_image' => 'required|image|mimes:png,webp|max:10240',
+        ], [
+            'frame_image.required' => 'Pilih file gambar frame PNG transparan terlebih dahulu.',
+            'frame_image.mimes'    => 'File frame wajib berformat PNG transparan atau WEBP.',
+            'frame_image.max'      => 'Ukuran file frame maksimal 10 MB.',
+        ]);
+
+        $uploadDir = public_path('uploads/twibbon');
+        if (!file_exists($uploadDir)) {
+            mkdir($uploadDir, 0777, true);
+        }
+
+        $fileName = 'active_frame.png';
+        $request->file('frame_image')->move($uploadDir, $fileName);
+
+        // 🎥 CCTV REKAM JEJAK
+        ActivityLog::create([
+            'user_name' => auth()->user()->name,
+            'role' => auth()->user()->role,
+            'action' => 'UPDATE FRAME TWIBBON',
+            'description' => auth()->user()->name . ' memperbarui template frame twibbon resmi DOT Teens.'
+        ]);
+
+        return back()->with('success', 'Template Frame Twibbon resmi berhasil diperbarui! Jemaat sekarang akan otomatis melihat template baru ini.');
+    }
+
+    // --- FUNGSI DIVISI SOSMED: RESET FRAME TWIBBON KE DEFAULT ---
+    public function resetTwibbonFrame()
+    {
+        $filePath = public_path('uploads/twibbon/active_frame.png');
+        if (file_exists($filePath)) {
+            unlink($filePath);
+        }
+
+        // 🎥 CCTV REKAM JEJAK
+        ActivityLog::create([
+            'user_name' => auth()->user()->name,
+            'role' => auth()->user()->role,
+            'action' => 'RESET FRAME TWIBBON',
+            'description' => auth()->user()->name . ' mereset frame twibbon ke template default bawaan sistem.'
+        ]);
+
+        return back()->with('success', 'Frame Twibbon berhasil di-reset ke template bawaan!');
+    }
+
     // --- FUNGSI DIVISI ACARA: BUAT EVENT BARU ---
     public function storeEvent(Request $request)
     {

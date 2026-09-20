@@ -841,7 +841,6 @@
                     <li class="nav-item"><a class="nav-link" href="#about">Tentang</a></li>
                     <li class="nav-item"><a class="nav-link" href="#devotion">Devotion</a></li>
                     <li class="nav-item"><a class="nav-link" href="#events">Acara</a></li>
-                    <li class="nav-item"><a class="nav-link" href="/twibbon"><i class="fa-solid fa-camera-retro me-1 text-info"></i>Twibbon</a></li>
                     <li class="nav-item"><a class="nav-link" href="#cells">Cell Group</a></li>
                     <li class="nav-item"><a class="nav-link" href="#gallery">Galeri</a></li>
                     <li class="nav-item"><a class="nav-link" href="#faq">FAQ</a></li>

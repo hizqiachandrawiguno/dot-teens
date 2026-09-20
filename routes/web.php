@@ -219,6 +219,8 @@ Route::middleware('auth')->group(function () {
     // Fitur Divisi Sosmed
     Route::post('/admin/gallery/add', [AdminController::class, 'storeGallery']);
     Route::post('/admin/gallery/delete/{id}', [AdminController::class, 'deleteGallery']);
+    Route::post('/admin/twibbon/upload', [AdminController::class, 'uploadTwibbonFrame'])->name('admin.twibbon.upload');
+    Route::post('/admin/twibbon/reset', [AdminController::class, 'resetTwibbonFrame'])->name('admin.twibbon.reset');
 
     // Fitur Divisi Pastoral
     Route::get('/admin/pastoral', [AdminController::class, 'pastoralDashboard']);

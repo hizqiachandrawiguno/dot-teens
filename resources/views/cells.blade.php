@@ -100,7 +100,6 @@
                     <li class="nav-item"><a class="nav-link" href="/">Home</a></li>
                     <li class="nav-item"><a class="nav-link" href="/about">About</a></li>
                     <li class="nav-item"><a class="nav-link active" href="/cells">Cells</a></li>
-                    <li class="nav-item"><a class="nav-link" href="/twibbon"><i class="fa-solid fa-camera-retro me-1 text-info"></i>Twibbon</a></li>
                     <li class="nav-item"><a class="nav-link" href="/gallery">Gallery</a></li>
                     <li class="nav-item"><a class="nav-link" href="/#faq">FAQ</a></li>
                     <li class="nav-item"><a class="btn btn-gradient rounded-pill px-4 ms-lg-2 text-white" style="color: white !important;" href="#join-cell">Join Us</a></li>

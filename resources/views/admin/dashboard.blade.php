@@ -700,6 +700,76 @@
                             </div>
                         </div>
                     </div>
+
+                    <!-- KELOLA TEMPLATE TWIBBON RESMI -->
+                    <div class="row g-4 mt-2">
+                        <div class="col-12">
+                            <div class="glass-card" style="border-left: 4px solid #38BDF8;">
+                                <div class="d-flex flex-column flex-md-row justify-content-between align-items-md-center gap-3 mb-4">
+                                    <div>
+                                        <div class="d-flex align-items-center gap-2 mb-1">
+                                            <h5 class="fw-bold text-white mb-0">
+                                                <i class="fa-solid fa-wand-magic-sparkles text-info me-2"></i> Template Frame Twibbon Jemaat
+                                            </h5>
+                                            @if(file_exists(public_path('uploads/twibbon/active_frame.png')))
+                                                <span class="badge bg-success rounded-pill px-3 py-1">Custom Frame Aktif</span>
+                                            @else
+                                                <span class="badge bg-secondary rounded-pill px-3 py-1">Template Default Sistem</span>
+                                            @endif
+                                        </div>
+                                        <p class="text-secondary small mb-0">
+                                            Upload 1 file PNG transparan resmi yang akan otomatis digunakan oleh seluruh jemaat saat berfoto di website.
+                                        </p>
+                                    </div>
+                                    <div class="d-flex gap-2">
+                                        <a href="/twibbon" target="_blank" class="btn btn-outline-info rounded-pill px-3 py-2 btn-sm fw-semibold">
+                                            <i class="fa-solid fa-arrow-up-right-from-square me-1"></i> Buka Halaman Jemaat
+                                        </a>
+                                        @if(file_exists(public_path('uploads/twibbon/active_frame.png')))
+                                            <form action="{{ route('admin.twibbon.reset') }}" method="POST" onsubmit="return confirm('Yakin ingin mereset frame ke default bawaan sistem?');">
+                                                @csrf
+                                                <button type="submit" class="btn btn-outline-danger rounded-pill px-3 py-2 btn-sm fw-semibold">
+                                                    <i class="fa-solid fa-trash-can me-1"></i> Reset ke Bawaan
+                                                </button>
+                                            </form>
+                                        @endif
+                                    </div>
+                                </div>
+
+                                <div class="row g-4 align-items-center">
+                                    <div class="col-md-5 col-lg-4 text-center">
+                                        <div class="p-3 rounded-3" style="background: #0B182B; border: 1px dashed rgba(56, 189, 248, 0.3);">
+                                            <small class="text-secondary d-block mb-2 fw-semibold">Preview Frame Aktif Saat Ini</small>
+                                            @if(file_exists(public_path('uploads/twibbon/active_frame.png')))
+                                                <img src="{{ asset('uploads/twibbon/active_frame.png') }}?v={{ time() }}" alt="Active Frame" class="img-fluid rounded-2 shadow" style="max-height: 200px; object-fit: contain; background: repeating-conic-gradient(#1e293b 0% 25%, #0f172a 0% 50%) 50% / 20px 20px;">
+                                            @else
+                                                <div class="py-4 text-center">
+                                                    <i class="fa-solid fa-image fs-1 text-secondary opacity-50 mb-2"></i>
+                                                    <p class="small text-secondary mb-0">Belum ada custom frame di-upload.<br><span class="text-info">Sistem memakai template default otomatis.</span></p>
+                                                </div>
+                                            @endif
+                                        </div>
+                                    </div>
+
+                                    <div class="col-md-7 col-lg-8">
+                                        <form action="{{ route('admin.twibbon.upload') }}" method="POST" enctype="multipart/form-data">
+                                            @csrf
+                                            <div class="mb-3">
+                                                <label class="small text-white fw-semibold mb-2">Upload Frame Baru (.PNG Transparan, Rasio 9:16 disarankan, Maks 10MB)</label>
+                                                <input type="file" name="frame_image" class="form-control" accept="image/png,image/webp" required>
+                                                <small class="text-secondary d-block mt-1">
+                                                    <i class="fa-solid fa-circle-info text-info me-1"></i> Pastikan bagian tengah frame transparan agar wajah jemaat terlihat jelas saat foto.
+                                                </small>
+                                            </div>
+                                            <button type="submit" class="btn btn-gradient rounded-pill px-4 py-2 fw-bold">
+                                                <i class="fa-solid fa-cloud-arrow-up me-2"></i> Update Template Frame Jemaat
+                                            </button>
+                                        </form>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
                 </div>
 
                 <!-- TAB 4: DIVISI CELL & JEMAAT -->
