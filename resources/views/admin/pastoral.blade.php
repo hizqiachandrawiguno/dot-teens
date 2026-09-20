@@ -92,16 +92,137 @@
         <h2 class="fw-bold mb-4">Pastoral <span class="text-gradient">Dashboard</span></h2>
 
         <div class="row g-4 mb-4">
-            <div class="col-md-6">
-                <div class="glass-card text-center" style="border-left: 4px solid #60A5FA;">
+            <div class="col-md-4">
+                <div class="glass-card text-center h-100" style="border-left: 4px solid #60A5FA;">
                     <h6 class="text-secondary text-uppercase tracking-wider">Total Jemaat Terdaftar</h6>
                     <h1 class="text-white fw-bold display-4 mb-0">{{ $members->count() }}</h1>
+                    <small class="text-secondary">Terdaftar di database</small>
                 </div>
             </div>
-            <div class="col-md-6">
-                <div class="glass-card text-center" style="border-left: 4px solid #EF4444;">
+            <div class="col-md-4">
+                <div class="glass-card text-center h-100" style="border-left: 4px solid #EF4444;">
                     <h6 class="text-secondary text-uppercase tracking-wider">Perlu Dikunjungi (> 3 Minggu)</h6>
                     <h1 class="text-danger fw-bold display-4 mb-0">{{ $needsVisitation->count() }}</h1>
+                    <button type="button" class="btn btn-sm btn-outline-danger rounded-pill px-3 mt-1" data-bs-toggle="modal" data-bs-target="#modalVisitation">
+                        <i class="fa-solid fa-list-check me-1"></i>Lihat Jemaat Absen
+                    </button>
+                </div>
+            </div>
+            <div class="col-md-4">
+                <div class="glass-card text-center h-100" style="border-left: 4px solid #F59E0B;">
+                    <h6 class="text-secondary text-uppercase tracking-wider">Ulang Tahun Pekan Ini 🎂</h6>
+                    <h1 class="text-warning fw-bold display-4 mb-0">{{ $upcomingBirthdays->count() }}</h1>
+                    <small class="text-secondary">Dalam 7 hari ke depan</small>
+                </div>
+            </div>
+        </div>
+
+        <!-- WIDGET ULANG TAHUN PEKAN INI -->
+        <div class="glass-card mb-4" style="border-left: 4px solid #F59E0B; background: linear-gradient(135deg, rgba(245, 158, 11, 0.06), rgba(17, 35, 64, 0.95));">
+            <div class="d-flex justify-content-between align-items-center mb-3">
+                <h5 class="text-white mb-0">
+                    <i class="fa-solid fa-cake-candles text-warning me-2"></i>Ulang Tahun Pekan Ini (Pastoral Birthday Care)
+                </h5>
+                <span class="badge bg-warning text-dark px-3 py-1 rounded-pill fw-bold">{{ $upcomingBirthdays->count() }} Jemaat</span>
+            </div>
+            @if($upcomingBirthdays->isNotEmpty())
+                <div class="row g-3">
+                    @foreach($upcomingBirthdays as $bdayMember)
+                        @php
+                            $bday = \Carbon\Carbon::parse($bdayMember->birth_date);
+                            $age = \Carbon\Carbon::parse($bdayMember->birth_date)->age + 1;
+                            $cleanPhone = preg_replace('/^0/', '62', preg_replace('/[^0-9]/', '', $bdayMember->phone_number ?? ''));
+                            $waMessage = "Halo " . $bdayMember->name . "! 🎉 Selamat ulang tahun yang ke-" . $age . " ya! Kami dari keluarga besar DOT Teens GBI ERC Sawangan mengucap syukur buat pertambahan usiamu. Kiranya Tuhan Yesus memberkati selalu, diberi hikmat, sukacita, dan menjadi terang di mana pun kamu berada. Have a blessed birthday! 🔥🎂";
+                        @endphp
+                        <div class="col-md-6 col-lg-4">
+                            <div class="p-3 rounded-3" style="background: rgba(0,0,0,0.25); border: 1px solid rgba(245, 158, 11, 0.25);">
+                                <div class="d-flex justify-content-between align-items-start">
+                                    <div>
+                                        <h6 class="fw-bold text-white mb-1">{{ $bdayMember->name }}</h6>
+                                        <p class="small text-secondary mb-1">
+                                            <i class="fa-regular fa-calendar text-warning me-1"></i>{{ $bday->translatedFormat('d F') }} (Menuju {{ $age }} Thn)
+                                        </p>
+                                        @if($bdayMember->fire_cell)
+                                            <span class="badge bg-secondary small mb-2">{{ $bdayMember->fire_cell }}</span>
+                                        @endif
+                                    </div>
+                                    @if($cleanPhone)
+                                        <a href="https://wa.me/{{ $cleanPhone }}?text={{ urlencode($waMessage) }}" target="_blank" class="btn btn-sm btn-success rounded-pill px-3" title="Kirim Ucapan WA">
+                                            <i class="fa-brands fa-whatsapp me-1"></i>Ucapan
+                                        </a>
+                                    @endif
+                                </div>
+                            </div>
+                        </div>
+                    @endforeach
+                </div>
+            @else
+                <p class="text-secondary small mb-0">
+                    <i class="fa-solid fa-circle-info me-1 text-info"></i>Tidak ada jemaat yang berulang tahun dalam 7 hari ke depan. Tetap pantau secara berkala!
+                </p>
+            @endif
+        </div>
+
+        <!-- MODAL JEMAAT PERLU DIKUNJUNGI (VISITATION) -->
+        <div class="modal fade text-start" id="modalVisitation" tabindex="-1" aria-hidden="true">
+            <div class="modal-dialog modal-dialog-centered modal-lg">
+                <div class="modal-content rounded-4 shadow-lg" style="background: #112340; border: 1px solid rgba(239, 68, 68, 0.35);">
+                    <div class="modal-header border-bottom pb-3 pt-4 px-4" style="border-color: rgba(239, 68, 68, 0.2) !important;">
+                        <div>
+                            <span class="badge bg-danger rounded-pill px-3 py-1 mb-1">Shepherding Alert</span>
+                            <h5 class="modal-title fw-bold text-white">
+                                <i class="fa-solid fa-triangle-exclamation text-danger me-2"></i>Daftar Jemaat Perlu Dikunjungi (> 3 Minggu Absen)
+                            </h5>
+                        </div>
+                        <button type="button" class="btn-close btn-close-white shadow-none" data-bs-dismiss="modal"></button>
+                    </div>
+                    <div class="modal-body p-4">
+                        @if($needsVisitation->isNotEmpty())
+                            <div class="table-responsive">
+                                <table class="table table-hover">
+                                    <thead>
+                                        <tr>
+                                            <th>Nama</th>
+                                            <th>Cell</th>
+                                            <th>Kehadiran Terakhir</th>
+                                            <th>Kontak WhatsApp</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        @foreach($needsVisitation as $nv)
+                                            @php
+                                                $cleanNvPhone = preg_replace('/^0/', '62', preg_replace('/[^0-9]/', '', $nv->phone_number ?? ''));
+                                                $lastAtt = $nv->attendances->first();
+                                                $visitationMsg = "Halo " . $nv->name . "! Kami dari Tim Pastoral DOT Teens rindu dan kangen banget sama kamu. Gimana kabarnya? Semoga semuanya baik-baik saja ya. Minggu ini ada ibadah seru di DOT, kami tunggu kehadiranmu ya! 🤗❤️";
+                                            @endphp
+                                            <tr>
+                                                <td class="fw-bold text-white">{{ $nv->name }}</td>
+                                                <td><span class="badge bg-secondary">{{ $nv->fire_cell ?: 'Belum Ada' }}</span></td>
+                                                <td class="text-danger small">
+                                                    {{ $lastAtt ? date('d M Y', strtotime($lastAtt->attendance_date)) : 'Belum Pernah Absen' }}
+                                                </td>
+                                                <td>
+                                                    @if($cleanNvPhone)
+                                                        <a href="https://wa.me/{{ $cleanNvPhone }}?text={{ urlencode($visitationMsg) }}" target="_blank" class="btn btn-sm btn-outline-success rounded-pill px-3">
+                                                            <i class="fa-brands fa-whatsapp me-1"></i>Sapa Jemaat
+                                                        </a>
+                                                    @else
+                                                        <span class="text-secondary small">Tidak ada nomor</span>
+                                                    @endif
+                                                </td>
+                                            </tr>
+                                        @endforeach
+                                    </tbody>
+                                </table>
+                            </div>
+                        @else
+                            <div class="text-center py-4">
+                                <i class="fa-solid fa-circle-check text-success fs-1 mb-2"></i>
+                                <h6 class="text-white fw-bold">Semua Jemaat Aktif!</h6>
+                                <p class="text-secondary small mb-0">Tidak ada jemaat yang absen lebih dari 3 minggu berturut-turut saat ini.</p>
+                            </div>
+                        @endif
+                    </div>
                 </div>
             </div>
         </div>

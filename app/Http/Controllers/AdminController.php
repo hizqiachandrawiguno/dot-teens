@@ -256,7 +256,9 @@ class AdminController extends Controller
     public function pastoralDashboard(Request $request)
     {
         $user = auth()->user();
-        $query = Member::query();
+        $query = Member::query()->with(['attendances' => function($q) {
+            $q->orderBy('attendance_date', 'desc');
+        }]);
 
         // Fitur Pencarian Nama
         if ($request->has('search') && $request->search != '') {
@@ -265,10 +267,37 @@ class AdminController extends Controller
 
         $members = $query->orderBy('name', 'asc')->get();
         
-        $needsVisitation = collect();
+        // Deteksi jemaat yang perlu dikunjungi (> 3 minggu tidak hadir / baru belum pernah hadir)
+        $needsVisitation = $members->filter(function($m) {
+            return $m->needs_visitation;
+        });
+
+        // Deteksi jemaat yang berulang tahun dalam 7 hari ke depan
+        $today = \Carbon\Carbon::today();
+        $upcomingBirthdays = $members->filter(function($m) use ($today) {
+            if (!$m->birth_date) return false;
+            try {
+                $bday = \Carbon\Carbon::parse($m->birth_date);
+                $thisYearBday = $bday->copy()->year($today->year);
+                if ($thisYearBday->lt($today)) {
+                    $diffDays = $today->diffInDays($thisYearBday->copy()->addYear(), false);
+                } else {
+                    $diffDays = $today->diffInDays($thisYearBday, false);
+                }
+                return $diffDays >= 0 && $diffDays <= 7;
+            } catch (\Throwable $e) {
+                return false;
+            }
+        })->sortBy(function($m) use ($today) {
+            $bday = \Carbon\Carbon::parse($m->birth_date)->year($today->year);
+            if ($bday->lt($today)) {
+                $bday->addYear();
+            }
+            return $bday->timestamp;
+        });
 
         // Kirim semua datanya ke view
-        return view('admin.pastoral', compact('user', 'members', 'needsVisitation'));
+        return view('admin.pastoral', compact('user', 'members', 'needsVisitation', 'upcomingBirthdays'));
     }
 
     // --- FUNGSI UNTUK MENYIMPAN DATA ABSENSI JEMAAT ---

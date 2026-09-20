@@ -38,6 +38,8 @@ Route::get('/', function () {
 
 Route::get('/about', [PublicController::class, 'about']);
 Route::post('/join-us', [PublicController::class, 'storeMember'])->name('join.submit');
+Route::post('/register-member', [PublicController::class, 'storeMember']); // Alias route untuk backward compatibility
+Route::get('/twibbon', function () { return view('twibbon'); })->name('twibbon');
 
 Route::get('/gallery', function () { 
     $galleries = \App\Models\Gallery::orderBy('created_at', 'desc')->get();

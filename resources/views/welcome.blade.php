@@ -841,6 +841,7 @@
                     <li class="nav-item"><a class="nav-link" href="#about">Tentang</a></li>
                     <li class="nav-item"><a class="nav-link" href="#devotion">Devotion</a></li>
                     <li class="nav-item"><a class="nav-link" href="#events">Acara</a></li>
+                    <li class="nav-item"><a class="nav-link" href="/twibbon"><i class="fa-solid fa-camera-retro me-1 text-info"></i>Twibbon</a></li>
                     <li class="nav-item"><a class="nav-link" href="#cells">Cell Group</a></li>
                     <li class="nav-item"><a class="nav-link" href="#gallery">Galeri</a></li>
                     <li class="nav-item"><a class="nav-link" href="#faq">FAQ</a></li>
@@ -1046,6 +1047,57 @@
                     </div>
                 </div>
             </div>
+
+            <!-- INOVASI: AYAT ROHANI HARI INI (DAILY YOUTH DEVOTIONAL) -->
+            @php
+                $dailyVerses = [
+                    ['verse' => 'Jangan seorang pun menganggap engkau rendah karena engkau muda. Jadilah teladan bagi orang-orang percaya, dalam perkataanmu, dalam tingkah lakumu, dalam kasihmu, dalam kesetiaanmu dan dalam kesucianmu.', 'ref' => '1 Timotius 4:12', 'theme' => 'Identitas Remaja'],
+                    ['verse' => 'Segala perkara dapat kutanggung di dalam Dia yang memberi kekuatan kepadaku.', 'ref' => 'Filipi 4:13', 'theme' => 'Kekuatan & Keberanian'],
+                    ['verse' => 'Sebab Aku ini mengetahui rancangan-rancangan apa yang ada pada-Ku mengenai kamu, demikianlah firman TUHAN, yaitu rancangan damai sejahtera dan bukan rancangan kecelakaan, untuk memberikan kepadamu hari depan yang penuh harapan.', 'ref' => 'Yeremia 29:11', 'theme' => 'Masa Depan'],
+                    ['verse' => 'Firman-Mu itu pelita bagi kakiku dan terang bagi jalanku.', 'ref' => 'Mazmur 119:105', 'theme' => 'Arah Hidup'],
+                    ['verse' => 'Tetapi orang-orang yang menanti-nantikan TUHAN mendapat kekuatan baru: mereka seumpama rajawali yang naik terbang dengan kekuatan sayapnya; mereka berlari dan tidak menjadi lesu, mereka berjalan dan tidak menjadi lelah.', 'ref' => 'Yesaya 40:31', 'theme' => 'Kekuatan Baru'],
+                    ['verse' => 'Percayalah kepada TUHAN dengan segenap hatimu, dan janganlah bersandar kepada pengertianmu sendiri. Akuilah Dia dalam segala lakumu, maka Ia akan meluruskan jalanmu.', 'ref' => 'Amsal 3:5-6', 'theme' => 'Hikmat & Ketaatan'],
+                    ['verse' => 'Jika Allah di pihak kita, siapakah yang akan melawan kita?', 'ref' => 'Roma 8:31', 'theme' => 'Kemenangan']
+                ];
+                $todayVerse = $dailyVerses[date('z') % count($dailyVerses)];
+                $shareText = "✨ Ayat Hari Ini dari DOT Teens:\n\n\"" . $todayVerse['verse'] . "\"\n(" . $todayVerse['ref'] . ")\n\nYuk join komunitas anak muda DOT GBI ERC Sawangan di https://dotsawangan.com 🔥";
+            @endphp
+
+            <div class="navy-card p-4 p-md-5 mt-4" data-aos="fade-up" style="border-left: 6px solid #F59E0B; background: linear-gradient(135deg, rgba(245, 158, 11, 0.04), rgba(18, 35, 63, 0.95));">
+                <div class="row align-items-center g-4">
+                    <div class="col-lg-8">
+                        <div class="d-flex align-items-center gap-2 mb-3">
+                            <span class="pill-badge pill-badge-cyan" style="background: rgba(245, 158, 11, 0.15); color: #F59E0B; border: 1px solid rgba(245, 158, 11, 0.3);">
+                                <i class="fa-solid fa-book-bible me-1"></i> Ayat Hari Ini
+                            </span>
+                            <span class="badge rounded-pill px-3 py-1" style="background: rgba(56, 189, 248, 0.12); color: #38BDF8;">
+                                {{ $todayVerse['theme'] }}
+                            </span>
+                        </div>
+                        <blockquote class="fs-5 fw-semibold text-white mb-3" style="line-height: 1.7; font-style: italic;">
+                            "{{ $todayVerse['verse'] }}"
+                        </blockquote>
+                        <p class="text-info fw-bold mb-0 fs-6">
+                            &mdash; {{ $todayVerse['ref'] }}
+                        </p>
+                    </div>
+
+                    <div class="col-lg-4 text-lg-end">
+                        <div class="d-flex flex-column gap-2">
+                            <button type="button" class="btn btn-outline-cyan rounded-pill px-4 py-2 text-white" onclick="copyVerse('{{ addslashes($todayVerse['verse']) }} ({{ addslashes($todayVerse['ref']) }})')">
+                                <i class="fa-regular fa-copy me-2"></i> Salin Ayat
+                            </button>
+                            <a href="https://wa.me/?text={{ urlencode($shareText) }}" target="_blank" class="btn btn-success rounded-pill px-4 py-2 fw-semibold">
+                                <i class="fa-brands fa-whatsapp me-2"></i> Share ke WhatsApp
+                            </a>
+                            <a href="/twibbon" class="btn btn-sm btn-outline-light rounded-pill px-3 py-2 mt-1">
+                                <i class="fa-solid fa-camera me-1 text-info"></i> Buat Story di Twibbon DOT
+                            </a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
         </div>
     </section>
 
@@ -2740,6 +2792,21 @@
                     fireCellInput.style.boxShadow = '0 0 15px rgba(56, 189, 248, 0.4)';
                 }
             }, 300);
+        }
+
+        // ==========================================
+        // COPY VERSE TO CLIPBOARD
+        // ==========================================
+        function copyVerse(text) {
+            if (navigator.clipboard && window.isSecureContext) {
+                navigator.clipboard.writeText(text).then(() => {
+                    alert('Ayat berhasil disalin! Silakan bagikan ke teman atau status media sosialmu.');
+                }).catch(() => {
+                    prompt('Salin ayat berikut:', text);
+                });
+            } else {
+                prompt('Salin ayat berikut:', text);
+            }
         }
     </script>
 </body>
