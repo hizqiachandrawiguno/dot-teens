@@ -476,39 +476,7 @@
         </div>
     </div>
 
-    <!-- MODAL BANTUAN IZIN KAMERA -->
-    <div class="modal fade" id="cameraPermissionModal" tabindex="-1" aria-hidden="true">
-        <div class="modal-dialog modal-dialog-centered">
-            <div class="modal-content glass-card border border-info border-opacity-50 text-white p-3">
-                <div class="modal-header border-0 pb-0">
-                    <h5 class="modal-title fw-bold text-gradient"><i class="fa-solid fa-shield-halved me-2"></i> Izin Akses Kamera</h5>
-                    <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
-                </div>
-                <div class="modal-body text-start">
-                    <p class="text-secondary mb-3">
-                        Browser membutuhkan izin kamera agar kamu bisa melihat wajahmu langsung di dalam bingkai Twibbon resmi.
-                    </p>
-                    <div class="p-3 rounded-3 mb-3" style="background: rgba(56, 189, 248, 0.1); border: 1px solid rgba(56, 189, 248, 0.25);">
-                        <h6 class="fw-bold text-info mb-2 small"><i class="fa-solid fa-circle-info me-1"></i> Cara Mengaktifkan Izin:</h6>
-                        <ol class="small text-white-50 mb-0 ps-3">
-                            <li>Klik ikon <strong>Gembok 🔒</strong> di sebelah kiri alamat web (URL bar).</li>
-                            <li>Pilih <strong>Izin Situs / Permissions</strong> lalu cari <strong>Kamera</strong>.</li>
-                            <li>Ubah menjadi <strong>Izinkan (Allow)</strong>, lalu coba klik 'Buka Kamera' kembali.</li>
-                        </ol>
-                    </div>
-                    <p class="small text-secondary mb-0">Atau kamu bisa langsung menggunakan kamera bawaan HP tanpa ribet:</p>
-                </div>
-                <div class="modal-footer border-0 pt-0 d-flex flex-column gap-2">
-                    <button type="button" class="btn btn-gradient rounded-pill w-100 py-2 fw-bold" onclick="triggerNativeCamera()">
-                        <i class="fa-solid fa-camera me-2"></i> Buka Kamera Bawaan HP
-                    </button>
-                    <button type="button" class="btn btn-outline-light rounded-pill w-100 py-2" onclick="triggerFileUpload()">
-                        <i class="fa-solid fa-images me-2 text-info"></i> Ambil dari Galeri HP Saja
-                    </button>
-                </div>
-            </div>
-        </div>
-    </div>
+
 
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
     <script>
@@ -551,23 +519,8 @@
         }
 
         function triggerNativeCamera() {
-            const modalEl = document.getElementById('cameraPermissionModal');
-            if (modalEl && typeof bootstrap !== 'undefined') {
-                const modal = bootstrap.Modal.getInstance(modalEl);
-                if (modal) modal.hide();
-            }
             nativeCameraInput.value = '';
             nativeCameraInput.click();
-        }
-
-        function showCameraPermissionModal() {
-            const modalEl = document.getElementById('cameraPermissionModal');
-            if (modalEl && typeof bootstrap !== 'undefined') {
-                const modal = new bootstrap.Modal(modalEl);
-                modal.show();
-            } else {
-                triggerNativeCamera();
-            }
         }
 
         function nudgeImg(dx, dy) {
@@ -748,7 +701,7 @@
             stopCamera(); // Pastikan stream lama berhenti
             try {
                 if (!navigator.mediaDevices || !navigator.mediaDevices.getUserMedia) {
-                    showCameraPermissionModal();
+                    triggerNativeCamera();
                     return;
                 }
 
@@ -786,9 +739,9 @@
                 updateUIState();
 
             } catch (err) {
-                console.error("Camera access error:", err);
+                console.warn("Camera access error, langsung buka kamera bawaan HP:", err);
                 stopCamera();
-                showCameraPermissionModal();
+                triggerNativeCamera();
             }
         }
 
