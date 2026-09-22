@@ -2,7 +2,7 @@
 <html lang="id">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
     <title>DOT Camera & Twibbon — DRP Outstanding Teens</title>
 
     <meta name="description" content="Ambil foto langsung dengan frame resmi DOT Teens & Disciples Revival Night dan bagikan ke WhatsApp.">
@@ -20,7 +20,10 @@
             font-family: 'Poppins', sans-serif;
             min-height: 100vh;
             margin: 0;
-            padding-bottom: 60px;
+            padding-bottom: 70px;
+            overflow-x: hidden;
+            overflow-y: auto;
+            -webkit-overflow-scrolling: touch;
         }
 
         .navbar-custom {
@@ -59,32 +62,45 @@
         }
 
         .btn-wa {
-            background: #22C55E;
+            background: linear-gradient(135deg, #22C55E, #16A34A);
             color: #FFFFFF;
             font-weight: 700;
             border: none;
             transition: all 0.25s ease;
+            box-shadow: 0 4px 15px rgba(34, 197, 94, 0.35);
         }
         .btn-wa:hover {
-            background: #16A34A;
+            background: linear-gradient(135deg, #16A34A, #15803D);
             color: #FFFFFF;
             transform: translateY(-2px);
-            box-shadow: 0 8px 25px rgba(34, 197, 94, 0.4);
+            box-shadow: 0 8px 25px rgba(34, 197, 94, 0.5);
         }
 
         /* Viewport Container (Phone Aspect Ratio 9:16) */
         .stage-wrapper {
             position: relative;
-            width: 320px;
-            height: 568px;
-            max-width: 100%;
+            width: 100%;
+            max-width: 280px;
+            aspect-ratio: 9 / 16;
             margin: 0 auto;
             border-radius: 20px;
             overflow: hidden;
             background: #030712;
             border: 2px solid rgba(56, 189, 248, 0.35);
             box-shadow: 0 15px 40px rgba(0, 0, 0, 0.7);
-            touch-action: none;
+            /* Catatan: touch-action: none dihapus dari wrapper agar scrolling layar mobile lancar! */
+        }
+
+        @media (min-width: 768px) {
+            .stage-wrapper {
+                max-width: 320px;
+            }
+        }
+
+        @media (max-height: 750px) and (max-width: 576px) {
+            .stage-wrapper {
+                max-width: 240px;
+            }
         }
 
         /* Video element for live camera feed */
@@ -151,6 +167,31 @@
             70% { box-shadow: 0 0 0 14px rgba(239, 68, 68, 0); }
             100% { box-shadow: 0 0 0 0 rgba(239, 68, 68, 0); }
         }
+
+        /* Mobile Sticky Bottom Bar */
+        .mobile-bottom-bar {
+            background: rgba(11, 19, 37, 0.96);
+            backdrop-filter: blur(16px);
+            border-top: 1px solid rgba(56, 189, 248, 0.25);
+            z-index: 1050;
+            box-shadow: 0 -10px 30px rgba(0, 0, 0, 0.6);
+            padding-bottom: calc(0.75rem + env(safe-area-inset-bottom, 0px));
+        }
+
+        @media (max-width: 767.98px) {
+            body {
+                padding-bottom: calc(95px + env(safe-area-inset-bottom, 0px));
+            }
+        }
+
+        /* Subtle glow for guide card */
+        .guide-box {
+            background: rgba(9, 14, 26, 0.85);
+            backdrop-filter: blur(8px);
+            border: 1px solid rgba(56, 189, 248, 0.3);
+            border-radius: 16px;
+            box-shadow: 0 8px 30px rgba(0, 0, 0, 0.6);
+        }
     </style>
 </head>
 <body>
@@ -161,11 +202,11 @@
     @endphp
 
     <!-- HEADER / TOPBAR -->
-    <nav class="navbar navbar-dark navbar-custom py-3">
+    <nav class="navbar navbar-dark navbar-custom py-2 py-md-3 sticky-top">
         <div class="container d-flex justify-content-between align-items-center">
             <a class="navbar-brand d-flex align-items-center gap-2" href="/">
-                <img src="{{ asset('images/logo.png') }}" alt="Logo DOT" style="height: 44px; object-fit: contain;">
-                <span class="fw-bold fs-5">DOT <span class="text-gradient">STUDIO</span></span>
+                <img src="{{ asset('images/logo.png') }}" alt="Logo DOT" style="height: 38px; object-fit: contain;">
+                <span class="fw-bold fs-6 fs-md-5">DOT <span class="text-gradient">STUDIO</span></span>
             </a>
             <a href="/" class="btn btn-sm btn-outline-light rounded-pill px-3 py-1">
                 <i class="fa-solid fa-arrow-left me-1"></i> Kembali ke Web
@@ -174,22 +215,23 @@
     </nav>
 
     <!-- MAIN APP -->
-    <div class="container py-4">
+    <div class="container py-3 py-md-4">
 
+        <!-- TITLE & BADGE -->
         <div class="text-center mb-3">
-            <span class="badge rounded-pill px-3 py-2 mb-2" style="background: rgba(56, 189, 248, 0.15); color: #38BDF8; border: 1px solid rgba(56, 189, 248, 0.3);">
+            <span class="badge rounded-pill px-3 py-1 mb-2" style="background: rgba(56, 189, 248, 0.15); color: #38BDF8; border: 1px solid rgba(56, 189, 248, 0.3);">
                 <i class="fa-solid fa-camera-retro me-1"></i> Official DOT Photo Studio
             </span>
-            <h1 class="display-6 fw-bold text-white mb-1">Ambil Foto <span class="text-gradient">Twibbon Resmi</span></h1>
+            <h1 class="fs-3 fs-md-2 fw-bold text-white mb-1">Ambil Foto <span class="text-gradient">Twibbon Resmi</span></h1>
             <p class="text-secondary small mx-auto mb-0" style="max-width: 520px;">
                 Buka kamera langsung di web atau pilih foto dari galerimu, paskan di frame resmi DOT, lalu bagikan langsung ke WhatsApp!
             </p>
         </div>
 
-        <div class="row g-4 justify-content-center">
+        <div class="row g-3 g-md-4 justify-content-center">
             
-            <!-- STAGE VIEWPORT (CANVAS + CAMERA + FRAME) -->
-            <div class="col-lg-5 col-md-7 text-center">
+            <!-- COLUMN 1: STAGE VIEWPORT (CANVAS + CAMERA + FRAME) -->
+            <div class="col-lg-5 col-md-6 text-center">
                 <div class="glass-card p-3 mb-3">
                     
                     <!-- Live Camera Status Indicator -->
@@ -212,52 +254,115 @@
                             <img id="frameOverlay" src="" alt="Official Frame" style="display:none;">
                         @endif
 
-                        <!-- 4. Guide placeholder when empty -->
-                        <div id="emptyGuide" class="position-absolute top-50 start-50 translate-middle text-center p-3" style="z-index: 3; pointer-events: none;">
-                            <div class="rounded-circle p-3 mb-2 mx-auto" style="width: 70px; height: 70px; background: rgba(56, 189, 248, 0.15); border: 1px solid #38BDF8; display: flex; align-items: center; justify-content: center;">
-                                <i class="fa-solid fa-camera fs-2 text-info"></i>
+                        <!-- 4. Guide placeholder when empty: TOMBOL UTAMA LANGSUNG DI TENGAH LAYAR -->
+                        <div id="emptyGuide" class="position-absolute top-50 start-50 translate-middle text-center p-3 w-100" style="z-index: 10; max-width: 270px;">
+                            <div class="guide-box p-3">
+                                <div class="rounded-circle p-2 mb-2 mx-auto" style="width: 58px; height: 58px; background: rgba(56, 189, 248, 0.2); border: 2px solid #38BDF8; display: flex; align-items: center; justify-content: center; box-shadow: 0 0 18px rgba(56, 189, 248, 0.4);">
+                                    <i class="fa-solid fa-camera-retro fs-4 text-info"></i>
+                                </div>
+                                <h6 class="fw-bold text-white mb-1">Siap Berfoto?</h6>
+                                <p class="text-white-50 small mb-3" style="font-size: 0.78rem;">Pilih cara untuk pasang foto ke bingkai twibbon resmi:</p>
+                                
+                                <div class="d-grid gap-2">
+                                    <button type="button" class="btn btn-sm btn-gradient rounded-pill py-2 px-3 fw-bold shadow" onclick="document.getElementById('btnToggleCamera').click()">
+                                        <i class="fa-solid fa-camera me-1"></i> Buka Kamera
+                                    </button>
+                                    <button type="button" class="btn btn-sm btn-outline-light rounded-pill py-2 px-3 fw-semibold bg-dark bg-opacity-50" onclick="triggerFileUpload()">
+                                        <i class="fa-solid fa-images me-1 text-info"></i> Pilih dari Galeri
+                                    </button>
+                                </div>
                             </div>
-                            <h6 class="fw-bold text-white mb-1">Siap Berfoto?</h6>
-                            <p class="text-secondary small mb-0">Klik tombol <strong>'Buka Kamera'</strong> atau pilih dari galeri.</p>
                         </div>
                     </div>
 
-                    <div class="text-secondary small mt-2">
+                    <!-- QUICK ACTION BUTTONS TEPAT DI BAWAH FRAME -->
+                    <div id="quickActionRow" class="mt-3">
+                        <!-- State 1: Belum Ada Foto (Tombol Cepat) -->
+                        <div id="quickActionEmpty" class="d-flex gap-2 justify-content-center">
+                            <button type="button" class="btn btn-gradient rounded-pill px-3 py-2 fw-bold flex-grow-1" onclick="document.getElementById('btnToggleCamera').click()">
+                                <i class="fa-solid fa-camera me-1"></i> Buka Kamera
+                            </button>
+                            <button type="button" class="btn btn-outline-light rounded-pill px-3 py-2 fw-semibold flex-grow-1" onclick="triggerFileUpload()">
+                                <i class="fa-solid fa-images me-1 text-info"></i> Pilih Galeri
+                            </button>
+                        </div>
+
+                        <!-- State 2: Live Camera Controls (Jepret Foto) -->
+                        <div id="quickActionCamera" class="d-flex gap-2 justify-content-center" style="display: none !important;">
+                            <button type="button" class="btn btn-danger flex-grow-1 rounded-pill py-2 fw-bold shadow pulse-camera fs-6" onclick="document.getElementById('btnSnap').click()">
+                                <i class="fa-solid fa-camera me-1"></i> Jepret Foto Ini!
+                            </button>
+                            <button type="button" class="btn btn-outline-light rounded-circle" style="width: 44px; height: 44px;" onclick="document.getElementById('btnSwitchCamera').click()" title="Ganti Kamera">
+                                <i class="fa-solid fa-camera-rotate"></i>
+                            </button>
+                            <button type="button" class="btn btn-outline-danger rounded-circle" style="width: 44px; height: 44px;" onclick="stopCamera()" title="Tutup Kamera">
+                                <i class="fa-solid fa-xmark"></i>
+                            </button>
+                        </div>
+
+                        <!-- State 3: Foto Sudah Siap (Share WA Langsung) -->
+                        <div id="quickActionReady" class="d-flex flex-column gap-2" style="display: none !important;">
+                            <button type="button" class="btn btn-wa rounded-pill py-3 fw-bold fs-5 shadow" onclick="document.getElementById('btnShareWa').click()">
+                                <i class="fa-brands fa-whatsapp me-2 fs-4"></i> Bagikan Langsung ke WA
+                            </button>
+                            <div class="d-flex gap-2">
+                                <button type="button" class="btn btn-sm btn-outline-info rounded-pill py-2 flex-grow-1 text-white" onclick="document.getElementById('btnDownloadImg').click()">
+                                    <i class="fa-solid fa-download me-1"></i> Simpan HD
+                                </button>
+                                <button type="button" class="btn btn-sm btn-outline-light rounded-pill py-2 flex-grow-1" onclick="triggerFileUpload()">
+                                    <i class="fa-solid fa-rotate me-1"></i> Ganti Foto
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="text-secondary small mt-2" id="canvasHint" style="display: none;">
                         <i class="fa-solid fa-hand-pointer text-info me-1"></i> Sentuh & geser foto di layar untuk menyesuaikan posisi
                     </div>
 
-                    <!-- ADJUSTMENT CONTROLS -->
-                    <div class="mt-3 p-3 rounded-3" style="background: rgba(0,0,0,0.3); border: 1px solid rgba(255,255,255,0.06);">
+                    <!-- ADJUSTMENT CONTROLS (Tampil hanya saat foto sudah terpasang) -->
+                    <div id="adjustmentControls" class="mt-3 p-3 rounded-3 text-start" style="background: rgba(0,0,0,0.3); border: 1px solid rgba(255,255,255,0.06); display: none;">
                         <div class="d-flex align-items-center justify-content-between mb-2">
                             <span class="text-secondary small fw-semibold"><i class="fa-solid fa-magnifying-glass me-1"></i> Zoom Foto</span>
                             <span id="zoomLabel" class="small text-info fw-bold">100%</span>
                         </div>
                         <input type="range" class="range-slider mb-3" id="zoomRange" min="30" max="300" value="100">
 
-                        <div class="d-flex justify-content-between gap-2">
-                            <button type="button" class="btn btn-sm btn-outline-light rounded-pill px-3" id="btnRotate">
+                        <div class="d-flex justify-content-between gap-1 mb-2">
+                            <button type="button" class="btn btn-sm btn-outline-light rounded-pill px-2 flex-grow-1" id="btnRotate">
                                 <i class="fa-solid fa-rotate-right me-1"></i> Putar
                             </button>
-                            <button type="button" class="btn btn-sm btn-outline-light rounded-pill px-3" id="btnFlip">
+                            <button type="button" class="btn btn-sm btn-outline-light rounded-pill px-2 flex-grow-1" id="btnFlip">
                                 <i class="fa-solid fa-arrows-left-right me-1"></i> Mirror
                             </button>
-                            <button type="button" class="btn btn-sm btn-outline-danger rounded-pill px-3" id="btnReset">
+                            <button type="button" class="btn btn-sm btn-outline-danger rounded-pill px-2 flex-grow-1" id="btnReset">
                                 <i class="fa-solid fa-arrows-rotate me-1"></i> Reset
                             </button>
+                        </div>
+
+                        <!-- Nudge buttons for effortless positioning on mobile -->
+                        <div class="d-flex align-items-center justify-content-between pt-2 border-top border-secondary border-opacity-25 mt-2">
+                            <span class="text-secondary small"><i class="fa-solid fa-arrows-up-down-left-right me-1"></i> Geser Posisi:</span>
+                            <div class="d-flex gap-1">
+                                <button type="button" class="btn btn-sm btn-dark border border-secondary rounded-circle p-0 d-flex align-items-center justify-content-center" style="width: 32px; height: 32px;" onclick="nudgeImg(-25, 0)" title="Geser Kiri"><i class="fa-solid fa-arrow-left"></i></button>
+                                <button type="button" class="btn btn-sm btn-dark border border-secondary rounded-circle p-0 d-flex align-items-center justify-content-center" style="width: 32px; height: 32px;" onclick="nudgeImg(0, -25)" title="Geser Atas"><i class="fa-solid fa-arrow-up"></i></button>
+                                <button type="button" class="btn btn-sm btn-dark border border-secondary rounded-circle p-0 d-flex align-items-center justify-content-center" style="width: 32px; height: 32px;" onclick="nudgeImg(0, 25)" title="Geser Bawah"><i class="fa-solid fa-arrow-down"></i></button>
+                                <button type="button" class="btn btn-sm btn-dark border border-secondary rounded-circle p-0 d-flex align-items-center justify-content-center" style="width: 32px; height: 32px;" onclick="nudgeImg(25, 0)" title="Geser Kanan"><i class="fa-solid fa-arrow-right"></i></button>
+                            </div>
                         </div>
                     </div>
 
                 </div>
             </div>
 
-            <!-- ACTION BUTTONS & SHARING -->
-            <div class="col-lg-5 col-md-7">
-                <div class="glass-card p-4">
+            <!-- COLUMN 2: ACTION BUTTONS & SHARING INFO (DESKTOP & COMPLETE CARD) -->
+            <div class="col-lg-5 col-md-6">
+                <div class="glass-card p-3 p-md-4">
 
                     <!-- STEP 1: CAMERA & UPLOAD BUTTONS -->
                     <div class="mb-4">
-                        <label class="form-label text-white fw-bold mb-2">
-                            <span class="badge bg-info text-dark me-2">1</span>Ambil / Pilih Foto
+                        <label class="form-label text-white fw-bold mb-2 d-flex align-items-center">
+                            <span class="badge bg-info text-dark me-2">1</span> Ambil / Pilih Foto
                         </label>
 
                         <!-- Button Group: Camera or Gallery -->
@@ -281,7 +386,7 @@
                             <div class="text-center my-1 text-secondary small">&mdash; ATAU &mdash;</div>
                             
                             <input type="file" id="fileUploadInput" accept="image/*" class="d-none">
-                            <button type="button" class="btn btn-outline-light rounded-pill py-2" onclick="document.getElementById('fileUploadInput').click()">
+                            <button type="button" class="btn btn-outline-light rounded-pill py-2 fw-semibold" onclick="triggerFileUpload()">
                                 <i class="fa-solid fa-images me-2 text-info"></i> Pilih Foto dari Galeri HP
                             </button>
                         </div>
@@ -289,8 +394,8 @@
 
                     <!-- STEP 2: SHARE LANGSUNG KE WHATSAPP -->
                     <div class="mb-4">
-                        <label class="form-label text-white fw-bold mb-2">
-                            <span class="badge bg-success me-2">2</span>Bagikan Foto
+                        <label class="form-label text-white fw-bold mb-2 d-flex align-items-center">
+                            <span class="badge bg-success me-2">2</span> Bagikan Foto
                         </label>
 
                         <div class="d-grid gap-2">
@@ -323,6 +428,47 @@
 
     </div>
 
+    <!-- MOBILE STICKY BOTTOM BAR (TAMPIL HANYA DI HP / SCREEN KECIL) -->
+    <div class="d-md-none fixed-bottom p-3 mobile-bottom-bar">
+        <div class="container px-0">
+            <!-- State 1: Awal (Belum ada foto) -->
+            <div id="mobileBarInitial" class="d-flex gap-2">
+                <button type="button" class="btn btn-gradient flex-grow-1 rounded-pill py-2 fw-bold shadow-lg" onclick="document.getElementById('btnToggleCamera').click()">
+                    <i class="fa-solid fa-camera me-1"></i> Buka Kamera
+                </button>
+                <button type="button" class="btn btn-outline-light flex-grow-1 rounded-pill py-2 fw-semibold bg-dark bg-opacity-75 shadow-lg" onclick="triggerFileUpload()">
+                    <i class="fa-solid fa-images me-1 text-info"></i> Galeri HP
+                </button>
+            </div>
+
+            <!-- State 2: Saat Kamera Terbuka -->
+            <div id="mobileBarCamera" class="d-none d-flex gap-2 align-items-center">
+                <button type="button" class="btn btn-outline-light rounded-circle p-0 d-flex align-items-center justify-content-center" style="width: 44px; height: 44px;" onclick="document.getElementById('btnSwitchCamera').click()" title="Ganti Kamera">
+                    <i class="fa-solid fa-camera-rotate"></i>
+                </button>
+                <button type="button" class="btn btn-danger flex-grow-1 rounded-pill py-2 fw-bold fs-6 shadow-lg pulse-camera" onclick="document.getElementById('btnSnap').click()">
+                    <i class="fa-solid fa-camera me-2"></i> Jepret Foto
+                </button>
+                <button type="button" class="btn btn-outline-danger rounded-circle p-0 d-flex align-items-center justify-content-center" style="width: 44px; height: 44px;" onclick="stopCamera()" title="Tutup Kamera">
+                    <i class="fa-solid fa-xmark fs-5"></i>
+                </button>
+            </div>
+
+            <!-- State 3: Foto Sudah Siap -->
+            <div id="mobileBarReady" class="d-none d-flex gap-2 align-items-center">
+                <button type="button" class="btn btn-wa flex-grow-1 rounded-pill py-2 fw-bold fs-6 shadow-lg" onclick="document.getElementById('btnShareWa').click()">
+                    <i class="fa-brands fa-whatsapp me-1 fs-5"></i> Kirim ke WhatsApp
+                </button>
+                <button type="button" class="btn btn-outline-info rounded-circle p-0 d-flex align-items-center justify-content-center bg-dark" style="width: 44px; height: 44px;" onclick="document.getElementById('btnDownloadImg').click()" title="Download HD">
+                    <i class="fa-solid fa-download text-white"></i>
+                </button>
+                <button type="button" class="btn btn-outline-light rounded-circle p-0 d-flex align-items-center justify-content-center bg-dark" style="width: 44px; height: 44px;" onclick="triggerFileUpload()" title="Ganti Foto">
+                    <i class="fa-solid fa-rotate-left"></i>
+                </button>
+            </div>
+        </div>
+    </div>
+
     <script>
         const hasCustomFrame = {{ $hasCustomFrame ? 'true' : 'false' }};
         const activeFrameUrl = "{{ $activeFrameUrl }}";
@@ -339,6 +485,7 @@
         const cameraControlsRow = document.getElementById('cameraControlsRow');
         const btnSnap = document.getElementById('btnSnap');
         const btnSwitchCamera = document.getElementById('btnSwitchCamera');
+        const fileUploadInput = document.getElementById('fileUploadInput');
 
         let cameraStream = null;
         let isCameraActive = false;
@@ -354,6 +501,77 @@
         let isDragging = false;
         let dragStartX = 0;
         let dragStartY = 0;
+
+        function triggerFileUpload() {
+            fileUploadInput.value = ''; // Reset agar bisa pilih file yang sama jika diinginkan
+            fileUploadInput.click();
+        }
+
+        function nudgeImg(dx, dy) {
+            if (!loadedImage) return;
+            imgX += dx;
+            imgY += dy;
+            renderCanvas();
+        }
+
+        // ==========================================
+        // SINKRONISASI TAMPILAN KONTROL & TOMBOL
+        // ==========================================
+        function updateUIState() {
+            const quickActionEmpty = document.getElementById('quickActionEmpty');
+            const quickActionCamera = document.getElementById('quickActionCamera');
+            const quickActionReady = document.getElementById('quickActionReady');
+            const adjustmentControls = document.getElementById('adjustmentControls');
+            const canvasHint = document.getElementById('canvasHint');
+
+            const mobileBarInitial = document.getElementById('mobileBarInitial');
+            const mobileBarCamera = document.getElementById('mobileBarCamera');
+            const mobileBarReady = document.getElementById('mobileBarReady');
+
+            if (isCameraActive) {
+                // Kamera sedang menyala
+                if (emptyGuide) emptyGuide.style.display = 'none';
+                if (quickActionEmpty) quickActionEmpty.style.setProperty('display', 'none', 'important');
+                if (quickActionCamera) quickActionCamera.style.setProperty('display', 'flex', 'important');
+                if (quickActionReady) quickActionReady.style.setProperty('display', 'none', 'important');
+                if (adjustmentControls) adjustmentControls.style.display = 'none';
+                if (canvasHint) canvasHint.style.display = 'none';
+
+                if (mobileBarInitial) mobileBarInitial.classList.add('d-none');
+                if (mobileBarCamera) mobileBarCamera.classList.remove('d-none');
+                if (mobileBarReady) mobileBarReady.classList.add('d-none');
+
+                photoCanvas.style.touchAction = 'auto';
+            } else if (loadedImage) {
+                // Foto sudah siap / terpasang
+                if (emptyGuide) emptyGuide.style.display = 'none';
+                if (quickActionEmpty) quickActionEmpty.style.setProperty('display', 'none', 'important');
+                if (quickActionCamera) quickActionCamera.style.setProperty('display', 'none', 'important');
+                if (quickActionReady) quickActionReady.style.setProperty('display', 'flex', 'important');
+                if (adjustmentControls) adjustmentControls.style.display = 'block';
+                if (canvasHint) canvasHint.style.display = 'block';
+
+                if (mobileBarInitial) mobileBarInitial.classList.add('d-none');
+                if (mobileBarCamera) mobileBarCamera.classList.add('d-none');
+                if (mobileBarReady) mobileBarReady.classList.remove('d-none');
+
+                photoCanvas.style.touchAction = 'none';
+            } else {
+                // Keadaan awal / kosong
+                if (emptyGuide) emptyGuide.style.display = 'block';
+                if (quickActionEmpty) quickActionEmpty.style.setProperty('display', 'flex', 'important');
+                if (quickActionCamera) quickActionCamera.style.setProperty('display', 'none', 'important');
+                if (quickActionReady) quickActionReady.style.setProperty('display', 'none', 'important');
+                if (adjustmentControls) adjustmentControls.style.display = 'none';
+                if (canvasHint) canvasHint.style.display = 'none';
+
+                if (mobileBarInitial) mobileBarInitial.classList.remove('d-none');
+                if (mobileBarCamera) mobileBarCamera.classList.add('d-none');
+                if (mobileBarReady) mobileBarReady.classList.add('d-none');
+
+                photoCanvas.style.touchAction = 'auto';
+            }
+        }
 
         // ==========================================
         // DEFAULT FRAME PROCEDURAL (JIKA ADMIN BELUM UPLOAD PNG)
@@ -431,8 +649,6 @@
 
             // Render photo
             if (loadedImage) {
-                emptyGuide.style.display = 'none';
-
                 ctx.save();
                 ctx.translate(photoCanvas.width / 2 + imgX, photoCanvas.height / 2 + imgY);
                 ctx.rotate((imgRotation * Math.PI) / 180);
@@ -445,10 +661,6 @@
 
                 ctx.drawImage(loadedImage, -scaledW / 2, -scaledH / 2, scaledW, scaledH);
                 ctx.restore();
-            } else {
-                if (!isCameraActive) {
-                    emptyGuide.style.display = 'block';
-                }
             }
 
             // If using procedural default frame, draw it on canvas
@@ -478,12 +690,13 @@
                 await cameraVideo.play();
 
                 isCameraActive = true;
-                emptyGuide.style.display = 'none';
                 cameraStatusIndicator.style.display = 'inline-block';
                 cameraControlsRow.style.setProperty('display', 'flex', 'important');
                 btnToggleCamera.innerHTML = '<i class="fa-solid fa-stop me-2"></i> Matikan Kamera';
                 btnToggleCamera.classList.remove('btn-gradient');
                 btnToggleCamera.classList.add('btn-outline-danger');
+
+                updateUIState();
 
             } catch (err) {
                 console.error("Camera access error:", err);
@@ -505,9 +718,7 @@
             btnToggleCamera.classList.remove('btn-outline-danger');
             btnToggleCamera.classList.add('btn-gradient');
 
-            if (!loadedImage) {
-                emptyGuide.style.display = 'block';
-            }
+            updateUIState();
         }
 
         btnToggleCamera.addEventListener('click', function() {
@@ -561,6 +772,7 @@
                 // Matikan kamera setelah jepret agar user bisa atur & share
                 stopCamera();
                 renderCanvas();
+                updateUIState();
             };
             snappedImg.src = tempCanvas.toDataURL('image/jpeg', 0.95);
         });
@@ -568,7 +780,7 @@
         // ==========================================
         // UPLOAD DARI FILE GALERI HP
         // ==========================================
-        document.getElementById('fileUploadInput').addEventListener('change', function(e) {
+        fileUploadInput.addEventListener('change', function(e) {
             const file = e.target.files[0];
             if (!file) return;
 
@@ -592,6 +804,7 @@
                     document.getElementById('zoomLabel').innerText = '100%';
 
                     renderCanvas();
+                    updateUIState();
                 };
                 img.src = evt.target.result;
             };
@@ -634,16 +847,19 @@
         });
 
         photoCanvas.addEventListener('touchstart', function(e) {
-            if (!loadedImage) return;
+            if (!loadedImage) return; // Jika belum ada foto, sentuhan bebas scroll halaman!
             isDragging = true;
             const p = getPos(e);
             dragStartX = p.x - imgX;
             dragStartY = p.y - imgY;
-        }, { passive: false });
+        }, { passive: true });
 
         window.addEventListener('touchmove', function(e) {
             if (!isDragging || !loadedImage) return;
-            e.preventDefault();
+            // Hanya prevent default saat user sedang aktif menggeser foto di dalam kanvas
+            if (e.cancelable) {
+                e.preventDefault();
+            }
             const p = getPos(e);
             imgX = p.x - dragStartX;
             imgY = p.y - dragStartY;
@@ -722,14 +938,14 @@
         // ==========================================
         document.getElementById('btnShareWa').addEventListener('click', async function() {
             if (!loadedImage) {
-                alert('Ambil foto atau pilih dari galeri terlebih dahulu!');
+                alert('Silakan ambil foto atau pilih dari galeri terlebih dahulu!');
                 return;
             }
 
             const blob = await getFinalCompositeBlob();
             if (!blob) return;
 
-            const file = new File([blob], 'DOT_Teens_Story.png', { type: 'image/png' });
+            const file = new File([blob], 'DOT_Teens_Twibbon.png', { type: 'image/png' });
             const shareText = "Halo! Ini twibbon DOT Teens aku 🔥 Ayo ikutan juga di https://dotsawangan.com/twibbon";
 
             // Cek apakah browser mendukung Web Share API dengan attachment file (Android/iOS Chrome/Safari)
@@ -770,7 +986,7 @@
         // ==========================================
         document.getElementById('btnDownloadImg').addEventListener('click', async function() {
             if (!loadedImage) {
-                alert('Ambil foto atau pilih dari galeri terlebih dahulu!');
+                alert('Silakan ambil foto atau pilih dari galeri terlebih dahulu!');
                 return;
             }
 
@@ -785,8 +1001,9 @@
             URL.revokeObjectURL(url);
         });
 
-        // Render initial blank canvas
+        // Inisialisasi
         renderCanvas();
+        updateUIState();
     </script>
 
 </body>
