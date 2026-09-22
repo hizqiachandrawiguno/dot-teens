@@ -587,6 +587,47 @@
             box-shadow: 0 12px 30px rgba(37, 211, 102, 0.6);
         }
 
+        /* FLOATING TWIBBON BUTTON (IDENTIK DENGAN TOMBOL WHATSAPP) */
+        .floating-twibbon {
+            position: fixed;
+            bottom: 100px;
+            right: 30px;
+            background: linear-gradient(135deg, #0284C7, #2563EB);
+            color: white;
+            width: 58px;
+            height: 58px;
+            border-radius: 50%;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            font-size: 24px;
+            box-shadow: 0 8px 25px rgba(56, 189, 248, 0.45);
+            z-index: 999;
+            transition: all 0.25s ease;
+            text-decoration: none;
+        }
+
+        .floating-twibbon:hover {
+            transform: scale(1.10);
+            color: white;
+            box-shadow: 0 12px 30px rgba(56, 189, 248, 0.7);
+        }
+
+        .floating-twibbon-badge {
+            position: absolute;
+            right: 68px;
+            background: rgba(11, 19, 37, 0.95);
+            color: #38BDF8;
+            border: 1px solid rgba(56, 189, 248, 0.35);
+            padding: 4px 12px;
+            border-radius: 20px;
+            font-size: 12px;
+            font-weight: 700;
+            white-space: nowrap;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.4);
+            pointer-events: none;
+        }
+
         .back-to-top {
             position: fixed;
             bottom: 30px;
@@ -693,6 +734,18 @@
                 width: 50px;
                 height: 50px;
                 font-size: 24px;
+            }
+            .floating-twibbon {
+                bottom: 80px;
+                right: 20px;
+                width: 50px;
+                height: 50px;
+                font-size: 20px;
+            }
+            .floating-twibbon-badge {
+                right: 58px;
+                font-size: 11px;
+                padding: 3px 8px;
             }
             .back-to-top {
                 bottom: 20px;
@@ -1089,8 +1142,8 @@
                             <a href="https://wa.me/?text={{ urlencode($shareText) }}" target="_blank" class="btn btn-success rounded-pill px-4 py-2 fw-semibold">
                                 <i class="fa-brands fa-whatsapp me-2"></i> Share ke WhatsApp
                             </a>
-                            <a href="/twibbon" class="btn btn-sm btn-outline-light rounded-pill px-3 py-2 mt-1">
-                                <i class="fa-solid fa-camera me-1 text-info"></i> Buat Story di Twibbon DOT
+                            <a href="/twibbon" class="btn btn-primary rounded-pill px-4 py-2 fw-semibold mt-1 shadow" style="background: linear-gradient(135deg, #0284C7, #2563EB); border: none;">
+                                <i class="fa-solid fa-camera-retro me-2"></i> Foto Twibbon Resmi DOT
                             </a>
                         </div>
                     </div>
@@ -1710,6 +1763,12 @@
             </div>
         </div>
     </div>
+
+    <!-- FLOATING TWIBBON BUTTON (MIRIP BUTTON WHATSAPP) -->
+    <a href="/twibbon" class="floating-twibbon" title="Foto Twibbon Resmi DOT">
+        <i class="fa-solid fa-camera-retro"></i>
+        <span class="floating-twibbon-badge">Twibbon</span>
+    </a>
 
     <!-- FLOATING WHATSAPP BUTTON -->
     <a href="https://wa.me/6285173280626?text=Halo%20kak,%20aku%20mau%20tanya%20info%20ibadah%20DOT%20Teens%20dong!" target="_blank" class="floating-wa" title="Tanya Kami di WhatsApp">

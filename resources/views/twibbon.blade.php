@@ -88,7 +88,6 @@
             background: #030712;
             border: 2px solid rgba(56, 189, 248, 0.35);
             box-shadow: 0 15px 40px rgba(0, 0, 0, 0.7);
-            /* Catatan: touch-action: none dihapus dari wrapper agar scrolling layar mobile lancar! */
         }
 
         @media (min-width: 768px) {
@@ -112,7 +111,8 @@
             height: 100%;
             object-fit: cover;
             display: none;
-            z-index: 1;
+            z-index: 4; /* Di atas canvas (z-index: 2) agar video feed live terlihat jelas */
+            background: #000;
         }
 
         /* Final / Working Canvas */
@@ -136,7 +136,7 @@
             height: 100%;
             object-fit: contain;
             pointer-events: none;
-            z-index: 5;
+            z-index: 6; /* Selalu di paling depan membingkai video & foto */
         }
 
         /* Range Slider */
@@ -186,9 +186,9 @@
 
         /* Subtle glow for guide card */
         .guide-box {
-            background: rgba(9, 14, 26, 0.85);
+            background: rgba(9, 14, 26, 0.88);
             backdrop-filter: blur(8px);
-            border: 1px solid rgba(56, 189, 248, 0.3);
+            border: 1px solid rgba(56, 189, 248, 0.35);
             border-radius: 16px;
             box-shadow: 0 8px 30px rgba(0, 0, 0, 0.6);
         }
@@ -242,7 +242,7 @@
                     <!-- The 9:16 Screen Stage -->
                     <div class="stage-wrapper" id="stageWrapper">
                         <!-- 1. Live video stream (hidden when photo is snapped) -->
-                        <video id="cameraVideo" autoplay playsinline muted></video>
+                        <video id="cameraVideo" autoplay playsinline webkit-playsinline muted></video>
 
                         <!-- 2. Interactive canvas where photo renders -->
                         <canvas id="photoCanvas" width="1080" height="1920"></canvas>
@@ -292,7 +292,7 @@
                             <button type="button" class="btn btn-danger flex-grow-1 rounded-pill py-2 fw-bold shadow pulse-camera fs-6" onclick="document.getElementById('btnSnap').click()">
                                 <i class="fa-solid fa-camera me-1"></i> Jepret Foto Ini!
                             </button>
-                            <button type="button" class="btn btn-outline-light rounded-circle" style="width: 44px; height: 44px;" onclick="document.getElementById('btnSwitchCamera').click()" title="Ganti Kamera">
+                            <button type="button" class="btn btn-outline-light rounded-circle" style="width: 44px; height: 44px;" onclick="document.getElementById('btnSwitchCamera').click()" title="Ganti Kamera Depan/Belakang">
                                 <i class="fa-solid fa-camera-rotate"></i>
                             </button>
                             <button type="button" class="btn btn-outline-danger rounded-circle" style="width: 44px; height: 44px;" onclick="stopCamera()" title="Tutup Kamera">
@@ -385,9 +385,16 @@
                             <!-- Opsi Upload dari Galeri -->
                             <div class="text-center my-1 text-secondary small">&mdash; ATAU &mdash;</div>
                             
+                            <!-- Input File Galeri -->
                             <input type="file" id="fileUploadInput" accept="image/*" class="d-none">
                             <button type="button" class="btn btn-outline-light rounded-pill py-2 fw-semibold" onclick="triggerFileUpload()">
                                 <i class="fa-solid fa-images me-2 text-info"></i> Pilih Foto dari Galeri HP
+                            </button>
+
+                            <!-- Input Fallback Kamera Bawaan HP -->
+                            <input type="file" id="nativeCameraInput" accept="image/*" capture="user" class="d-none">
+                            <button type="button" class="btn btn-outline-secondary btn-sm rounded-pill py-1 mt-1 text-secondary" onclick="triggerNativeCamera()">
+                                <i class="fa-solid fa-mobile-screen me-1"></i> Pakai Kamera Bawaan HP (Alternatif)
                             </button>
                         </div>
                     </div>
@@ -469,6 +476,41 @@
         </div>
     </div>
 
+    <!-- MODAL BANTUAN IZIN KAMERA -->
+    <div class="modal fade" id="cameraPermissionModal" tabindex="-1" aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered">
+            <div class="modal-content glass-card border border-info border-opacity-50 text-white p-3">
+                <div class="modal-header border-0 pb-0">
+                    <h5 class="modal-title fw-bold text-gradient"><i class="fa-solid fa-shield-halved me-2"></i> Izin Akses Kamera</h5>
+                    <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
+                </div>
+                <div class="modal-body text-start">
+                    <p class="text-secondary mb-3">
+                        Browser membutuhkan izin kamera agar kamu bisa melihat wajahmu langsung di dalam bingkai Twibbon resmi.
+                    </p>
+                    <div class="p-3 rounded-3 mb-3" style="background: rgba(56, 189, 248, 0.1); border: 1px solid rgba(56, 189, 248, 0.25);">
+                        <h6 class="fw-bold text-info mb-2 small"><i class="fa-solid fa-circle-info me-1"></i> Cara Mengaktifkan Izin:</h6>
+                        <ol class="small text-white-50 mb-0 ps-3">
+                            <li>Klik ikon <strong>Gembok 🔒</strong> di sebelah kiri alamat web (URL bar).</li>
+                            <li>Pilih <strong>Izin Situs / Permissions</strong> lalu cari <strong>Kamera</strong>.</li>
+                            <li>Ubah menjadi <strong>Izinkan (Allow)</strong>, lalu coba klik 'Buka Kamera' kembali.</li>
+                        </ol>
+                    </div>
+                    <p class="small text-secondary mb-0">Atau kamu bisa langsung menggunakan kamera bawaan HP tanpa ribet:</p>
+                </div>
+                <div class="modal-footer border-0 pt-0 d-flex flex-column gap-2">
+                    <button type="button" class="btn btn-gradient rounded-pill w-100 py-2 fw-bold" onclick="triggerNativeCamera()">
+                        <i class="fa-solid fa-camera me-2"></i> Buka Kamera Bawaan HP
+                    </button>
+                    <button type="button" class="btn btn-outline-light rounded-pill w-100 py-2" onclick="triggerFileUpload()">
+                        <i class="fa-solid fa-images me-2 text-info"></i> Ambil dari Galeri HP Saja
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
     <script>
         const hasCustomFrame = {{ $hasCustomFrame ? 'true' : 'false' }};
         const activeFrameUrl = "{{ $activeFrameUrl }}";
@@ -486,6 +528,7 @@
         const btnSnap = document.getElementById('btnSnap');
         const btnSwitchCamera = document.getElementById('btnSwitchCamera');
         const fileUploadInput = document.getElementById('fileUploadInput');
+        const nativeCameraInput = document.getElementById('nativeCameraInput');
 
         let cameraStream = null;
         let isCameraActive = false;
@@ -503,8 +546,28 @@
         let dragStartY = 0;
 
         function triggerFileUpload() {
-            fileUploadInput.value = ''; // Reset agar bisa pilih file yang sama jika diinginkan
+            fileUploadInput.value = '';
             fileUploadInput.click();
+        }
+
+        function triggerNativeCamera() {
+            const modalEl = document.getElementById('cameraPermissionModal');
+            if (modalEl && typeof bootstrap !== 'undefined') {
+                const modal = bootstrap.Modal.getInstance(modalEl);
+                if (modal) modal.hide();
+            }
+            nativeCameraInput.value = '';
+            nativeCameraInput.click();
+        }
+
+        function showCameraPermissionModal() {
+            const modalEl = document.getElementById('cameraPermissionModal');
+            if (modalEl && typeof bootstrap !== 'undefined') {
+                const modal = new bootstrap.Modal(modalEl);
+                modal.show();
+            } else {
+                triggerNativeCamera();
+            }
         }
 
         function nudgeImg(dx, dy) {
@@ -529,7 +592,7 @@
             const mobileBarReady = document.getElementById('mobileBarReady');
 
             if (isCameraActive) {
-                // Kamera sedang menyala
+                // Kamera sedang menyala: PASTIKAN VIDEO FEED TAMPIL DI DEPAN KANVAS
                 if (emptyGuide) emptyGuide.style.display = 'none';
                 if (quickActionEmpty) quickActionEmpty.style.setProperty('display', 'none', 'important');
                 if (quickActionCamera) quickActionCamera.style.setProperty('display', 'flex', 'important');
@@ -541,6 +604,9 @@
                 if (mobileBarCamera) mobileBarCamera.classList.remove('d-none');
                 if (mobileBarReady) mobileBarReady.classList.add('d-none');
 
+                cameraVideo.style.display = 'block';
+                cameraVideo.style.zIndex = '4';
+                photoCanvas.style.display = 'none';
                 photoCanvas.style.touchAction = 'auto';
             } else if (loadedImage) {
                 // Foto sudah siap / terpasang
@@ -555,6 +621,9 @@
                 if (mobileBarCamera) mobileBarCamera.classList.add('d-none');
                 if (mobileBarReady) mobileBarReady.classList.remove('d-none');
 
+                cameraVideo.style.display = 'none';
+                photoCanvas.style.display = 'block';
+                photoCanvas.style.zIndex = '2';
                 photoCanvas.style.touchAction = 'none';
             } else {
                 // Keadaan awal / kosong
@@ -569,6 +638,9 @@
                 if (mobileBarCamera) mobileBarCamera.classList.add('d-none');
                 if (mobileBarReady) mobileBarReady.classList.add('d-none');
 
+                cameraVideo.style.display = 'none';
+                photoCanvas.style.display = 'block';
+                photoCanvas.style.zIndex = '2';
                 photoCanvas.style.touchAction = 'auto';
             }
         }
@@ -675,18 +747,33 @@
         async function startCamera() {
             stopCamera(); // Pastikan stream lama berhenti
             try {
+                if (!navigator.mediaDevices || !navigator.mediaDevices.getUserMedia) {
+                    showCameraPermissionModal();
+                    return;
+                }
+
                 const constraints = {
                     video: {
-                        facingMode: facingMode,
-                        width: { ideal: 1920 },
-                        height: { ideal: 1080 }
+                        facingMode: { ideal: facingMode },
+                        width: { ideal: 1280 },
+                        height: { ideal: 720 }
                     },
                     audio: false
                 };
 
-                cameraStream = await navigator.mediaDevices.getUserMedia(constraints);
+                try {
+                    cameraStream = await navigator.mediaDevices.getUserMedia(constraints);
+                } catch (fallbackErr) {
+                    console.warn("Retrying with simple video constraint:", fallbackErr);
+                    cameraStream = await navigator.mediaDevices.getUserMedia({ video: true, audio: false });
+                }
+
                 cameraVideo.srcObject = cameraStream;
                 cameraVideo.style.display = 'block';
+                cameraVideo.style.zIndex = '4'; // Video di depan kanvas
+                cameraVideo.style.transform = (facingMode === 'user') ? 'scaleX(-1)' : 'scaleX(1)';
+                photoCanvas.style.display = 'none';
+
                 await cameraVideo.play();
 
                 isCameraActive = true;
@@ -700,8 +787,8 @@
 
             } catch (err) {
                 console.error("Camera access error:", err);
-                alert("Tidak dapat mengakses kamera. Pastikan izin kamera telah diaktifkan di browsermu atau gunakan opsi 'Pilih Foto dari Galeri'.");
                 stopCamera();
+                showCameraPermissionModal();
             }
         }
 
@@ -710,7 +797,16 @@
                 cameraStream.getTracks().forEach(track => track.stop());
                 cameraStream = null;
             }
-            cameraVideo.style.display = 'none';
+            if (cameraVideo) {
+                cameraVideo.pause();
+                cameraVideo.srcObject = null;
+                cameraVideo.style.display = 'none';
+                cameraVideo.style.zIndex = '1';
+            }
+            
+            photoCanvas.style.display = 'block';
+            photoCanvas.style.zIndex = '2';
+
             isCameraActive = false;
             cameraStatusIndicator.style.display = 'none';
             cameraControlsRow.style.setProperty('display', 'none', 'important');
@@ -742,16 +838,18 @@
 
             // Capture frame from video onto a temporary canvas
             const tempCanvas = document.createElement('canvas');
-            tempCanvas.width = cameraVideo.videoWidth || 1080;
-            tempCanvas.height = cameraVideo.videoHeight || 1920;
+            const vW = cameraVideo.videoWidth || 1080;
+            const vH = cameraVideo.videoHeight || 1920;
+            tempCanvas.width = vW;
+            tempCanvas.height = vH;
             const tempCtx = tempCanvas.getContext('2d');
 
             // If front selfie camera, flip naturally
             if (facingMode === 'user') {
-                tempCtx.translate(tempCanvas.width, 0);
+                tempCtx.translate(vW, 0);
                 tempCtx.scale(-1, 1);
             }
-            tempCtx.drawImage(cameraVideo, 0, 0, tempCanvas.width, tempCanvas.height);
+            tempCtx.drawImage(cameraVideo, 0, 0, vW, vH);
 
             // Convert to image object
             const snappedImg = new Image();
@@ -777,13 +875,9 @@
             snappedImg.src = tempCanvas.toDataURL('image/jpeg', 0.95);
         });
 
-        // ==========================================
-        // UPLOAD DARI FILE GALERI HP
-        // ==========================================
-        fileUploadInput.addEventListener('change', function(e) {
-            const file = e.target.files[0];
+        // Helper untuk memproses file gambar (dari galeri atau kamera HP)
+        function handleImageFile(file) {
             if (!file) return;
-
             stopCamera();
 
             const reader = new FileReader();
@@ -809,6 +903,17 @@
                 img.src = evt.target.result;
             };
             reader.readAsDataURL(file);
+        }
+
+        // ==========================================
+        // UPLOAD DARI FILE GALERI HP & NATIVE CAMERA
+        // ==========================================
+        fileUploadInput.addEventListener('change', function(e) {
+            handleImageFile(e.target.files[0]);
+        });
+
+        nativeCameraInput.addEventListener('change', function(e) {
+            handleImageFile(e.target.files[0]);
         });
 
         // ==========================================
