@@ -87,6 +87,84 @@ class EventController extends Controller
         return back()->with('success', 'Acara berhasil ditambahkan ke kalender!' . ($isPopup ? ' Dan langsung aktif sebagai Pop Up Banner Beranda.' : ''));
     }
 
+    // Tampilkan Form Edit Acara
+    public function edit($id)
+    {
+        Event::ensureIsPopupColumnExists();
+        $event = Event::findOrFail($id);
+        return view('admin.events.edit', compact('event'));
+    }
+
+    // Perbarui Acara & Banner (CRUD Update)
+    public function update(Request $request, $id)
+    {
+        $event = Event::findOrFail($id);
+
+        $request->validate([
+            'title' => 'required|string|max:255',
+            'description' => 'required',
+            'event_date' => 'required|date',
+            'event_waktu' => 'required',
+            'location' => 'required',
+            'image' => 'nullable|image|mimes:jpeg,png,jpg,webp|max:10240', // Maksimal 10 MB
+        ], [
+            'image.max' => 'Ukuran file gambar banner/poster terlalu besar, maksimal 10 MB.',
+            'image.image' => 'File yang diunggah harus berupa file gambar.',
+            'image.mimes' => 'Format gambar yang didukung: JPEG, PNG, JPG, atau WEBP.',
+        ]);
+
+        $imageName = $event->image;
+        if ($request->hasFile('image')) {
+            // Hapus file poster lama jika ada dan bukan drn.jpeg bawaan
+            if ($event->image && $event->image !== 'drn.jpeg') {
+                $oldPath = public_path('uploads/events/' . $event->image);
+                if (File::exists($oldPath)) {
+                    File::delete($oldPath);
+                }
+            }
+
+            $imageName = time() . '.' . $request->image->extension();
+            $request->image->move(public_path('uploads/events'), $imageName);
+        }
+
+        Event::ensureIsPopupColumnExists();
+
+        $isPopup = $request->boolean('is_popup');
+        if ($isPopup && !$event->is_popup) {
+            try {
+                if (Schema::hasColumn('events', 'is_popup')) {
+                    Event::where('is_popup', true)->update(['is_popup' => false]);
+                }
+            } catch (\Throwable $e) {}
+        }
+
+        $eventData = [
+            'title' => $request->title,
+            'description' => $request->description,
+            'event_date' => $request->event_date,
+            'event_waktu' => $request->event_waktu,
+            'location' => $request->location,
+            'image' => $imageName,
+        ];
+        if (Schema::hasColumn('events', 'is_popup')) {
+            $eventData['is_popup'] = $isPopup;
+        }
+
+        // Simpan pembaruan ke event yang sudah ada (Relasi pendaftaran jemaat TETAP AMAN)
+        $event->update($eventData);
+
+        if (class_exists(ActivityLog::class) && auth()->check()) {
+            ActivityLog::create([
+                'user_name' => auth()->user()->name,
+                'role' => auth()->user()->role,
+                'action' => 'UPDATE EVENT',
+                'description' => auth()->user()->name . ' memperbarui data acara & banner: ' . $event->title . ($isPopup ? ' (Aktif sebagai Pop Up Banner)' : ''),
+            ]);
+        }
+
+        return redirect()->route('events.index')->with('success', "Acara & Banner '{$event->title}' berhasil diperbarui! Seluruh data pendaftaran jemaat tetap aman.");
+    }
+
     // Toggle atau Ubah Pop Up Banner
     public function togglePopup($id)
     {

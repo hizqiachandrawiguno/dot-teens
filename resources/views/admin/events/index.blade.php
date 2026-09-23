@@ -289,7 +289,7 @@
                                 <th style="width: 80px;">Poster</th>
                                 <th>Detail Acara</th>
                                 <th style="width: 210px;">Waktu & Lokasi</th>
-                                <th class="text-center" style="width: 80px;">Aksi</th>
+                                <th class="text-center" style="width: 100px;">Aksi</th>
                             </tr>
                         </thead>
                         <tbody>
@@ -338,6 +338,9 @@
                                         <a href="{{ route('admin.events.participants', $event->id) }}" class="btn btn-xs btn-outline-light rounded-pill px-2 py-1 small" style="font-size: 11px;">
                                             <i class="fa-solid fa-users me-1"></i> Peserta ({{ $event->registrations()->count() }})
                                         </a>
+                                        <button type="button" class="btn btn-xs btn-outline-warning rounded-pill px-2 py-1 small" data-bs-toggle="modal" data-bs-target="#modalEditEvent{{ $event->id }}" style="font-size: 11px;" title="Edit data acara atau perbarui banner">
+                                            <i class="fa-solid fa-pen-to-square me-1"></i> Edit Banner
+                                        </button>
                                     </div>
                                 </td>
                                 <td>
@@ -346,16 +349,121 @@
                                 </td>
                                 <td class="text-center">
                                     <div class="d-flex justify-content-center gap-1">
+                                        <!-- Tombol Edit Event & Update Banner -->
+                                        <button type="button" class="btn btn-sm btn-outline-warning rounded-circle d-flex align-items-center justify-content-center" style="width: 35px; height: 35px;" data-bs-toggle="modal" data-bs-target="#modalEditEvent{{ $event->id }}" title="Edit Acara & Update Banner">
+                                            <i class="fa-solid fa-pen-to-square"></i>
+                                        </button>
+                                        <!-- Tombol Hapus Acara -->
                                         <form action="{{ route('events.destroy', $event->id) }}" method="POST">
                                             @csrf
                                             @method('DELETE')
-                                            <button class="btn btn-sm btn-outline-danger rounded-circle" style="width: 35px; height: 35px;" onclick="return confirm('Hapus acara ini?')">
-                                                <i class="fa-solid fa-trash mt-1"></i>
+                                            <button class="btn btn-sm btn-outline-danger rounded-circle d-flex align-items-center justify-content-center" style="width: 35px; height: 35px;" onclick="return confirm('Apakah Anda yakin ingin menghapus acara ini? Perhatian: Menghapus acara akan menghapus data pendaftaran terkait.')" title="Hapus Acara">
+                                                <i class="fa-solid fa-trash"></i>
                                             </button>
                                         </form>
                                     </div>
                                 </td>
                             </tr>
+
+                            <!-- MODAL EDIT ACARA & UPDATE BANNER -->
+                            <div class="modal fade" id="modalEditEvent{{ $event->id }}" tabindex="-1" aria-labelledby="modalEditEventLabel{{ $event->id }}" aria-hidden="true">
+                                <div class="modal-dialog modal-dialog-centered modal-lg">
+                                    <div class="modal-content text-start shadow-lg" style="background-color: #112240; border: 1px solid rgba(56, 189, 248, 0.25); border-radius: 20px; color: #FFFFFF;">
+                                        <div class="modal-header border-bottom border-secondary border-opacity-25 px-4 py-3">
+                                            <h5 class="modal-title fw-bold text-white fs-5" id="modalEditEventLabel{{ $event->id }}">
+                                                <i class="fa-solid fa-pen-to-square text-warning me-2"></i> Edit Acara & Update Banner
+                                            </h5>
+                                            <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
+                                        </div>
+                                        
+                                        <form action="{{ route('events.update', $event->id) }}" method="POST" enctype="multipart/form-data">
+                                            @csrf
+                                            @method('PUT')
+                                            
+                                            <div class="modal-body p-4 text-start">
+                                                
+                                                <!-- NOTIFIKASI AMAN DATABASE JEMAAT -->
+                                                <div class="alert alert-info rounded-3 py-2 px-3 small mb-3 d-flex align-items-center gap-2" style="background: rgba(56, 189, 248, 0.12); border: 1px solid rgba(56, 189, 248, 0.35); color: #7DD3FC;">
+                                                    <i class="fa-solid fa-shield-halved fs-4 text-info flex-shrink-0"></i>
+                                                    <div>
+                                                        <strong>Database Jemaat Aman:</strong> Mengedit banner dan detail acara ini <strong>TIDAK AKAN menghapus {{ $event->registrations()->count() }} data jemaat</strong> yang sudah mendaftar.
+                                                    </div>
+                                                </div>
+
+                                                <!-- PREVIEW & GANTI BANNER -->
+                                                <div class="p-3 rounded-3 mb-3" style="background: rgba(15, 23, 42, 0.6); border: 1px solid rgba(56, 189, 248, 0.2);">
+                                                    <label class="form-label-custom fw-bold text-info mb-2">
+                                                        <i class="fa-solid fa-image me-1"></i> Gambar Banner / Poster Saat Ini:
+                                                    </label>
+                                                    <div class="d-flex align-items-center gap-3 flex-wrap">
+                                                        @if($event->image)
+                                                            <img src="{{ asset('uploads/events/' . $event->image) }}" alt="Poster {{ $event->title }}" class="rounded-3 shadow" style="width: 85px; height: 85px; object-fit: cover; border: 2px solid rgba(56,189,248,0.4);">
+                                                            <div>
+                                                                <div class="fw-semibold text-white small">{{ $event->image }}</div>
+                                                                <div class="small text-secondary" style="font-size: 11.5px;">Pilih file gambar baru di bawah jika ingin mengganti banner ini.</div>
+                                                            </div>
+                                                        @else
+                                                            <div class="bg-secondary bg-opacity-25 rounded-3 d-flex align-items-center justify-content-center text-secondary" style="width: 85px; height: 85px;">
+                                                                <i class="fa-solid fa-image fs-3"></i>
+                                                            </div>
+                                                            <div class="small text-secondary">Belum ada gambar poster.</div>
+                                                        @endif
+                                                    </div>
+
+                                                    <div class="mt-3 pt-2 border-top border-secondary border-opacity-25">
+                                                        <label class="form-label-custom">Upload Banner / Poster Baru (Opsional):</label>
+                                                        <input type="file" name="image" class="form-control" accept="image/jpeg,image/png,image/jpg,image/webp">
+                                                        <div class="form-text small" style="color: #94A3B8; font-size: 11.5px; margin-top: 4px;">
+                                                            <i class="fa-solid fa-circle-info me-1 text-info"></i> JPG, PNG, WEBP. Maks 10 MB. Biarkan kosong jika tetap memakai banner lama.
+                                                        </div>
+                                                    </div>
+                                                </div>
+
+                                                <!-- INPUT FORM -->
+                                                <div class="mb-3">
+                                                    <label class="form-label-custom">Judul Acara <span class="text-danger">*</span></label>
+                                                    <input type="text" name="title" class="form-control" value="{{ $event->title }}" required>
+                                                </div>
+
+                                                <div class="row mb-3">
+                                                    <div class="col-sm-6">
+                                                        <label class="form-label-custom">Tanggal <span class="text-danger">*</span></label>
+                                                        <input type="date" name="event_date" class="form-control" style="color-scheme: dark;" value="{{ $event->event_date }}" required>
+                                                    </div>
+                                                    <div class="col-sm-6 mt-3 mt-sm-0">
+                                                        <label class="form-label-custom">Jam <span class="text-danger">*</span></label>
+                                                        <input type="time" name="event_waktu" class="form-control" style="color-scheme: dark;" value="{{ $event->event_waktu ?? $event->event_time ?? '18:00' }}" required>
+                                                    </div>
+                                                </div>
+
+                                                <div class="mb-3">
+                                                    <label class="form-label-custom">Lokasi <span class="text-danger">*</span></label>
+                                                    <input type="text" name="location" class="form-control" value="{{ $event->location }}" required>
+                                                </div>
+
+                                                <div class="mb-3">
+                                                    <label class="form-label-custom">Deskripsi Singkat <span class="text-danger">*</span></label>
+                                                    <textarea name="description" class="form-control" rows="3" required>{{ $event->description }}</textarea>
+                                                </div>
+
+                                                <div class="form-check form-switch p-3 rounded-3" style="background: rgba(245, 158, 11, 0.08); border: 1px dashed rgba(245, 158, 11, 0.35);">
+                                                    <input class="form-check-input ms-0 me-2" type="checkbox" name="is_popup" value="1" id="isPopupModal{{ $event->id }}" style="cursor: pointer;" {{ $event->is_popup ? 'checked' : '' }}>
+                                                    <label class="form-check-label small text-white fw-bold" for="isPopupModal{{ $event->id }}" style="cursor: pointer;">
+                                                        <i class="fa-solid fa-star text-warning me-1"></i> Tampilkan Sebagai Pop Up Banner Beranda
+                                                    </label>
+                                                </div>
+
+                                            </div>
+                                            <div class="modal-footer border-top border-secondary border-opacity-25 px-4 py-3">
+                                                <button type="button" class="btn btn-outline-secondary rounded-pill px-4" data-bs-dismiss="modal">Batal</button>
+                                                <button type="submit" class="btn btn-primary-gradient rounded-pill px-4 text-white shadow">
+                                                    <i class="fa-solid fa-floppy-disk me-1"></i> Simpan Perubahan Banner
+                                                </button>
+                                            </div>
+                                        </form>
+                                    </div>
+                                </div>
+                            </div>
                             @empty
                             <tr>
                                 <td colspan="4" class="text-center py-5 text-secondary">Belum ada acara yang diposting. Yuk isi kalendernya! 🗓️</td>
