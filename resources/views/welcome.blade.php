@@ -875,27 +875,69 @@
         /* ========================================================
            TOP HOMEPAGE BANNER (ACARA MENDATANG & REGISTRASI CEPAT)
            ======================================================== */
-        .top-event-banner {
+        /* ========================================================
+           TOP HOMEPAGE BANNER 16:9 (CINEMATIC BILLBOARD & REGISTRATION)
+           ======================================================== */
+        .top-event-banner-169 {
             position: relative;
-            border-radius: 24px;
-            background: linear-gradient(135deg, rgba(14, 165, 233, 0.16) 0%, rgba(37, 99, 235, 0.12) 50%, rgba(15, 23, 42, 0.75) 100%);
-            border: 1.5px solid rgba(56, 189, 248, 0.35);
-            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.35), 0 0 25px rgba(56, 189, 248, 0.15);
-            backdrop-filter: blur(16px);
-            -webkit-backdrop-filter: blur(16px);
+            border-radius: 28px;
             overflow: hidden;
+            width: 100%;
+            background-color: #0A1628;
+            border: 1.5px solid rgba(56, 189, 248, 0.4);
+            box-shadow: 0 25px 60px -15px rgba(0, 0, 0, 0.7), 0 0 40px rgba(56, 189, 248, 0.2);
+            margin-bottom: 3.5rem;
         }
 
-        .top-event-banner::before {
+        @media (min-width: 992px) {
+            .top-event-banner-169 {
+                aspect-ratio: 16 / 9;
+                max-height: 80vh;
+                min-height: 520px;
+                display: flex;
+                align-items: center;
+            }
+        }
+
+        .top-event-banner-bg {
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background-size: cover;
+            background-position: center center;
+            filter: brightness(0.4) saturate(1.2);
+            transform: scale(1.05);
+            transition: transform 0.6s ease;
+            z-index: 1;
+        }
+
+        .top-event-banner-169:hover .top-event-banner-bg {
+            transform: scale(1.08);
+        }
+
+        .top-event-banner-overlay {
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: linear-gradient(135deg, rgba(8, 15, 30, 0.95) 0%, rgba(10, 22, 40, 0.88) 45%, rgba(10, 22, 40, 0.65) 100%);
+            z-index: 2;
+        }
+
+        .top-event-banner-169::before {
             content: '';
             position: absolute;
             top: 0;
             left: 0;
             right: 0;
-            height: 3px;
-            background: linear-gradient(90deg, #38BDF8, #818CF8, #EC4899, #38BDF8);
-            background-size: 200% 100%;
+            height: 4px;
+            background: linear-gradient(90deg, #38BDF8, #818CF8, #F43F5E, #F59E0B, #38BDF8);
+            background-size: 250% 100%;
             animation: gradientBorderMove 4s linear infinite;
+            z-index: 10;
         }
 
         @keyframes gradientBorderMove {
@@ -903,58 +945,53 @@
             100% { background-position: 200% 0%; }
         }
 
-        .top-event-banner-inner {
+        .top-event-banner-content {
             position: relative;
-            z-index: 2;
+            z-index: 3;
+            width: 100%;
+            padding: 2.2rem 1.8rem;
         }
 
-        .top-event-poster-wrapper {
+        @media (min-width: 992px) {
+            .top-event-banner-content {
+                padding: 3rem 4rem;
+            }
+        }
+
+        .top-event-poster-showcase {
             position: relative;
-            width: 100%;
-            max-width: 110px;
-            margin: 0 auto;
-            border-radius: 14px;
+            border-radius: 20px;
             overflow: hidden;
+            box-shadow: 0 15px 35px rgba(0, 0, 0, 0.6), 0 0 25px rgba(56, 189, 248, 0.35);
+            border: 2px solid rgba(56, 189, 248, 0.5);
+            transition: all 0.35s cubic-bezier(0.4, 0, 0.2, 1);
             cursor: pointer;
-            border: 1.5px solid rgba(56, 189, 248, 0.4);
-            transition: transform 0.25s ease, box-shadow 0.25s ease;
+            max-width: 320px;
+            margin: 0 auto;
         }
 
-        .top-event-poster-wrapper:hover {
-            transform: scale(1.05);
-            box-shadow: 0 0 20px rgba(56, 189, 248, 0.4);
+        .top-event-poster-showcase:hover {
+            transform: translateY(-6px) scale(1.03);
+            box-shadow: 0 22px 50px rgba(0, 0, 0, 0.75), 0 0 35px rgba(56, 189, 248, 0.6);
+            border-color: #38BDF8;
         }
 
-        .top-event-poster-img {
+        .top-event-poster-showcase img {
             width: 100%;
-            height: 95px;
+            height: 100%;
+            max-height: 380px;
             object-fit: cover;
             display: block;
-        }
-
-        .top-event-poster-badge {
-            position: absolute;
-            bottom: 4px;
-            right: 4px;
-            background: rgba(10, 22, 40, 0.85);
-            color: #38BDF8;
-            border-radius: 50%;
-            width: 22px;
-            height: 22px;
-            font-size: 10px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
         }
 
         .top-event-chip-fire {
             background: rgba(239, 68, 68, 0.2) !important;
             color: #FCA5A5 !important;
             border: 1px solid rgba(239, 68, 68, 0.4);
-            font-size: 11px;
+            font-size: 11.5px;
             font-weight: 700;
             letter-spacing: 0.5px;
-            padding: 5px 12px;
+            padding: 6px 14px;
             border-radius: 50rem;
             display: inline-flex;
             align-items: center;
@@ -980,30 +1017,64 @@
         .top-event-chip-date, .top-event-chip-time {
             background: rgba(56, 189, 248, 0.15) !important;
             color: #7DD3FC !important;
-            border: 1px solid rgba(56, 189, 248, 0.3);
-            font-size: 11px;
-            padding: 5px 10px;
+            border: 1px solid rgba(56, 189, 248, 0.35);
+            font-size: 11.5px;
+            font-weight: 600;
+            padding: 6px 14px;
             border-radius: 50rem;
         }
 
-        .top-event-title {
-            font-size: clamp(1.2rem, 2.5vw, 1.65rem);
-            letter-spacing: -0.3px;
-            text-shadow: 0 2px 10px rgba(0, 0, 0, 0.5);
+        .top-event-headline {
+            font-size: clamp(1.6rem, 3.2vw, 2.5rem);
+            font-weight: 800;
+            line-height: 1.18;
+            letter-spacing: -0.5px;
+            color: #FFFFFF;
+            text-shadow: 0 3px 15px rgba(0, 0, 0, 0.6);
         }
 
-        .btn-top-event-register {
-            background: linear-gradient(135deg, #0284C7 0%, #2563EB 100%) !important;
-            border: none !important;
-            font-size: 14px;
-            letter-spacing: 0.3px;
+        .top-event-lead {
+            font-size: clamp(0.92rem, 1.3vw, 1.05rem);
+            line-height: 1.65;
+            color: #E2E8F0;
+        }
+
+        .top-event-perks {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 10px;
+        }
+
+        .top-event-perk-badge {
+            background: rgba(255, 255, 255, 0.08);
+            border: 1px solid rgba(255, 255, 255, 0.15);
+            color: #E2E8F0;
+            border-radius: 50rem;
+            padding: 5px 14px;
+            font-size: 12px;
+            font-weight: 600;
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+        }
+
+        .btn-top-event-register-lg {
+            background: linear-gradient(135deg, #0284C7 0%, #2563EB 50%, #1D4ED8 100%) !important;
+            border: 1px solid rgba(255, 255, 255, 0.25) !important;
+            color: #FFFFFF !important;
+            font-size: clamp(0.95rem, 1.2vw, 1.1rem);
+            font-weight: 800;
+            letter-spacing: 0.5px;
+            padding: 12px 28px;
+            border-radius: 50rem;
+            box-shadow: 0 10px 25px rgba(2, 132, 199, 0.5), 0 0 15px rgba(37, 99, 235, 0.3) !important;
             transition: all 0.25s ease;
         }
 
-        .btn-top-event-register:hover {
+        .btn-top-event-register-lg:hover {
             background: linear-gradient(135deg, #38BDF8 0%, #1D4ED8 100%) !important;
-            transform: translateY(-2px);
-            box-shadow: 0 8px 20px rgba(2, 132, 199, 0.4) !important;
+            transform: translateY(-3px) scale(1.02);
+            box-shadow: 0 16px 35px rgba(2, 132, 199, 0.65), 0 0 25px rgba(56, 189, 248, 0.5) !important;
         }
     </style>
 </head>
@@ -1075,25 +1146,19 @@
                     if (!$bannerImage && stripos($featuredEvent->title, 'Revival') !== false && file_exists(public_path('images/drn.jpeg'))) {
                         $bannerImage = asset('images/drn.jpeg');
                     }
+                    $bgImage = $bannerImage ?: asset('images/header.png');
                 @endphp
 
-                <!-- TOP HOMEPAGE BANNER: ACARA MENDATANG & TOMBOL REGISTRASI -->
-                <div class="top-event-banner mb-4 mb-lg-5" data-aos="zoom-in" data-aos-duration="800">
-                    <div class="top-event-banner-inner p-3 p-md-4">
-                        <div class="row align-items-center g-3">
-                            <!-- Poster Preview (Jika Tersedia) -->
-                            @if($bannerImage)
-                                <div class="col-md-3 col-lg-2 d-none d-md-block text-center">
-                                    <div class="top-event-poster-wrapper" onclick="openLightbox('{{ $bannerImage }}', 'Poster Resmi {{ addslashes($featuredEvent->title) }}', true)" role="button" title="Klik untuk memperbesar poster">
-                                        <img src="{{ $bannerImage }}" alt="{{ $featuredEvent->title }} Poster" class="top-event-poster-img shadow">
-                                        <span class="top-event-poster-badge"><i class="fa-solid fa-magnifying-glass-plus"></i></span>
-                                    </div>
-                                </div>
-                            @endif
-
-                            <!-- Detail Acara Mendatang -->
-                            <div class="{{ $bannerImage ? 'col-12 col-md-9 col-lg-7' : 'col-12 col-lg-8' }} text-center text-md-start">
-                                <div class="d-flex flex-wrap align-items-center justify-content-center justify-content-md-start gap-2 mb-2">
+                <!-- 16:9 CINEMATIC UPCOMING EVENT BANNER (SCREEN FILLING & PROMINENT) -->
+                <div class="top-event-banner-169 mb-5" data-aos="zoom-in" data-aos-duration="900">
+                    <div class="top-event-banner-bg" style="background-image: url('{{ $bgImage }}');"></div>
+                    <div class="top-event-banner-overlay"></div>
+                    
+                    <div class="top-event-banner-content">
+                        <div class="row align-items-center g-4 g-lg-5">
+                            <!-- Left: Event Information & Big CTA -->
+                            <div class="{{ $bannerImage ? 'col-lg-7' : 'col-lg-12' }} text-center text-lg-start">
+                                <div class="d-flex flex-wrap align-items-center justify-content-center justify-content-lg-start gap-2 mb-3">
                                     <span class="badge top-event-chip-fire">
                                         <span class="live-dot-pulse"></span> 🔥 ACARA MENDATANG SPESIAL
                                     </span>
@@ -1105,38 +1170,55 @@
                                     </span>
                                 </div>
 
-                                <h3 class="top-event-title mb-1 text-white fw-bold">
+                                <h2 class="top-event-headline mb-3">
                                     {{ $featuredEvent->title }}
-                                </h3>
+                                </h2>
 
-                                <div class="top-event-location text-info small mb-2 d-flex align-items-center justify-content-center justify-content-md-start gap-1">
-                                    <i class="fa-solid fa-location-dot text-danger"></i>
-                                    <span>{{ $featuredEvent->location }}</span>
+                                <div class="d-inline-flex align-items-center gap-2 px-3 py-1.5 rounded-pill bg-dark bg-opacity-60 border border-info border-opacity-30 text-info small mb-3">
+                                    <i class="fa-solid fa-location-dot text-danger fs-6"></i>
+                                    <span class="fw-semibold">{{ $featuredEvent->location }}</span>
                                 </div>
 
-                                <p class="top-event-desc text-light opacity-90 small mb-0 d-none d-sm-block">
-                                    {{ Str::limit($featuredEvent->description, 140) }}
+                                <p class="top-event-lead mb-3">
+                                    {{ Str::limit($featuredEvent->description, 200) }}
                                 </p>
-                            </div>
 
-                            <!-- Tombol Aksi Registrasi & Info Acara -->
-                            <div class="{{ $bannerImage ? 'col-12 col-lg-3' : 'col-12 col-lg-4' }} text-center text-lg-end">
-                                <div class="d-flex flex-column flex-sm-row flex-lg-column gap-2 justify-content-center justify-content-lg-end">
+                                <div class="top-event-perks justify-content-center justify-content-lg-start mb-4">
+                                    <span class="top-event-perk-badge"><i class="fa-solid fa-check text-success"></i> Masuk Gratis</span>
+                                    <span class="top-event-perk-badge"><i class="fa-solid fa-qrcode text-info"></i> E-Ticket QR Instan</span>
+                                    <span class="top-event-perk-badge"><i class="fa-solid fa-gift text-warning"></i> Doorprize & Konsumsi</span>
+                                </div>
+
+                                <div class="d-flex flex-column flex-sm-row gap-3 justify-content-center justify-content-lg-start">
                                     <button type="button" 
-                                        class="btn btn-top-event-register py-2.5 px-3 fw-bold rounded-pill text-white shadow-lg d-inline-flex align-items-center justify-content-center gap-2"
+                                        class="btn btn-top-event-register-lg d-inline-flex align-items-center justify-content-center gap-2"
                                         onclick="openEventRegistration({{ $featuredEvent->id }}, '{{ addslashes($featuredEvent->title) }}', '{{ date('d M Y', strtotime($featuredEvent->event_date)) }}', '{{ $featuredEvent->time_formatted }} WIB', '{{ addslashes($featuredEvent->location) }}')">
-                                        <i class="fa-solid fa-ticket fs-6"></i>
-                                        <span>Registrasi Sekarang</span>
+                                        <i class="fa-solid fa-ticket fs-5"></i>
+                                        <span>REGISTRASI SEKARANG</span>
                                     </button>
 
                                     <button type="button" 
-                                        class="btn btn-sm btn-outline-info rounded-pill px-3 py-2 fw-semibold d-inline-flex align-items-center justify-content-center gap-1.5"
+                                        class="btn btn-outline-light rounded-pill px-4 py-2.5 fw-semibold d-inline-flex align-items-center justify-content-center gap-2"
                                         onclick="if (upcomingModalInstance) upcomingModalInstance.show();">
                                         <i class="fa-solid fa-circle-info"></i>
                                         <span>Lihat Detail Acara</span>
                                     </button>
                                 </div>
                             </div>
+
+                            <!-- Right: Visual Poster Showcase -->
+                            @if($bannerImage)
+                                <div class="col-lg-5 text-center">
+                                    <div class="top-event-poster-showcase" onclick="openLightbox('{{ $bannerImage }}', 'Poster Resmi {{ addslashes($featuredEvent->title) }}', true)" role="button" title="Klik untuk memperbesar poster">
+                                        <img src="{{ $bannerImage }}" alt="{{ $featuredEvent->title }} Poster Resmi">
+                                        <div class="position-absolute bottom-0 start-0 end-0 p-2 text-center" style="background: linear-gradient(to top, rgba(10,22,40,0.92), transparent);">
+                                            <span class="badge bg-dark bg-opacity-75 text-info border border-info border-opacity-50 small rounded-pill px-3 py-1">
+                                                <i class="fa-solid fa-magnifying-glass-plus me-1"></i> Perbesar Poster
+                                            </span>
+                                        </div>
+                                    </div>
+                                </div>
+                            @endif
                         </div>
                     </div>
                 </div>

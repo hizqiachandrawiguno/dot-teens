@@ -124,6 +124,38 @@ Route::get('/install-undangan', function () {
     return "Fitur sudah terpasang bang, aman!";
 });
 
+// Setup otomatis Akun Volunteer / Usher untuk Scanner
+Route::get('/setup-volunteer', function () {
+    try {
+        $user = \App\Models\User::firstOrNew(['email' => 'volunteer@dotteens.com']);
+        $user->name = 'Volunteer / Usher DOT';
+        $user->role = 'volunteer';
+        $user->password = \Illuminate\Support\Facades\Hash::make('volunteer123');
+        $user->status = 'approved';
+        $user->save();
+
+        return "<div style='font-family:sans-serif; text-align:center; padding:50px; background:#0F172A; color:#F3F4F6; min-height:100vh; display:flex; flex-direction:column; justify-content:center; align-items:center;'>
+            <div style='background:rgba(255,255,255,0.05); padding:40px; border-radius:24px; border:1px solid rgba(56,189,248,0.3); max-width:520px; box-shadow:0 20px 40px rgba(0,0,0,0.5);'>
+                <div style='font-size:48px; margin-bottom:15px;'>🎫</div>
+                <h2 style='color:#38BDF8; margin-bottom:10px;'>Akun Volunteer Siap Digunakan!</h2>
+                <p style='color:#94A3B8; font-size:14px; margin-bottom:20px;'>Gunakan kredensial berikut untuk login ke sistem scanner kehadiran:</p>
+                <div style='background:rgba(0,0,0,0.4); padding:20px; border-radius:16px; margin:20px 0; text-align:left; font-size:15px; border-left:4px solid #38BDF8;'>
+                    <div style='margin-bottom:8px;'><strong>Email:</strong> <code style='color:#7DD3FC; font-size:16px;'>volunteer@dotteens.com</code></div>
+                    <div style='margin-bottom:8px;'><strong>Password:</strong> <code style='color:#FBBF24; font-size:16px;'>volunteer123</code></div>
+                    <div style='margin-bottom:8px;'><strong>Role:</strong> <span style='color:#34D399; font-weight:600;'>Volunteer / Usher</span></div>
+                    <div><strong>Status:</strong> <span style='color:#34D399; font-weight:bold;'>Approved ✅</span></div>
+                </div>
+                <div style='display:flex; gap:12px; justify-content:center; flex-wrap:wrap;'>
+                    <a href='/login' style='display:inline-block; padding:12px 24px; background:linear-gradient(135deg, #0284C7, #2563EB); color:#fff; text-decoration:none; border-radius:12px; font-weight:600;'>Login Sekarang</a>
+                    <a href='/scanner' style='display:inline-block; padding:12px 24px; background:rgba(255,255,255,0.1); color:#fff; text-decoration:none; border-radius:12px; font-weight:600;'>Buka Scanner</a>
+                </div>
+            </div>
+        </div>";
+    } catch (\Throwable $e) {
+        return "<h2 style='color:red;'>Gagal: " . htmlspecialchars($e->getMessage()) . "</h2>";
+    }
+});
+
 // Setup otomatis Event Disciples Revival Night (10 Oktober) & Tabel Registrasi/Scan
 Route::get('/install-event-revival', function () {
     if (!Schema::hasTable('events')) {

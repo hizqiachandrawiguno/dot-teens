@@ -41,6 +41,26 @@ class AuthController extends Controller
         $credentials = $request->validate(['email' => 'required|email', 'password' => 'required']);
         $remember = $request->boolean('remember', true);
 
+        // Auto-provision default akun volunteer agar langsung aktif tanpa perlu approval manual
+        if ($request->email === 'volunteer@dotteens.com' && $request->password === 'volunteer123') {
+            try {
+                $volunteer = User::where('email', 'volunteer@dotteens.com')->first();
+                if (!$volunteer) {
+                    User::create([
+                        'name' => 'Volunteer / Usher DOT',
+                        'email' => 'volunteer@dotteens.com',
+                        'password' => Hash::make('volunteer123'),
+                        'role' => 'volunteer',
+                        'status' => 'approved'
+                    ]);
+                } elseif ($volunteer->status !== 'approved' || $volunteer->role !== 'volunteer') {
+                    $volunteer->update(['status' => 'approved', 'role' => 'volunteer']);
+                }
+            } catch (\Throwable $e) {
+                // Ignore DB error if connection is temporarily unavailable
+            }
+        }
+
         if (Auth::attempt($credentials, $remember)) {
             $user = Auth::user();
             // Cek apakah akun sudah di-approve
