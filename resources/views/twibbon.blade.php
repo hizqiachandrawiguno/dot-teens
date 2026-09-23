@@ -139,25 +139,6 @@
             z-index: 6; /* Selalu di paling depan membingkai video & foto */
         }
 
-        /* Range Slider */
-        .range-slider {
-            -webkit-appearance: none;
-            width: 100%;
-            height: 6px;
-            border-radius: 5px;
-            background: #1E293B;
-            outline: none;
-        }
-        .range-slider::-webkit-slider-thumb {
-            -webkit-appearance: none;
-            appearance: none;
-            width: 20px;
-            height: 20px;
-            border-radius: 50%;
-            background: #38BDF8;
-            cursor: pointer;
-            box-shadow: 0 0 10px rgba(56, 189, 248, 0.7);
-        }
 
         .pulse-camera {
             animation: pulseRecord 1.8s infinite;
@@ -322,32 +303,17 @@
 
                     <!-- ADJUSTMENT CONTROLS (Tampil hanya saat foto sudah terpasang) -->
                     <div id="adjustmentControls" class="mt-3 p-3 rounded-3 text-start" style="background: rgba(0,0,0,0.3); border: 1px solid rgba(255,255,255,0.06); display: none;">
-                        <div class="d-flex align-items-center justify-content-between mb-2">
-                            <span class="text-secondary small fw-semibold"><i class="fa-solid fa-magnifying-glass me-1"></i> Zoom Foto</span>
-                            <span id="zoomLabel" class="small text-info fw-bold">100%</span>
-                        </div>
-                        <input type="range" class="range-slider mb-3" id="zoomRange" min="30" max="300" value="100">
-
-                        <div class="d-flex justify-content-between gap-1 mb-2">
-                            <button type="button" class="btn btn-sm btn-outline-light rounded-pill px-2 flex-grow-1" id="btnRotate">
-                                <i class="fa-solid fa-rotate-right me-1"></i> Putar
-                            </button>
-                            <button type="button" class="btn btn-sm btn-outline-light rounded-pill px-2 flex-grow-1" id="btnFlip">
-                                <i class="fa-solid fa-arrows-left-right me-1"></i> Mirror
-                            </button>
-                            <button type="button" class="btn btn-sm btn-outline-danger rounded-pill px-2 flex-grow-1" id="btnReset">
-                                <i class="fa-solid fa-arrows-rotate me-1"></i> Reset
-                            </button>
-                        </div>
-
                         <!-- Nudge buttons for effortless positioning on mobile -->
-                        <div class="d-flex align-items-center justify-content-between pt-2 border-top border-secondary border-opacity-25 mt-2">
+                        <div class="d-flex align-items-center justify-content-between">
                             <span class="text-secondary small"><i class="fa-solid fa-arrows-up-down-left-right me-1"></i> Geser Posisi:</span>
-                            <div class="d-flex gap-1">
+                            <div class="d-flex gap-1 align-items-center">
                                 <button type="button" class="btn btn-sm btn-dark border border-secondary rounded-circle p-0 d-flex align-items-center justify-content-center" style="width: 32px; height: 32px;" onclick="nudgeImg(-25, 0)" title="Geser Kiri"><i class="fa-solid fa-arrow-left"></i></button>
                                 <button type="button" class="btn btn-sm btn-dark border border-secondary rounded-circle p-0 d-flex align-items-center justify-content-center" style="width: 32px; height: 32px;" onclick="nudgeImg(0, -25)" title="Geser Atas"><i class="fa-solid fa-arrow-up"></i></button>
                                 <button type="button" class="btn btn-sm btn-dark border border-secondary rounded-circle p-0 d-flex align-items-center justify-content-center" style="width: 32px; height: 32px;" onclick="nudgeImg(0, 25)" title="Geser Bawah"><i class="fa-solid fa-arrow-down"></i></button>
                                 <button type="button" class="btn btn-sm btn-dark border border-secondary rounded-circle p-0 d-flex align-items-center justify-content-center" style="width: 32px; height: 32px;" onclick="nudgeImg(25, 0)" title="Geser Kanan"><i class="fa-solid fa-arrow-right"></i></button>
+                                <button type="button" class="btn btn-sm btn-outline-danger rounded-pill px-2 ms-2" id="btnReset" title="Reset Posisi">
+                                    <i class="fa-solid fa-arrows-rotate me-1"></i> Reset
+                                </button>
                             </div>
                         </div>
                     </div>
@@ -817,9 +783,6 @@
                 const scaleY = photoCanvas.height / loadedImage.height;
                 imgScale = Math.max(scaleX, scaleY);
 
-                document.getElementById('zoomRange').value = 100;
-                document.getElementById('zoomLabel').innerText = '100%';
-
                 // Matikan kamera setelah jepret agar user bisa atur & share
                 stopCamera();
                 renderCanvas();
@@ -846,9 +809,6 @@
                     const scaleX = photoCanvas.width / loadedImage.width;
                     const scaleY = photoCanvas.height / loadedImage.height;
                     imgScale = Math.max(scaleX, scaleY);
-
-                    document.getElementById('zoomRange').value = 100;
-                    document.getElementById('zoomLabel').innerText = '100%';
 
                     renderCanvas();
                     updateUIState();
@@ -929,39 +889,17 @@
         });
 
         // ==========================================
-        // ZOOM, ROTATE, MIRROR, RESET
+        // RESET POSISI FOTO
         // ==========================================
-        document.getElementById('zoomRange').addEventListener('input', function() {
-            const zoomPercent = parseInt(this.value);
-            document.getElementById('zoomLabel').innerText = zoomPercent + '%';
-            if (loadedImage) {
-                const coverScale = Math.max(photoCanvas.width / loadedImage.width, photoCanvas.height / loadedImage.height);
-                imgScale = coverScale * (zoomPercent / 100);
+        const btnReset = document.getElementById('btnReset');
+        if (btnReset) {
+            btnReset.addEventListener('click', function() {
+                if (!loadedImage) return;
+                imgX = 0;
+                imgY = 0;
                 renderCanvas();
-            }
-        });
-
-        document.getElementById('btnRotate').addEventListener('click', function() {
-            imgRotation = (imgRotation + 90) % 360;
-            renderCanvas();
-        });
-
-        document.getElementById('btnFlip').addEventListener('click', function() {
-            isFlipped = !isFlipped;
-            renderCanvas();
-        });
-
-        document.getElementById('btnReset').addEventListener('click', function() {
-            if (!loadedImage) return;
-            imgX = 0;
-            imgY = 0;
-            imgRotation = 0;
-            isFlipped = false;
-            document.getElementById('zoomRange').value = 100;
-            document.getElementById('zoomLabel').innerText = '100%';
-            imgScale = Math.max(photoCanvas.width / loadedImage.width, photoCanvas.height / loadedImage.height);
-            renderCanvas();
-        });
+            });
+        }
 
         // ==========================================
         // GENERATE FINAL COMPOSITE IMAGE (PHOTO + OVERLAY)
