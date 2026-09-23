@@ -25,8 +25,11 @@ Route::get('/', function () {
         if (\Illuminate\Support\Facades\Schema::hasColumn('events', 'is_popup')) {
             $featuredEvent = \App\Models\Event::where('is_popup', true)->first();
         }
+        if (!$featuredEvent) {
+            $featuredEvent = $events->first() ?? \App\Models\Event::where('title', 'like', '%Revival%')->first() ?? \App\Models\Event::orderBy('event_date', 'desc')->first();
+        }
     } catch (\Throwable $e) {
-        $featuredEvent = null;
+        $featuredEvent = $events->first() ?? null;
     }
 
     // Cek status saklar dari file

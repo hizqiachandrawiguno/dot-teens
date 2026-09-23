@@ -113,6 +113,38 @@
             background: linear-gradient(135deg, #38BDF8 0%, #1D4ED8 100%);
             color: #FFFFFF;
         }
+
+        .status-badge-pending {
+            background-color: #F59E0B !important;
+            color: #0A1628 !important;
+            font-weight: 800 !important;
+            font-size: 11px !important;
+            padding: 5px 12px !important;
+            border-radius: 50rem !important;
+            display: inline-flex !important;
+            align-items: center !important;
+            gap: 5px !important;
+            letter-spacing: 0.5px !important;
+            border: 1px solid rgba(255, 255, 255, 0.2) !important;
+            box-shadow: 0 2px 8px rgba(245, 158, 11, 0.35) !important;
+            text-transform: uppercase !important;
+        }
+
+        .status-badge-attended {
+            background-color: #10B981 !important;
+            color: #022C22 !important;
+            font-weight: 800 !important;
+            font-size: 11px !important;
+            padding: 5px 12px !important;
+            border-radius: 50rem !important;
+            display: inline-flex !important;
+            align-items: center !important;
+            gap: 5px !important;
+            letter-spacing: 0.5px !important;
+            border: 1px solid rgba(255, 255, 255, 0.2) !important;
+            box-shadow: 0 2px 8px rgba(16, 185, 129, 0.35) !important;
+            text-transform: uppercase !important;
+        }
     </style>
 </head>
 <body>
@@ -254,14 +286,14 @@
                             <td>
                                 <span class="small text-secondary">{{ $p->origin ?? '-' }}</span>
                             </td>
-                            <td>
+                            <td class="text-center col-status">
                                 @if($p->status === 'attended')
-                                    <span class="badge bg-success bg-opacity-25 text-success border border-success px-2 py-1">
-                                        <i class="fa-solid fa-circle-check me-1"></i> HADIR
+                                    <span class="status-badge-attended status-badge">
+                                        <i class="fa-solid fa-circle-check"></i> HADIR
                                     </span>
                                 @else
-                                    <span class="badge bg-warning bg-opacity-15 text-warning border border-warning px-2 py-1">
-                                        <i class="fa-solid fa-clock me-1"></i> BELUM HADIR
+                                    <span class="status-badge-pending status-badge">
+                                        <i class="fa-solid fa-clock"></i> BELUM HADIR
                                     </span>
                                 @endif
                             </td>
