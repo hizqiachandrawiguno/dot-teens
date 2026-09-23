@@ -129,6 +129,42 @@
         .table-custom tbody tr:hover td {
             background-color: rgba(56, 189, 248, 0.04) !important;
         }
+
+        /* MODAL STYLES & FIX CUT OFF */
+        .modal-content-custom {
+            background-color: #112240 !important;
+            border: 1px solid rgba(56, 189, 248, 0.25) !important;
+            border-radius: 20px !important;
+            color: #FFFFFF !important;
+            box-shadow: 0 20px 50px rgba(0, 0, 0, 0.7) !important;
+            max-height: 90vh !important;
+        }
+
+        .modal-dialog-scrollable .modal-content {
+            max-height: 90vh !important;
+            overflow: hidden !important;
+        }
+
+        .modal-dialog-scrollable .modal-body {
+            overflow-y: auto !important;
+            max-height: calc(90vh - 140px) !important;
+            padding-right: 18px;
+        }
+
+        .modal-dialog-scrollable .modal-body::-webkit-scrollbar {
+            width: 6px;
+        }
+        .modal-dialog-scrollable .modal-body::-webkit-scrollbar-track {
+            background: rgba(10, 22, 40, 0.6);
+            border-radius: 8px;
+        }
+        .modal-dialog-scrollable .modal-body::-webkit-scrollbar-thumb {
+            background: #1E3A5F;
+            border-radius: 8px;
+        }
+        .modal-dialog-scrollable .modal-body::-webkit-scrollbar-thumb:hover {
+            background: #38BDF8;
+        }
     </style>
 </head>
 <body>
@@ -364,106 +400,6 @@
                                     </div>
                                 </td>
                             </tr>
-
-                            <!-- MODAL EDIT ACARA & UPDATE BANNER -->
-                            <div class="modal fade" id="modalEditEvent{{ $event->id }}" tabindex="-1" aria-labelledby="modalEditEventLabel{{ $event->id }}" aria-hidden="true">
-                                <div class="modal-dialog modal-dialog-centered modal-lg">
-                                    <div class="modal-content text-start shadow-lg" style="background-color: #112240; border: 1px solid rgba(56, 189, 248, 0.25); border-radius: 20px; color: #FFFFFF;">
-                                        <div class="modal-header border-bottom border-secondary border-opacity-25 px-4 py-3">
-                                            <h5 class="modal-title fw-bold text-white fs-5" id="modalEditEventLabel{{ $event->id }}">
-                                                <i class="fa-solid fa-pen-to-square text-warning me-2"></i> Edit Acara & Update Banner
-                                            </h5>
-                                            <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
-                                        </div>
-                                        
-                                        <form action="{{ route('events.update', $event->id) }}" method="POST" enctype="multipart/form-data">
-                                            @csrf
-                                            @method('PUT')
-                                            
-                                            <div class="modal-body p-4 text-start">
-                                                
-                                                <!-- NOTIFIKASI AMAN DATABASE JEMAAT -->
-                                                <div class="alert alert-info rounded-3 py-2 px-3 small mb-3 d-flex align-items-center gap-2" style="background: rgba(56, 189, 248, 0.12); border: 1px solid rgba(56, 189, 248, 0.35); color: #7DD3FC;">
-                                                    <i class="fa-solid fa-shield-halved fs-4 text-info flex-shrink-0"></i>
-                                                    <div>
-                                                        <strong>Database Jemaat Aman:</strong> Mengedit banner dan detail acara ini <strong>TIDAK AKAN menghapus {{ $event->registrations()->count() }} data jemaat</strong> yang sudah mendaftar.
-                                                    </div>
-                                                </div>
-
-                                                <!-- PREVIEW & GANTI BANNER -->
-                                                <div class="p-3 rounded-3 mb-3" style="background: rgba(15, 23, 42, 0.6); border: 1px solid rgba(56, 189, 248, 0.2);">
-                                                    <label class="form-label-custom fw-bold text-info mb-2">
-                                                        <i class="fa-solid fa-image me-1"></i> Gambar Banner / Poster Saat Ini:
-                                                    </label>
-                                                    <div class="d-flex align-items-center gap-3 flex-wrap">
-                                                        @if($event->image)
-                                                            <img src="{{ asset('uploads/events/' . $event->image) }}" alt="Poster {{ $event->title }}" class="rounded-3 shadow" style="width: 85px; height: 85px; object-fit: cover; border: 2px solid rgba(56,189,248,0.4);">
-                                                            <div>
-                                                                <div class="fw-semibold text-white small">{{ $event->image }}</div>
-                                                                <div class="small text-secondary" style="font-size: 11.5px;">Pilih file gambar baru di bawah jika ingin mengganti banner ini.</div>
-                                                            </div>
-                                                        @else
-                                                            <div class="bg-secondary bg-opacity-25 rounded-3 d-flex align-items-center justify-content-center text-secondary" style="width: 85px; height: 85px;">
-                                                                <i class="fa-solid fa-image fs-3"></i>
-                                                            </div>
-                                                            <div class="small text-secondary">Belum ada gambar poster.</div>
-                                                        @endif
-                                                    </div>
-
-                                                    <div class="mt-3 pt-2 border-top border-secondary border-opacity-25">
-                                                        <label class="form-label-custom">Upload Banner / Poster Baru (Opsional):</label>
-                                                        <input type="file" name="image" class="form-control" accept="image/jpeg,image/png,image/jpg,image/webp">
-                                                        <div class="form-text small" style="color: #94A3B8; font-size: 11.5px; margin-top: 4px;">
-                                                            <i class="fa-solid fa-circle-info me-1 text-info"></i> JPG, PNG, WEBP. Maks 10 MB. Biarkan kosong jika tetap memakai banner lama.
-                                                        </div>
-                                                    </div>
-                                                </div>
-
-                                                <!-- INPUT FORM -->
-                                                <div class="mb-3">
-                                                    <label class="form-label-custom">Judul Acara <span class="text-danger">*</span></label>
-                                                    <input type="text" name="title" class="form-control" value="{{ $event->title }}" required>
-                                                </div>
-
-                                                <div class="row mb-3">
-                                                    <div class="col-sm-6">
-                                                        <label class="form-label-custom">Tanggal <span class="text-danger">*</span></label>
-                                                        <input type="date" name="event_date" class="form-control" style="color-scheme: dark;" value="{{ $event->event_date }}" required>
-                                                    </div>
-                                                    <div class="col-sm-6 mt-3 mt-sm-0">
-                                                        <label class="form-label-custom">Jam <span class="text-danger">*</span></label>
-                                                        <input type="time" name="event_waktu" class="form-control" style="color-scheme: dark;" value="{{ $event->event_waktu ?? $event->event_time ?? '18:00' }}" required>
-                                                    </div>
-                                                </div>
-
-                                                <div class="mb-3">
-                                                    <label class="form-label-custom">Lokasi <span class="text-danger">*</span></label>
-                                                    <input type="text" name="location" class="form-control" value="{{ $event->location }}" required>
-                                                </div>
-
-                                                <div class="mb-3">
-                                                    <label class="form-label-custom">Deskripsi Singkat <span class="text-danger">*</span></label>
-                                                    <textarea name="description" class="form-control" rows="3" required>{{ $event->description }}</textarea>
-                                                </div>
-
-                                                <div class="form-check form-switch p-3 rounded-3" style="background: rgba(245, 158, 11, 0.08); border: 1px dashed rgba(245, 158, 11, 0.35);">
-                                                    <input class="form-check-input ms-0 me-2" type="checkbox" name="is_popup" value="1" id="isPopupModal{{ $event->id }}" style="cursor: pointer;" {{ $event->is_popup ? 'checked' : '' }}>
-                                                    <label class="form-check-label small text-white fw-bold" for="isPopupModal{{ $event->id }}" style="cursor: pointer;">
-                                                        <i class="fa-solid fa-star text-warning me-1"></i> Tampilkan Sebagai Pop Up Banner Beranda
-                                                    </label>
-                                                </div>
-
-                                            </div>
-                                            <div class="modal-footer border-top border-secondary border-opacity-25 px-4 py-3">
-                                                <button type="button" class="btn btn-outline-secondary rounded-pill px-4" data-bs-dismiss="modal">Batal</button>
-                                                <button type="submit" class="btn btn-primary-gradient rounded-pill px-4 text-white shadow">
-                                                    <i class="fa-solid fa-floppy-disk me-1"></i> Simpan Perubahan Banner
-                                                </button>
-                                            </div>
-                                        </form>
-                                    </div>
-                                </div>
-                            </div>
                             @empty
                             <tr>
                                 <td colspan="4" class="text-center py-5 text-secondary">Belum ada acara yang diposting. Yuk isi kalendernya! 🗓️</td>
@@ -476,6 +412,109 @@
         </div>
     </div>
 </div>
+
+<!-- ========================================== -->
+<!-- MODAL EDIT ACARA & UPDATE BANNER (SEMUA EVENT) -->
+<!-- ========================================== -->
+@foreach($events as $event)
+<div class="modal fade" id="modalEditEvent{{ $event->id }}" tabindex="-1" aria-labelledby="modalEditEventLabel{{ $event->id }}" aria-hidden="true" data-bs-backdrop="static">
+    <div class="modal-dialog modal-dialog-centered modal-dialog-scrollable modal-lg">
+        <form action="{{ route('events.update', $event->id) }}" method="POST" enctype="multipart/form-data" class="modal-content modal-content-custom text-start">
+            @csrf
+            @method('PUT')
+
+            <div class="modal-header border-bottom border-secondary border-opacity-25 px-4 py-3" style="background: #112240; border-top-left-radius: 20px; border-top-right-radius: 20px;">
+                <h5 class="modal-title fw-bold text-white fs-5" id="modalEditEventLabel{{ $event->id }}">
+                    <i class="fa-solid fa-pen-to-square text-warning me-2"></i> Edit Acara & Update Banner
+                </h5>
+                <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            
+            <div class="modal-body p-4 text-start">
+                
+                <!-- NOTIFIKASI AMAN DATABASE JEMAAT -->
+                <div class="alert alert-info rounded-3 py-2 px-3 small mb-3 d-flex align-items-center gap-2" style="background: rgba(56, 189, 248, 0.12); border: 1px solid rgba(56, 189, 248, 0.35); color: #7DD3FC;">
+                    <i class="fa-solid fa-shield-halved fs-4 text-info flex-shrink-0"></i>
+                    <div>
+                        <strong>Database Jemaat Aman:</strong> Mengedit banner dan detail acara ini <strong>TIDAK AKAN menghapus {{ $event->registrations()->count() }} data jemaat</strong> yang sudah mendaftar.
+                    </div>
+                </div>
+
+                <!-- PREVIEW & GANTI BANNER -->
+                <div class="p-3 rounded-3 mb-3" style="background: rgba(15, 23, 42, 0.6); border: 1px solid rgba(56, 189, 248, 0.2);">
+                    <label class="form-label-custom fw-bold text-info mb-2">
+                        <i class="fa-solid fa-image me-1"></i> Gambar Banner / Poster Saat Ini:
+                    </label>
+                    <div class="d-flex align-items-center gap-3 flex-wrap">
+                        @if($event->image)
+                            <img src="{{ asset('uploads/events/' . $event->image) }}" alt="Poster {{ $event->title }}" class="rounded-3 shadow" style="width: 85px; height: 85px; object-fit: cover; border: 2px solid rgba(56,189,248,0.4);">
+                            <div>
+                                <div class="fw-semibold text-white small">{{ $event->image }}</div>
+                                <div class="small text-secondary" style="font-size: 11.5px;">Pilih file gambar baru di bawah jika ingin mengganti banner ini.</div>
+                            </div>
+                        @else
+                            <div class="bg-secondary bg-opacity-25 rounded-3 d-flex align-items-center justify-content-center text-secondary" style="width: 85px; height: 85px;">
+                                <i class="fa-solid fa-image fs-3"></i>
+                            </div>
+                            <div class="small text-secondary">Belum ada gambar poster.</div>
+                        @endif
+                    </div>
+
+                    <div class="mt-3 pt-2 border-top border-secondary border-opacity-25">
+                        <label class="form-label-custom">Upload Banner / Poster Baru (Opsional):</label>
+                        <input type="file" name="image" class="form-control" accept="image/jpeg,image/png,image/jpg,image/webp">
+                        <div class="form-text small" style="color: #94A3B8; font-size: 11.5px; margin-top: 4px;">
+                            <i class="fa-solid fa-circle-info me-1 text-info"></i> JPG, PNG, WEBP. Maks 10 MB. Biarkan kosong jika tetap memakai banner lama.
+                        </div>
+                    </div>
+                </div>
+
+                <!-- INPUT FORM -->
+                <div class="mb-3">
+                    <label class="form-label-custom">Judul Acara <span class="text-danger">*</span></label>
+                    <input type="text" name="title" class="form-control" value="{{ $event->title }}" required>
+                </div>
+
+                <div class="row mb-3">
+                    <div class="col-sm-6">
+                        <label class="form-label-custom">Tanggal <span class="text-danger">*</span></label>
+                        <input type="date" name="event_date" class="form-control" style="color-scheme: dark;" value="{{ $event->event_date }}" required>
+                    </div>
+                    <div class="col-sm-6 mt-3 mt-sm-0">
+                        <label class="form-label-custom">Jam <span class="text-danger">*</span></label>
+                        <input type="time" name="event_waktu" class="form-control" style="color-scheme: dark;" value="{{ $event->event_waktu ?? $event->event_time ?? '18:00' }}" required>
+                    </div>
+                </div>
+
+                <div class="mb-3">
+                    <label class="form-label-custom">Lokasi <span class="text-danger">*</span></label>
+                    <input type="text" name="location" class="form-control" value="{{ $event->location }}" required>
+                </div>
+
+                <div class="mb-3">
+                    <label class="form-label-custom">Deskripsi Singkat <span class="text-danger">*</span></label>
+                    <textarea name="description" class="form-control" rows="3" required>{{ $event->description }}</textarea>
+                </div>
+
+                <div class="form-check form-switch p-3 rounded-3" style="background: rgba(245, 158, 11, 0.08); border: 1px dashed rgba(245, 158, 11, 0.35);">
+                    <input class="form-check-input ms-0 me-2" type="checkbox" name="is_popup" value="1" id="isPopupModal{{ $event->id }}" style="cursor: pointer;" {{ $event->is_popup ? 'checked' : '' }}>
+                    <label class="form-check-label small text-white fw-bold" for="isPopupModal{{ $event->id }}" style="cursor: pointer;">
+                        <i class="fa-solid fa-star text-warning me-1"></i> Tampilkan Sebagai Pop Up Banner Beranda
+                    </label>
+                </div>
+
+            </div>
+            
+            <div class="modal-footer border-top border-secondary border-opacity-25 px-4 py-3" style="background: #112240; border-bottom-left-radius: 20px; border-bottom-right-radius: 20px;">
+                <button type="button" class="btn btn-outline-secondary rounded-pill px-4" data-bs-dismiss="modal">Batal</button>
+                <button type="submit" class="btn btn-primary-gradient rounded-pill px-4 text-white shadow">
+                    <i class="fa-solid fa-floppy-disk me-1"></i> Simpan Perubahan Banner
+                </button>
+            </div>
+        </form>
+    </div>
+</div>
+@endforeach
 
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
 <script src="https://unpkg.com/aos@2.3.1/dist/aos.js"></script>
