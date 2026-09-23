@@ -238,12 +238,14 @@ Route::middleware('auth')->group(function () {
     Route::post('/admin/prayer/reset', [AdminController::class, 'resetPrayer']);
 
     // Fitur Scanner Kehadiran QR & Kelola Peserta Event (Didefinisikan SEBELUM resource admin/events)
+    Route::get('/scanner/{event_id?}', [EventRegistrationController::class, 'scannerPage'])->name('scanner');
     Route::get('/admin/events/scan/{event_id?}', [EventRegistrationController::class, 'scannerPage'])->name('admin.events.scan');
     Route::post('/admin/events/scan-process', [EventRegistrationController::class, 'processScan'])->name('admin.events.scan.process');
     Route::get('/admin/events/{event_id}/participants', [EventRegistrationController::class, 'participantsList'])->name('admin.events.participants')->whereNumber('event_id');
     Route::post('/admin/events/participants/{id}/toggle', [EventRegistrationController::class, 'toggleAttendance'])->name('admin.events.participants.toggle')->whereNumber('id');
     Route::delete('/admin/events/participants/{id}', [EventRegistrationController::class, 'destroyParticipant'])->name('admin.events.participants.delete')->whereNumber('id');
     Route::get('/admin/events/{event_id}/export', [EventRegistrationController::class, 'exportCsv'])->name('admin.events.export')->whereNumber('event_id');
+    Route::get('/admin/events/{event_id}/export-pdf', [EventRegistrationController::class, 'exportPdf'])->name('admin.events.export_pdf')->whereNumber('event_id');
 
     // Fitur Toggle Pop Up Banner Beranda
     Route::post('/admin/events/{id}/toggle-popup', [EventController::class, 'togglePopup'])->name('admin.events.toggle_popup')->whereNumber('id');

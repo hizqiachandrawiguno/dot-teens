@@ -312,8 +312,8 @@
                     <span class="badge bg-cyan text-white px-1.5 py-0.5 rounded text-uppercase d-none d-sm-inline-block" style="font-size: 9px; font-weight: 700;">WIB</span>
                 </div>
 
-                <a href="{{ route('admin.events.participants', $selectedEvent->id) }}" class="btn btn-sm btn-outline-info rounded-pill px-2.5 px-sm-3 fw-semibold">
-                    <i class="fa-solid fa-users me-1"></i> <span class="d-none d-md-inline">Data Peserta</span> ({{ $totalRegistered }})
+                <a href="#sectionDaftarPeserta" class="btn btn-sm btn-cyan rounded-pill px-2.5 px-sm-3 fw-semibold shadow-sm">
+                    <i class="fa-solid fa-users me-1"></i> <span class="d-none d-md-inline">List Anak / Peserta</span> (<span id="topParticipantCount">{{ $totalRegistered }}</span>)
                 </a>
             </div>
         </div>
@@ -554,6 +554,251 @@
                         </table>
                     </div>
                 </div>
+            </div>
+        </div>
+
+        <!-- SECTION: LIST ANAK-ANAK & SELURUH PESERTA TERDAFTAR DENGAN SEARCH, MULTI-FILTER, MANUAL CHECK-IN & DOWNLOAD PDF -->
+        <div class="glass-card mt-4" id="sectionDaftarPeserta">
+            <div class="d-flex flex-column flex-lg-row justify-content-between align-items-lg-center gap-3 mb-4 pb-3 border-bottom border-secondary border-opacity-25">
+                <div>
+                    <div class="d-flex align-items-center gap-2 mb-1">
+                        <span class="badge bg-primary bg-opacity-25 text-info border border-info px-2.5 py-1">
+                            <i class="fa-solid fa-clipboard-user me-1"></i> Data Pendaftar Langsung
+                        </span>
+                        <span id="filteredCountBadge" class="badge rounded-pill bg-dark text-light border border-secondary px-2.5 py-1" style="font-size: 11px;">
+                            Menampilkan {{ count($participants) }} dari {{ $totalRegistered }} Peserta
+                        </span>
+                    </div>
+                    <h4 class="fw-bold text-white mb-0">
+                        <i class="fa-solid fa-users-line text-info me-2"></i> Daftar Anak-anak & Peserta Terdaftar
+                    </h4>
+                    <p class="text-secondary small mb-0 mt-1">
+                        Cari pendaftar secara langsung, filter per status/kategori, lakukan check-in manual jika tiket bermasalah, dan unduh laporan resmi dalam format PDF.
+                    </p>
+                </div>
+
+                <!-- ACTION BUTTONS: EXPORT PDF & CSV -->
+                <div class="d-flex gap-2 flex-wrap">
+                    <!-- DROPDOWN DOWNLOAD PDF -->
+                    <div class="dropdown">
+                        <button class="btn btn-sm btn-danger fw-bold rounded-pill px-3 py-2 dropdown-toggle shadow-sm d-flex align-items-center gap-1.5" type="button" id="dropdownPdfBtn" data-bs-toggle="dropdown" aria-expanded="false">
+                            <i class="fa-solid fa-file-pdf fs-6"></i>
+                            <span>Download Laporan PDF</span>
+                        </button>
+                        <ul class="dropdown-menu dropdown-menu-end shadow-lg py-2" aria-labelledby="dropdownPdfBtn" style="background: #112240; border: 1px solid rgba(56, 189, 248, 0.3); min-width: 290px; z-index: 1050;">
+                            <li><h6 class="dropdown-header text-uppercase text-info" style="font-size: 10px; letter-spacing: 0.5px;">Download Keseluruhan</h6></li>
+                            <li>
+                                <a class="dropdown-item text-light d-flex align-items-center gap-2 py-2" href="{{ route('admin.events.export_pdf', $selectedEvent->id) }}?scope=all">
+                                    <i class="fa-solid fa-file-lines text-primary fs-5"></i>
+                                    <div>
+                                        <div class="fw-semibold">Semua Peserta (PDF Lengkap)</div>
+                                        <small class="text-secondary">Seluruh {{ $totalRegistered }} data pendaftar</small>
+                                    </div>
+                                </a>
+                            </li>
+                            <li><hr class="dropdown-divider border-secondary border-opacity-25"></li>
+                            <li><h6 class="dropdown-header text-uppercase text-info" style="font-size: 10px; letter-spacing: 0.5px;">Download Per Bagian (Status)</h6></li>
+                            <li>
+                                <a class="dropdown-item text-light d-flex align-items-center gap-2 py-2" href="{{ route('admin.events.export_pdf', $selectedEvent->id) }}?scope=attended">
+                                    <i class="fa-solid fa-circle-check text-success fs-5"></i>
+                                    <div>
+                                        <div class="fw-semibold">Hanya Peserta Sudah Hadir</div>
+                                        <small class="text-secondary"><span class="pdf-count-attended">{{ $totalAttended }}</span> peserta telah check-in</small>
+                                    </div>
+                                </a>
+                            </li>
+                            <li>
+                                <a class="dropdown-item text-light d-flex align-items-center gap-2 py-2" href="{{ route('admin.events.export_pdf', $selectedEvent->id) }}?scope=registered">
+                                    <i class="fa-solid fa-hourglass-half text-warning fs-5"></i>
+                                    <div>
+                                        <div class="fw-semibold">Hanya Peserta Belum Hadir</div>
+                                        <small class="text-secondary"><span class="pdf-count-pending">{{ $totalPending }}</span> peserta belum check-in</small>
+                                    </div>
+                                </a>
+                            </li>
+                            @if(count($categories) > 0)
+                            <li><hr class="dropdown-divider border-secondary border-opacity-25"></li>
+                            <li><h6 class="dropdown-header text-uppercase text-info" style="font-size: 10px; letter-spacing: 0.5px;">Download Per Kategori</h6></li>
+                            @foreach($categories as $cat)
+                            <li>
+                                <a class="dropdown-item text-light d-flex align-items-center gap-2 py-1.5" href="{{ route('admin.events.export_pdf', $selectedEvent->id) }}?category={{ urlencode($cat) }}">
+                                    <i class="fa-solid fa-tag text-info small"></i>
+                                    <div>
+                                        <div class="fw-semibold" style="font-size: 13px;">Kategori: {{ $cat }}</div>
+                                    </div>
+                                </a>
+                            </li>
+                            @endforeach
+                            @endif
+                            <li><hr class="dropdown-divider border-secondary border-opacity-25"></li>
+                            <li><h6 class="dropdown-header text-uppercase text-info" style="font-size: 10px; letter-spacing: 0.5px;">Download Sesuai Filter di Layar</h6></li>
+                            <li>
+                                <a class="dropdown-item text-light d-flex align-items-center gap-2 py-2" href="javascript:void(0)" onclick="downloadActiveFilterPdf()">
+                                    <i class="fa-solid fa-filter text-info fs-5"></i>
+                                    <div>
+                                        <div class="fw-semibold">Sesuai Filter & Pencarian Saat Ini</div>
+                                        <small class="text-secondary">Unduh persis data yang sedang tampil</small>
+                                    </div>
+                                </a>
+                            </li>
+                            <li>
+                                <a class="dropdown-item text-light d-flex align-items-center gap-2 py-2" href="javascript:void(0)" onclick="printActiveFilterPdf()">
+                                    <i class="fa-solid fa-print text-warning fs-5"></i>
+                                    <div>
+                                        <div class="fw-semibold">Cetak / Print PDF Langsung</div>
+                                        <small class="text-secondary">Buka jendela cetak / simpan browser</small>
+                                    </div>
+                                </a>
+                            </li>
+                        </ul>
+                    </div>
+
+                    <!-- EXPORT CSV -->
+                    <a href="{{ route('admin.events.export', $selectedEvent->id) }}" class="btn btn-sm btn-outline-success rounded-pill px-3 py-2 fw-semibold shadow-sm d-flex align-items-center gap-1.5" title="Download Excel / CSV">
+                        <i class="fa-solid fa-file-csv fs-6"></i>
+                        <span>Export CSV</span>
+                    </a>
+                </div>
+            </div>
+
+            <!-- SEARCH & FILTER CONTROLS -->
+            <div class="row g-2 mb-3">
+                <div class="col-12 col-md-5">
+                    <div class="input-group">
+                        <span class="input-group-text bg-dark border-0 text-info"><i class="fa-solid fa-magnifying-glass"></i></span>
+                        <input type="text" id="participantSearchInput" class="form-control" placeholder="Cari nama anak, tiket (DRN-...), no WhatsApp, atau sekolah..." oninput="filterParticipantsTable()">
+                        <button class="btn btn-outline-secondary text-secondary border-0" type="button" onclick="clearSearch()" title="Hapus Pencarian">
+                            <i class="fa-solid fa-xmark"></i>
+                        </button>
+                    </div>
+                </div>
+                <div class="col-6 col-md-3">
+                    <select id="participantStatusFilter" class="form-select" onchange="filterParticipantsTable()">
+                        <option value="all">Semua Status ({{ $totalRegistered }})</option>
+                        <option value="attended">✓ Sudah Hadir ({{ $totalAttended }})</option>
+                        <option value="registered">⏳ Belum Hadir ({{ $totalPending }})</option>
+                    </select>
+                </div>
+                <div class="col-6 col-md-2">
+                    <select id="participantCategoryFilter" class="form-select" onchange="filterParticipantsTable()">
+                        <option value="all">Semua Kategori</option>
+                        @foreach($categories as $cat)
+                            <option value="{{ $cat }}">{{ $cat }}</option>
+                        @endforeach
+                    </select>
+                </div>
+                <div class="col-12 col-md-2">
+                    <button type="button" class="btn btn-outline-secondary text-light w-100 rounded-3" onclick="resetAllFilters()">
+                        <i class="fa-solid fa-rotate-left me-1"></i> Reset
+                    </button>
+                </div>
+            </div>
+
+            <!-- TABEL DAFTAR PESERTA -->
+            <div class="table-responsive" style="max-height: 580px; overflow-y: auto;">
+                <table class="table table-custom align-middle" id="tableParticipants">
+                    <thead class="sticky-top" style="z-index: 10;">
+                        <tr>
+                            <th style="width: 40px;" class="text-center">No</th>
+                            <th style="width: 130px;">Kode Tiket</th>
+                            <th>Nama Lengkap</th>
+                            <th style="width: 140px;">WhatsApp</th>
+                            <th style="width: 110px;" class="text-center">Kategori</th>
+                            <th>Asal Sekolah / COOL</th>
+                            <th style="width: 130px;" class="text-center">Status</th>
+                            <th style="width: 160px;">Waktu Hadir</th>
+                            <th style="width: 110px;" class="text-center">Aksi Cepat</th>
+                        </tr>
+                    </thead>
+                    <tbody id="participantsTableBody">
+                        @forelse($participants as $idx => $p)
+                        <tr class="participant-row" 
+                            id="row-p-{{ $p->id }}"
+                            data-id="{{ $p->id }}"
+                            data-ticket="{{ strtolower($p->ticket_code) }}"
+                            data-name="{{ strtolower($p->name) }}"
+                            data-phone="{{ preg_replace('/[^0-9]/', '', $p->phone) }}"
+                            data-origin="{{ strtolower($p->origin ?? '') }}"
+                            data-category="{{ $p->category }}"
+                            data-status="{{ $p->status }}">
+                            
+                            <td class="text-center text-secondary row-num">{{ $idx + 1 }}</td>
+                            <td>
+                                <div class="d-flex align-items-center gap-1.5">
+                                    <a href="{{ route('event.ticket', $p->ticket_code) }}" target="_blank" class="font-monospace text-info fw-bold text-decoration-none" title="Buka E-Tiket">
+                                        <i class="fa-solid fa-arrow-up-right-from-square small me-1"></i>{{ $p->ticket_code }}
+                                    </a>
+                                </div>
+                            </td>
+                            <td>
+                                <div class="fw-bold text-white text-participant-name">{{ $p->name }}</div>
+                                @if($p->email)
+                                    <small class="text-secondary" style="font-size: 11px;">{{ $p->email }}</small>
+                                @endif
+                            </td>
+                            <td>
+                                <a href="https://wa.me/{{ preg_replace('/[^0-9]/', '', $p->phone) }}" target="_blank" class="text-success text-decoration-none small d-inline-flex align-items-center gap-1" title="Kirim Pesan WhatsApp">
+                                    <i class="fa-brands fa-whatsapp fs-6"></i>
+                                    <span class="font-monospace">{{ $p->phone }}</span>
+                                </a>
+                            </td>
+                            <td class="text-center">
+                                <span class="badge bg-secondary bg-opacity-50 text-light border border-secondary border-opacity-25 px-2 py-1">
+                                    {{ $p->category }}
+                                </span>
+                            </td>
+                            <td>
+                                <span class="small text-secondary">{{ $p->origin ?: '-' }}</span>
+                            </td>
+                            <td class="text-center col-status">
+                                @if($p->status === 'attended')
+                                    <span class="badge bg-success bg-opacity-25 text-success border border-success px-2.5 py-1.5 fw-semibold status-badge">
+                                        <i class="fa-solid fa-circle-check me-1"></i> HADIR
+                                    </span>
+                                @else
+                                    <span class="badge bg-warning bg-opacity-15 text-warning border border-warning px-2.5 py-1.5 fw-semibold status-badge">
+                                        <i class="fa-solid fa-clock me-1"></i> BELUM HADIR
+                                    </span>
+                                @endif
+                            </td>
+                            <td class="col-attended-info">
+                                @if($p->attended_at)
+                                    <div class="text-light small fw-semibold attended-time">
+                                        <i class="fa-regular fa-clock text-info me-1"></i>{{ $p->attended_at->timezone('Asia/Jakarta')->format('d M, H:i') }} WIB
+                                    </div>
+                                    <small class="text-secondary attended-by" style="font-size: 11px;">Oleh: {{ $p->scanned_by ?? 'Panitia' }}</small>
+                                @else
+                                    <span class="text-secondary no-attended-dash">-</span>
+                                @endif
+                            </td>
+                            <td class="text-center">
+                                <button type="button" 
+                                    class="btn btn-sm {{ $p->status === 'attended' ? 'btn-outline-warning' : 'btn-outline-success' }} rounded-pill px-2.5 py-1 btn-toggle-checkin" 
+                                    onclick="toggleParticipantCheckin({{ $p->id }}, this)"
+                                    title="{{ $p->status === 'attended' ? 'Batalkan status hadir' : 'Check-in Hadir Manual' }}">
+                                    @if($p->status === 'attended')
+                                        <i class="fa-solid fa-rotate-left me-1"></i> Batal
+                                    @else
+                                        <i class="fa-solid fa-check me-1"></i> Hadir
+                                    @endif
+                                </button>
+                            </td>
+                        </tr>
+                        @empty
+                        <tr id="emptyParticipantRow">
+                            <td colspan="9" class="text-center py-5 text-secondary">
+                                <i class="fa-solid fa-users-slash fs-1 d-block mb-2 text-secondary opacity-50"></i>
+                                Belum ada peserta yang terdaftar untuk event ini.
+                            </td>
+                        </tr>
+                        @endforelse
+                        <tr id="noFilterMatchRow" class="d-none">
+                            <td colspan="9" class="text-center py-4 text-warning">
+                                <i class="fa-solid fa-circle-exclamation me-1"></i> Tidak ada peserta yang cocok dengan filter atau kata kunci pencarian.
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
             </div>
         </div>
     </div>
@@ -1350,6 +1595,7 @@
                     showSuccessFeedback(data);
                     updateStats(data.stats);
                     addToRecentList(data.participant);
+                    markParticipantRowAttended(data.participant);
                 } else if (data.status === 'already_attended') {
                     playSoundWarning();
                     showAlreadyAttendedFeedback(data);
@@ -1454,6 +1700,272 @@
             `;
             tbody.insertBefore(tr, tbody.firstChild);
         }
+
+        /* ========================================================
+           SKRIP FILTER, LIVE SEARCH & TOGGLE KEHADIRAN TABEL PESERTA
+           ======================================================== */
+        function filterParticipantsTable() {
+            const searchVal = (document.getElementById('participantSearchInput')?.value || '').trim().toLowerCase();
+            const statusVal = document.getElementById('participantStatusFilter')?.value || 'all';
+            const catVal = document.getElementById('participantCategoryFilter')?.value || 'all';
+
+            const rows = document.querySelectorAll('.participant-row');
+            let visibleCount = 0;
+
+            rows.forEach(row => {
+                const tName = row.dataset.name || '';
+                const tTicket = row.dataset.ticket || '';
+                const tPhone = row.dataset.phone || '';
+                const tOrigin = row.dataset.origin || '';
+                const rStatus = row.dataset.status || '';
+                const rCat = row.dataset.category || '';
+
+                // Search match
+                const matchSearch = !searchVal || 
+                    tName.includes(searchVal) || 
+                    tTicket.includes(searchVal) || 
+                    tPhone.includes(searchVal) || 
+                    tOrigin.includes(searchVal);
+
+                // Status match
+                const matchStatus = (statusVal === 'all') || (rStatus === statusVal);
+
+                // Category match
+                const matchCat = (catVal === 'all') || (rCat === catVal);
+
+                if (matchSearch && matchStatus && matchCat) {
+                    row.style.display = '';
+                    visibleCount++;
+                } else {
+                    row.style.display = 'none';
+                }
+            });
+
+            // Update badge
+            const badge = document.getElementById('filteredCountBadge');
+            if (badge) {
+                badge.innerText = `Menampilkan ${visibleCount} dari ${rows.length} Peserta`;
+            }
+
+            // Show / hide no match row
+            const noMatchRow = document.getElementById('noFilterMatchRow');
+            if (noMatchRow) {
+                if (visibleCount === 0 && rows.length > 0) {
+                    noMatchRow.classList.remove('d-none');
+                } else {
+                    noMatchRow.classList.add('d-none');
+                }
+            }
+        }
+
+        function clearSearch() {
+            const input = document.getElementById('participantSearchInput');
+            if (input) {
+                input.value = '';
+                filterParticipantsTable();
+            }
+        }
+
+        function resetAllFilters() {
+            const input = document.getElementById('participantSearchInput');
+            const status = document.getElementById('participantStatusFilter');
+            const cat = document.getElementById('participantCategoryFilter');
+            if (input) input.value = '';
+            if (status) status.value = 'all';
+            if (cat) cat.value = 'all';
+            filterParticipantsTable();
+        }
+
+        function downloadActiveFilterPdf() {
+            const searchVal = (document.getElementById('participantSearchInput')?.value || '').trim();
+            const statusVal = document.getElementById('participantStatusFilter')?.value || 'all';
+            const catVal = document.getElementById('participantCategoryFilter')?.value || 'all';
+
+            let url = "{{ route('admin.events.export_pdf', $selectedEvent->id) }}?";
+            const params = new URLSearchParams();
+
+            if (statusVal !== 'all') {
+                params.append('scope', statusVal);
+            } else {
+                params.append('scope', 'all');
+            }
+
+            if (catVal !== 'all') {
+                params.append('category', catVal);
+            }
+
+            if (searchVal) {
+                params.append('search', searchVal);
+            }
+
+            window.location.href = url + params.toString();
+        }
+
+        function printActiveFilterPdf() {
+            const searchVal = (document.getElementById('participantSearchInput')?.value || '').trim();
+            const statusVal = document.getElementById('participantStatusFilter')?.value || 'all';
+            const catVal = document.getElementById('participantCategoryFilter')?.value || 'all';
+
+            let url = "{{ route('admin.events.export_pdf', $selectedEvent->id) }}?";
+            const params = new URLSearchParams();
+
+            if (statusVal !== 'all') {
+                params.append('scope', statusVal);
+            } else {
+                params.append('scope', 'all');
+            }
+
+            if (catVal !== 'all') {
+                params.append('category', catVal);
+            }
+
+            if (searchVal) {
+                params.append('search', searchVal);
+            }
+
+            params.append('stream', '1');
+
+            window.open(url + params.toString(), '_blank');
+        }
+
+        // Tandai baris peserta saat scan berhasil
+        function markParticipantRowAttended(participant) {
+            if (!participant) return;
+            const code = (participant.ticket_code || '').toLowerCase();
+            const row = document.querySelector(`.participant-row[data-ticket="${code}"]`) || 
+                        document.getElementById(`row-p-${participant.id}`);
+
+            if (row) {
+                row.dataset.status = 'attended';
+                const colStatus = row.querySelector('.col-status');
+                if (colStatus) {
+                    colStatus.innerHTML = `
+                        <span class="badge bg-success bg-opacity-25 text-success border border-success px-2.5 py-1.5 fw-semibold status-badge">
+                            <i class="fa-solid fa-circle-check me-1"></i> HADIR
+                        </span>
+                    `;
+                }
+
+                const colAttended = row.querySelector('.col-attended-info');
+                if (colAttended) {
+                    colAttended.innerHTML = `
+                        <div class="text-light small fw-semibold attended-time">
+                            <i class="fa-regular fa-clock text-info me-1"></i>${participant.attended_at}
+                        </div>
+                        <small class="text-secondary attended-by" style="font-size: 11px;">Oleh: ${participant.scanned_by || 'Panitia'}</small>
+                    `;
+                }
+
+                const btn = row.querySelector('.btn-toggle-checkin');
+                if (btn) {
+                    btn.className = 'btn btn-sm btn-outline-warning rounded-pill px-2.5 py-1 btn-toggle-checkin';
+                    btn.title = 'Batalkan status hadir';
+                    btn.innerHTML = '<i class="fa-solid fa-rotate-left me-1"></i> Batal';
+                }
+
+                // Efek highlight baris
+                row.style.transition = 'background-color 0.5s ease';
+                row.style.backgroundColor = 'rgba(16, 185, 129, 0.2)';
+                setTimeout(() => {
+                    row.style.backgroundColor = '';
+                }, 2000);
+            }
+        }
+
+        // Toggle Manual Check-in via AJAX
+        function toggleParticipantCheckin(participantId, btn) {
+            const originalHtml = btn.innerHTML;
+            btn.disabled = true;
+            btn.innerHTML = '<span class="spinner-border spinner-border-sm"></span>';
+
+            fetch(`/admin/events/participants/${participantId}/toggle`, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'Accept': 'application/json',
+                    'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').getAttribute('content')
+                }
+            })
+            .then(res => res.json())
+            .then(data => {
+                btn.disabled = false;
+                if (data.success) {
+                    const row = document.getElementById(`row-p-${participantId}`);
+                    if (row) {
+                        row.dataset.status = data.status;
+
+                        const colStatus = row.querySelector('.col-status');
+                        const colAttended = row.querySelector('.col-attended-info');
+
+                        if (data.status === 'attended') {
+                            playSoundSuccess();
+                            if (colStatus) {
+                                colStatus.innerHTML = `
+                                    <span class="badge bg-success bg-opacity-25 text-success border border-success px-2.5 py-1.5 fw-semibold status-badge">
+                                        <i class="fa-solid fa-circle-check me-1"></i> HADIR
+                                    </span>
+                                `;
+                            }
+                            if (colAttended) {
+                                colAttended.innerHTML = `
+                                    <div class="text-light small fw-semibold attended-time">
+                                        <i class="fa-regular fa-clock text-info me-1"></i>${data.participant.attended_at}
+                                    </div>
+                                    <small class="text-secondary attended-by" style="font-size: 11px;">Oleh: ${data.participant.scanned_by}</small>
+                                `;
+                            }
+                            btn.className = 'btn btn-sm btn-outline-warning rounded-pill px-2.5 py-1 btn-toggle-checkin';
+                            btn.title = 'Batalkan status hadir';
+                            btn.innerHTML = '<i class="fa-solid fa-rotate-left me-1"></i> Batal';
+
+                            // Tambah ke recent list
+                            addToRecentList({
+                                name: data.participant.name,
+                                ticket_code: row.dataset.ticket.toUpperCase(),
+                                category: row.dataset.category,
+                                attended_at: data.participant.attended_at
+                            });
+                        } else {
+                            if (colStatus) {
+                                colStatus.innerHTML = `
+                                    <span class="badge bg-warning bg-opacity-15 text-warning border border-warning px-2.5 py-1.5 fw-semibold status-badge">
+                                        <i class="fa-solid fa-clock me-1"></i> BELUM HADIR
+                                    </span>
+                                `;
+                            }
+                            if (colAttended) {
+                                colAttended.innerHTML = `<span class="text-secondary">-</span>`;
+                            }
+                            btn.className = 'btn btn-sm btn-outline-success rounded-pill px-2.5 py-1 btn-toggle-checkin';
+                            btn.title = 'Check-in Hadir Manual';
+                            btn.innerHTML = '<i class="fa-solid fa-check me-1"></i> Hadir';
+                        }
+                    }
+
+                    // Update stats
+                    updateStats(data.stats);
+
+                    // Update PDF counts in dropdown
+                    document.querySelectorAll('.pdf-count-attended').forEach(el => el.innerText = data.stats.total_attended);
+                    document.querySelectorAll('.pdf-count-pending').forEach(el => el.innerText = data.stats.total_pending);
+
+                    // Re-filter table jika sedang dalam filter status
+                    filterParticipantsTable();
+                } else {
+                    btn.innerHTML = originalHtml;
+                    alert('Gagal mengubah status: ' + (data.message || 'Terjadi kesalahan.'));
+                }
+            })
+            .catch(err => {
+                btn.disabled = false;
+                btn.innerHTML = originalHtml;
+                console.error(err);
+                alert('Gagal menghubungi server.');
+            });
+        }
     </script>
+
+    <!-- Bootstrap Bundle JS untuk Dropdown & Interaksi -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
 </body>
 </html>

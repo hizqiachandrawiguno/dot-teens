@@ -190,6 +190,7 @@
                 <label class="form-label">Pilih Jabatan / Divisi Pelayanan</label>
                 <select name="role" class="form-select" required>
                     <option value="super_admin">Super Admin (Akses Penuh)</option>
+                    <option value="volunteer">Volunteer / Usher (Scanner Kehadiran)</option>
                     <option value="div_cell">Ketua Divisi Cell</option>
                     <option value="div_acara">Ketua Divisi Acara</option>
                     <option value="div_sosmed">Ketua Divisi Sosial Media</option>

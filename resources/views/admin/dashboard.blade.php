@@ -249,11 +249,14 @@
                 </a>
             </div>
 
-            <div class="d-flex align-items-center gap-3">
+            <div class="d-flex align-items-center gap-2 gap-md-3">
+                <a href="{{ route('admin.events.scan') }}" class="btn btn-sm text-dark fw-bold rounded-pill px-3 py-1.5 d-inline-flex align-items-center gap-1.5 shadow" style="font-size: 0.8rem; background: linear-gradient(135deg, #38BDF8, #60A5FA); border: none;">
+                    <i class="fa-solid fa-qrcode"></i> <span>Scanner QR Event</span>
+                </a>
                 <div class="text-end d-none d-sm-block">
                     <div class="text-white fw-bold small">{{ $user->name }}</div>
                     <span class="badge rounded-pill px-2 py-1" style="background: rgba(96, 165, 250, 0.15); color:#60A5FA; border: 1px solid rgba(96, 165, 250, 0.3); font-size: 0.7rem;">
-                        <i class="fa-solid fa-shield me-1 text-warning"></i> {{ $user->role == 'super_admin' ? 'SUPER ADMIN' : 'KETUA ' . strtoupper(str_replace('_', ' ', $user->role)) }}
+                        <i class="fa-solid fa-shield me-1 text-warning"></i> {{ $user->role == 'super_admin' ? 'SUPER ADMIN' : ($user->role == 'volunteer' ? 'VOLUNTEER / USHER' : 'KETUA ' . strtoupper(str_replace('_', ' ', $user->role))) }}
                     </span>
                 </div>
                 <form action="{{ route('logout') }}" method="POST">
@@ -557,6 +560,7 @@
                             <select id="filterDivisi" class="form-select form-select-sm w-auto rounded-pill px-3 py-1 text-white" style="cursor: pointer;">
                                 <option value="all">⚡ Semua Divisi</option>
                                 <option value="super_admin">Super Admin</option>
+                                <option value="volunteer">Volunteer / Usher</option>
                                 <option value="div_acara">Divisi Acara</option>
                                 <option value="div_cell">Divisi Cell</option>
                                 <option value="div_pastoral">Divisi Pastoral</option>
@@ -1122,6 +1126,45 @@
                             </div>
                         </div>
                     </form>
+                </div>
+            @endif
+
+            @if($user->role == 'volunteer')
+                <div class="glass-card p-4">
+                    <div class="d-flex align-items-center gap-3 mb-3">
+                        <div class="p-3 rounded-circle" style="background: rgba(56, 189, 248, 0.15); color: #38BDF8; font-size: 24px;">
+                            <i class="fa-solid fa-qrcode"></i>
+                        </div>
+                        <div>
+                            <h4 class="fw-bold text-white mb-1"><i class="fa-solid fa-id-badge text-info me-2"></i> Ruang Volunteer & Usher Scanner</h4>
+                            <p class="text-secondary small mb-0">Selamat melayani! Anda memiliki akses khusus untuk memindai tiket QR, memantau daftar peserta yang mendaftar, dan mengelola absensi kehadiran event.</p>
+                        </div>
+                    </div>
+                    <div class="d-flex gap-2 flex-wrap mt-3">
+                        <a href="{{ route('admin.events.scan') }}" class="btn btn-gradient-sm px-4 py-2.5 fw-bold d-inline-flex align-items-center gap-2">
+                            <i class="fa-solid fa-camera"></i> Buka Scanner Kehadiran QR
+                        </a>
+                    </div>
+                </div>
+            @endif
+
+            <!-- CARD AKSES SCANNER UNTUK SELURUH DIVISI LAIN -->
+            @if(!in_array($user->role, ['super_admin', 'div_acara', 'volunteer']))
+                <div class="glass-card p-4 mb-4" style="border: 1px solid rgba(56, 189, 248, 0.25);">
+                    <div class="d-flex flex-column flex-sm-row justify-content-between align-items-sm-center gap-3">
+                        <div class="d-flex align-items-center gap-3">
+                            <div class="p-2.5 rounded-3 text-info" style="background: rgba(56, 189, 248, 0.1); font-size: 22px;">
+                                <i class="fa-solid fa-qrcode"></i>
+                            </div>
+                            <div>
+                                <h5 class="fw-bold text-white mb-0">Scanner Kehadiran Acara / Event</h5>
+                                <p class="text-secondary small mb-0">Bantu tim Acara untuk scan tiket kehadiran dan melihat daftar peserta event secara langsung.</p>
+                            </div>
+                        </div>
+                        <a href="{{ route('admin.events.scan') }}" class="btn btn-sm btn-outline-info rounded-pill px-3 py-2 fw-semibold">
+                            <i class="fa-solid fa-camera me-1"></i> Buka Scanner
+                        </a>
+                    </div>
                 </div>
             @endif
         @endif

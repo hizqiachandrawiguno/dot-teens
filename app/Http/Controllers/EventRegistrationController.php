@@ -9,6 +9,7 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Str;
 use Illuminate\Support\Facades\Schema;
 use Illuminate\Database\Schema\Blueprint;
+use Barryvdh\DomPDF\Facade\Pdf;
 
 class EventRegistrationController extends Controller
 {
@@ -236,13 +237,25 @@ class EventRegistrationController extends Controller
             ->take(10)
             ->get();
 
+        $participants = EventRegistration::where('event_id', $selectedEvent->id)
+            ->orderBy('created_at', 'desc')
+            ->get();
+
+        $categories = EventRegistration::where('event_id', $selectedEvent->id)
+            ->whereNotNull('category')
+            ->distinct()
+            ->pluck('category')
+            ->values();
+
         return view('admin.events.scan', compact(
             'events',
             'selectedEvent',
             'totalRegistered',
             'totalAttended',
             'totalPending',
-            'recentAttended'
+            'recentAttended',
+            'participants',
+            'categories'
         ));
     }
 
@@ -399,9 +412,9 @@ class EventRegistrationController extends Controller
     }
 
     /**
-     * Manual Check-in / Cancel Check-in Toggle oleh Admin
+     * Manual Check-in / Cancel Check-in Toggle oleh Admin / Panitia
      */
-    public function toggleAttendance($id)
+    public function toggleAttendance(Request $request, $id)
     {
         $registration = EventRegistration::findOrFail($id);
 
@@ -411,14 +424,42 @@ class EventRegistrationController extends Controller
                 'attended_at' => null,
                 'scanned_by' => null,
             ]);
-            $msg = "Status kehadiran {$registration->name} dibatalkan (kembali ke Belum Hadir).";
+            $msg = "Status kehadiran {$registration->name} dibatalkan (Belum Hadir).";
+            $newStatus = 'registered';
         } else {
             $registration->update([
                 'status' => 'attended',
                 'attended_at' => now('Asia/Jakarta'),
-                'scanned_by' => auth()->user()->name ?? 'Admin',
+                'scanned_by' => auth()->user()->name ?? 'Panitia Scanner',
             ]);
             $msg = "Status kehadiran {$registration->name} berhasil diubah menjadi HADIR.";
+            $newStatus = 'attended';
+        }
+
+        // Hitung ulang statistik
+        $totalRegistered = EventRegistration::where('event_id', $registration->event_id)->count();
+        $totalAttended = EventRegistration::where('event_id', $registration->event_id)->where('status', 'attended')->count();
+        $totalPending = $totalRegistered - $totalAttended;
+
+        if ($request->ajax() || $request->wantsJson()) {
+            return response()->json([
+                'success' => true,
+                'message' => $msg,
+                'status' => $newStatus,
+                'participant' => [
+                    'id' => $registration->id,
+                    'name' => $registration->name,
+                    'status' => $registration->status,
+                    'attended_at' => $registration->attended_at ? $registration->attended_at->timezone('Asia/Jakarta')->format('d M, H:i') . ' WIB' : '-',
+                    'scanned_by' => $registration->scanned_by ?? '-',
+                ],
+                'stats' => [
+                    'total_registered' => $totalRegistered,
+                    'total_attended' => $totalAttended,
+                    'total_pending' => $totalPending,
+                    'percent' => $totalRegistered > 0 ? round(($totalAttended / $totalRegistered) * 100) : 0,
+                ]
+            ]);
         }
 
         return back()->with('success', $msg);
@@ -483,5 +524,74 @@ class EventRegistrationController extends Controller
         };
 
         return response()->stream($callback, 200, $headers);
+    }
+
+    /**
+     * Ekspor Data Peserta ke Format PDF (Keseluruhan atau Per Bagian)
+     */
+    public function exportPdf(Request $request, $event_id)
+    {
+        $this->ensureTableExists();
+
+        $event = Event::findOrFail($event_id);
+        $query = EventRegistration::where('event_id', $event_id);
+
+        $scope = $request->get('scope', 'all');
+        $scopeTitle = 'Seluruh Peserta Terdaftar';
+
+        // Filter berdasarkan scope status
+        if ($scope === 'attended') {
+            $query->where('status', 'attended');
+            $scopeTitle = 'Daftar Peserta SUDAH HADIR (Check-in)';
+        } elseif ($scope === 'registered') {
+            $query->where('status', 'registered');
+            $scopeTitle = 'Daftar Peserta BELUM HADIR';
+        }
+
+        // Filter kategori jika diberikan
+        if ($request->filled('category')) {
+            $query->where('category', $request->category);
+            $scopeTitle .= ' • Kategori ' . $request->category;
+        }
+
+        // Filter search jika ada
+        if ($request->filled('search')) {
+            $s = trim($request->search);
+            $query->where(function($q) use ($s) {
+                $q->where('name', 'like', "%{$s}%")
+                  ->orWhere('ticket_code', 'like', "%{$s}%")
+                  ->orWhere('phone', 'like', "%{$s}%")
+                  ->orWhere('origin', 'like', "%{$s}%");
+            });
+            $scopeTitle .= " • Pencarian \"{$s}\"";
+        }
+
+        $participants = $query->orderBy('name', 'asc')->get();
+
+        $totalAll = EventRegistration::where('event_id', $event_id)->count();
+        $totalAttended = EventRegistration::where('event_id', $event_id)->where('status', 'attended')->count();
+        $totalPending = $totalAll - $totalAttended;
+        $printedCount = $participants->count();
+
+        $pdf = Pdf::loadView('admin.events.pdf', compact(
+            'event',
+            'participants',
+            'scope',
+            'scopeTitle',
+            'totalAll',
+            'totalAttended',
+            'totalPending',
+            'printedCount'
+        ))->setPaper('a4', 'landscape');
+
+        $cleanTitle = Str::slug($event->title);
+        $cleanScope = Str::slug($scopeTitle);
+        $filename = 'Laporan_Peserta_' . $cleanTitle . '_' . ($cleanScope ?: 'Semua') . '_' . date('Ymd_His') . '.pdf';
+
+        if ($request->has('stream')) {
+            return $pdf->stream($filename);
+        }
+
+        return $pdf->download($filename);
     }
 }
