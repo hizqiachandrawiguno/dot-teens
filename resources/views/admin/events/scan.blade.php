@@ -621,7 +621,7 @@
                         <ul class="dropdown-menu dropdown-menu-end shadow-lg py-2" aria-labelledby="dropdownPdfBtn" style="background: #112240; border: 1px solid rgba(56, 189, 248, 0.3); min-width: 290px; z-index: 1050;">
                             <li><h6 class="dropdown-header text-uppercase text-info" style="font-size: 10px; letter-spacing: 0.5px;">Download Keseluruhan</h6></li>
                             <li>
-                                <a class="dropdown-item text-light d-flex align-items-center gap-2 py-2" href="{{ route('admin.events.export_pdf', $selectedEvent->id) }}?scope=all">
+                                <a class="dropdown-item text-light d-flex align-items-center gap-2 py-2" href="{{ route('admin.events.export_pdf', $selectedEvent->id) }}?scope=all" target="_blank">
                                     <i class="fa-solid fa-file-lines text-primary fs-5"></i>
                                     <div>
                                         <div class="fw-semibold">Semua Peserta (PDF Lengkap)</div>
@@ -632,7 +632,7 @@
                             <li><hr class="dropdown-divider border-secondary border-opacity-25"></li>
                             <li><h6 class="dropdown-header text-uppercase text-info" style="font-size: 10px; letter-spacing: 0.5px;">Download Per Bagian (Status)</h6></li>
                             <li>
-                                <a class="dropdown-item text-light d-flex align-items-center gap-2 py-2" href="{{ route('admin.events.export_pdf', $selectedEvent->id) }}?scope=attended">
+                                <a class="dropdown-item text-light d-flex align-items-center gap-2 py-2" href="{{ route('admin.events.export_pdf', $selectedEvent->id) }}?scope=attended" target="_blank">
                                     <i class="fa-solid fa-circle-check text-success fs-5"></i>
                                     <div>
                                         <div class="fw-semibold">Hanya Peserta Sudah Hadir</div>
@@ -641,7 +641,7 @@
                                 </a>
                             </li>
                             <li>
-                                <a class="dropdown-item text-light d-flex align-items-center gap-2 py-2" href="{{ route('admin.events.export_pdf', $selectedEvent->id) }}?scope=registered">
+                                <a class="dropdown-item text-light d-flex align-items-center gap-2 py-2" href="{{ route('admin.events.export_pdf', $selectedEvent->id) }}?scope=registered" target="_blank">
                                     <i class="fa-solid fa-hourglass-half text-warning fs-5"></i>
                                     <div>
                                         <div class="fw-semibold">Hanya Peserta Belum Hadir</div>
@@ -654,7 +654,7 @@
                             <li><h6 class="dropdown-header text-uppercase text-info" style="font-size: 10px; letter-spacing: 0.5px;">Download Per Kategori</h6></li>
                             @foreach($categories as $cat)
                             <li>
-                                <a class="dropdown-item text-light d-flex align-items-center gap-2 py-1.5" href="{{ route('admin.events.export_pdf', $selectedEvent->id) }}?category={{ urlencode($cat) }}">
+                                <a class="dropdown-item text-light d-flex align-items-center gap-2 py-1.5" href="{{ route('admin.events.export_pdf', $selectedEvent->id) }}?category={{ urlencode($cat) }}" target="_blank">
                                     <i class="fa-solid fa-tag text-info small"></i>
                                     <div>
                                         <div class="fw-semibold" style="font-size: 13px;">Kategori: {{ $cat }}</div>

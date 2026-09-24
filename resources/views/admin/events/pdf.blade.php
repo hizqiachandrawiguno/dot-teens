@@ -235,9 +235,36 @@
             color: #94a3b8;
             font-style: italic;
         }
+
+        @media print {
+            .no-print { display: none !important; }
+            body { margin: 0; padding: 0; }
+        }
     </style>
 </head>
 <body>
+
+    @if($autoPrint ?? false)
+    <div class="no-print" style="background: #0f172a; color: white; padding: 12px 20px; margin-bottom: 20px; border-radius: 8px; display: flex; justify-content: space-between; align-items: center; font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; box-shadow: 0 4px 12px rgba(0,0,0,0.15);">
+        <div>
+            <div style="font-weight: bold; font-size: 13px; color: #38bdf8;">🖨️ Mode Cetak / Simpan PDF Browser</div>
+            <div style="font-size: 11px; color: #cbd5e1; margin-top: 3px;">
+                Jika unduhan PDF otomatis tidak muncul, klik tombol di sebelah kanan. Pilih tujuan <strong>"Save as PDF" (Simpan sebagai PDF)</strong> dengan layout <strong>Landscape</strong>.
+            </div>
+        </div>
+        <div style="display: flex; gap: 8px;">
+            <button onclick="window.print()" style="background: #0284c7; color: white; border: none; padding: 8px 16px; font-weight: bold; border-radius: 6px; cursor: pointer; font-size: 12px;">Cetak / Unduh PDF</button>
+            <button onclick="window.close()" style="background: #334155; color: white; border: none; padding: 8px 12px; border-radius: 6px; cursor: pointer; font-size: 12px;">Tutup</button>
+        </div>
+    </div>
+    <script>
+        window.addEventListener('DOMContentLoaded', function() {
+            setTimeout(function() {
+                window.print();
+            }, 500);
+        });
+    </script>
+    @endif
 
     <!-- KOP LAPORAN -->
     <table class="kop-table" cellpadding="0" cellspacing="0">

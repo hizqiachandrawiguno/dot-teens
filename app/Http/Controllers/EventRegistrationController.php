@@ -573,7 +573,7 @@ class EventRegistrationController extends Controller
         $totalPending = $totalAll - $totalAttended;
         $printedCount = $participants->count();
 
-        $pdf = Pdf::loadView('admin.events.pdf', compact(
+        $data = compact(
             'event',
             'participants',
             'scope',
@@ -582,16 +582,30 @@ class EventRegistrationController extends Controller
             'totalAttended',
             'totalPending',
             'printedCount'
-        ))->setPaper('a4', 'landscape');
+        );
 
-        $cleanTitle = Str::slug($event->title);
-        $cleanScope = Str::slug($scopeTitle);
-        $filename = 'Laporan_Peserta_' . $cleanTitle . '_' . ($cleanScope ?: 'Semua') . '_' . date('Ymd_His') . '.pdf';
-
-        if ($request->has('stream')) {
-            return $pdf->stream($filename);
+        // Jika request secara eksplisit meminta tampilan HTML / Cetak Browser langsung
+        if ($request->has('print') || $request->has('html')) {
+            return view('admin.events.pdf', array_merge($data, ['autoPrint' => true]));
         }
 
-        return $pdf->download($filename);
+        // Jika paket DomPDF terinstall di server, buat file PDF menggunakan DomPDF
+        if (class_exists(\Barryvdh\DomPDF\Facade\Pdf::class)) {
+            $pdf = \Barryvdh\DomPDF\Facade\Pdf::loadView('admin.events.pdf', $data)->setPaper('a4', 'landscape');
+
+            $cleanTitle = Str::slug($event->title);
+            $cleanScope = Str::slug($scopeTitle);
+            $filename = 'Laporan_Peserta_' . $cleanTitle . '_' . ($cleanScope ?: 'Semua') . '_' . date('Ymd_His') . '.pdf';
+
+            if ($request->has('stream')) {
+                return $pdf->stream($filename);
+            }
+
+            return $pdf->download($filename);
+        }
+
+        // Fallback jika paket DomPDF belum terinstall di server (misal belum composer install di hosting)
+        // Langsung tampilkan preview cetak HTML dengan auto-trigger Print ke PDF browser agar tidak terjadi Error 500
+        return view('admin.events.pdf', array_merge($data, ['autoPrint' => true]));
     }
 }
