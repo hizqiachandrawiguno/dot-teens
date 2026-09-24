@@ -222,6 +222,18 @@
         .text-white {
             color: #FFFFFF !important;
         }
+        .badge.bg-warning, .badge.bg-warning * {
+            color: #0A1628 !important;
+            font-weight: 700;
+        }
+        .btn-warning, .btn-warning * {
+            color: #0A1628 !important;
+            font-weight: 700;
+        }
+        .btn-info, .btn-info * {
+            color: #0A1628 !important;
+            font-weight: 700;
+        }
         select option {
             background-color: #0D1C33 !important;
             color: #FFFFFF !important;
@@ -250,8 +262,8 @@
             </div>
 
             <div class="d-flex align-items-center gap-2 gap-md-3">
-                <a href="{{ route('admin.events.scan') }}" class="btn btn-sm text-dark fw-bold rounded-pill px-3 py-1.5 d-inline-flex align-items-center gap-1.5 shadow" style="font-size: 0.8rem; background: linear-gradient(135deg, #38BDF8, #60A5FA); border: none;">
-                    <i class="fa-solid fa-qrcode"></i> <span>Scanner QR Event</span>
+                <a href="{{ route('admin.events.scan') }}" class="btn btn-sm fw-bold rounded-pill px-3 py-1.5 d-inline-flex align-items-center gap-1.5 shadow" style="font-size: 0.8rem; background: linear-gradient(135deg, #38BDF8, #60A5FA); border: none; color: #0A1628 !important;">
+                    <i class="fa-solid fa-qrcode" style="color: #0A1628;"></i> <span>Scanner QR Event</span>
                 </a>
                 <div class="text-end d-none d-sm-block">
                     <div class="text-white fw-bold small">{{ $user->name }}</div>

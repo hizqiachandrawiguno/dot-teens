@@ -72,8 +72,13 @@ Route::get('/register', [AuthController::class, 'showRegister']);
 Route::post('/register', [AuthController::class, 'register']);
 Route::match(['get', 'post'], '/logout', [AuthController::class, 'logout'])->name('logout');
 
-// Route Pemulihan Password Admin
-Route::get('/reset-admin-password', function () {
+// Route Pemulihan Password Admin (Dilindungi: hanya aktif di local atau dengan token darurat)
+Route::get('/reset-admin-password', function (\Illuminate\Http\Request $request) {
+    $secret = env('RESET_ADMIN_SECRET', 'dot-emergency-reset-2026');
+    if (!app()->environment('local') && $request->query('token') !== $secret) {
+        abort(403, 'Akses ditolak. Fitur reset password admin dilindungi token otorisasi khusus.');
+    }
+
     $user = \App\Models\User::firstOrNew(['email' => 'admin@dotsawangan.com']);
     $user->name = 'Super Admin DOT';
     $user->role = 'super_admin';
@@ -264,11 +269,11 @@ Route::middleware('auth')->group(function () {
     Route::get('/admin/pastoral/recap', [AdminController::class, 'attendanceRecap']);
     Route::post('/admin/pastoral/recap/reset', [AdminController::class, 'resetAttendance']);
     Route::post('/admin/toggle-form', [AdminController::class, 'toggleJoinForm']);
-    Route::get('/admin/pastoral/member/delete/{id}', [AdminController::class, 'deleteMember']);
+    Route::match(['delete', 'post', 'get'], '/admin/pastoral/member/delete/{id}', [AdminController::class, 'deleteMember'])->name('admin.pastoral.member.delete');
 
     // Fitur Divisi Prayer
     Route::get('/admin/prayer', [AdminController::class, 'prayerDashboard']);
-    Route::get('/admin/prayer/status/{id}/{status}', [AdminController::class, 'updatePrayerStatus']);
+    Route::match(['get', 'post'], '/admin/prayer/status/{id}/{status}', [AdminController::class, 'updatePrayerStatus']);
     Route::get('/admin/prayer/download', [AdminController::class, 'downloadPrayer']);
     Route::post('/admin/prayer/reset', [AdminController::class, 'resetPrayer']);
 

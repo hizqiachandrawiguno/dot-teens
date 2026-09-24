@@ -52,12 +52,7 @@
                         <div class="mb-4">
                             <label class="small text-secondary mb-1">Lokasi</label>
                             <input type="text" name="location" class="form-control p-2" value="{{ $event->location }}" required>
-                        </div>
-                        <div class="mb-3">
-                            <label class="small text-secondary">Nomor WA Ketua Cell</label>
-                            <input type="number" name="leader_phone" class="form-control" value="{{ $schedule->leader_phone }}" required>
-                        </div>
-                        <button type="submit" class="btn btn-info w-100 rounded-pill fw-bold text-dark">Simpan Perubahan</button>
+                        <button type="submit" class="btn btn-info w-100 rounded-pill fw-bold shadow py-2" style="color: #0A1628 !important; background: linear-gradient(135deg, #38BDF8, #60A5FA); border: none;">Simpan Perubahan</button>
                     </form>
                 </div>
             </div>

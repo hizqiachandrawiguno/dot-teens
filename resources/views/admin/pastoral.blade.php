@@ -48,7 +48,13 @@
             border: none; color: white; font-weight: 600; 
         }
         .btn-gradient:hover { background: linear-gradient(135deg, #38BDF8, #1D4ED8); color: white; }
-        .table { color: #E2E8F0; }
+        .table { 
+            color: #E2E8F0; 
+            --bs-table-bg: transparent;
+            --bs-table-color: #E2E8F0;
+            --bs-table-hover-bg: rgba(56, 189, 248, 0.08);
+            --bs-table-hover-color: #FFFFFF;
+        }
         .table th { color: #38BDF8; border-bottom: 1px solid rgba(56, 189, 248, 0.18); background: #0D1C33; }
         .table td { border-bottom: 1px solid rgba(56, 189, 248, 0.1); background: transparent; vertical-align: middle; color: #CBD5E1; }
         .form-control, .form-control:focus {
@@ -332,9 +338,13 @@
                     data-registered="{{ date('d M Y, H:i', strtotime($m->created_at)) }} WIB">
                     <i class="fa-regular fa-copy"></i>
                 </button>
-                <a href="/admin/pastoral/member/delete/{{ $m->id }}" class="btn btn-sm btn-outline-danger rounded-circle" onclick="return confirm('Yakin ingin menghapus jemaat bernama {{ $m->name }}?');" title="Hapus Jemaat">
-                    <i class="fa-solid fa-trash-can"></i>
-                </a>
+                <form action="/admin/pastoral/member/delete/{{ $m->id }}" method="POST" class="d-inline" onsubmit="return confirm('Yakin ingin menghapus jemaat bernama {{ $m->name }}?');">
+                    @csrf
+                    @method('DELETE')
+                    <button type="submit" class="btn btn-sm btn-outline-danger rounded-circle" title="Hapus Jemaat">
+                        <i class="fa-solid fa-trash-can"></i>
+                    </button>
+                </form>
             </div>
 
             <!-- MODAL DETAIL JEMAAT PASTORAL -->

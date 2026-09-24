@@ -91,8 +91,18 @@
         .text-muted, .text-secondary {
             color: #94A3B8 !important;
         }
-        .text-dark {
-            color: #FFFFFF !important;
+        /* Standalone text-dark on dark page background (prevents black text disappearing on navy background) */
+        .text-dark:not(.badge):not(.btn):not(.badge *):not(.btn *):not(.alert *) {
+            color: #E2E8F0 !important;
+        }
+        /* Ensure badges and light buttons on welcome page always have clear, sharp contrast */
+        .badge.bg-warning, .badge.bg-info, .badge.bg-light,
+        .btn-warning, .btn-light {
+            color: #0A1628 !important;
+        }
+        .badge.bg-warning *, .badge.bg-info *, .badge.bg-light *,
+        .btn-warning *, .btn-light * {
+            color: #0A1628 !important;
         }
         .text-white {
             color: #FFFFFF !important;

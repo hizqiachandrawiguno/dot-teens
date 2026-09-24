@@ -11,9 +11,16 @@
         .navbar-custom { background: #0D1C33; border-bottom: 1px solid rgba(56, 189, 248, 0.18); box-shadow: 0 4px 20px rgba(0, 0, 0, 0.5); }
         .glass-card { background: #112340; border: 1px solid rgba(56, 189, 248, 0.18); border-radius: 1.25rem; padding: 1.5rem; box-shadow: 0 8px 30px rgba(0, 0, 0, 0.3); }
         .text-gradient { background: linear-gradient(90deg, #38BDF8, #60A5FA); -webkit-background-clip: text; -webkit-text-fill-color: transparent; }
-        .table { color: #E2E8F0; }
+        .table { 
+            color: #E2E8F0; 
+            --bs-table-bg: transparent; 
+            --bs-table-color: #E2E8F0; 
+            --bs-table-hover-bg: rgba(56, 189, 248, 0.08); 
+            --bs-table-hover-color: #FFFFFF; 
+        }
         .table th { background-color: #0D1C33; color: #38BDF8; border-bottom: 1px solid rgba(56, 189, 248, 0.18); }
         .table td { border-bottom: 1px solid rgba(56, 189, 248, 0.1); vertical-align: middle; color: #CBD5E1; }
+        .text-muted { color: #94A3B8 !important; }
         .form-control, .form-select { background: #0B182B; border: 1px solid rgba(56, 189, 248, 0.22); color: #FFFFFF; }
     </style>
 </head>
@@ -81,7 +88,7 @@
                     </div>
 
                     <div class="table-responsive" style="max-height: 500px; overflow-y: auto;">
-                        <table class="table table-hover table-light rounded overflow-hidden">
+                        <table class="table table-hover rounded overflow-hidden">
                             <thead class="table-dark">
                                 <tr>
                                     <th>No</th>

@@ -18,9 +18,17 @@ class AdminController extends Controller
     {
         $user = auth()->user();
 
-        // 1. CEK BERDASARKAN "ROLE" ASLI DI DATABASE
+        // 1. CEK ROLE KHUSUS
+        if ($user->role == 'volunteer') {
+            return redirect('/scanner');
+        }
+
         if ($user->role == 'div_pastoral') {
             return redirect('/admin/pastoral');
+        }
+
+        if ($user->role == 'div_prayer') {
+            return redirect('/admin/prayer');
         }
 
         // 2. JIKA YANG LOGIN SUPER ADMIN ATAU DIVISI LAIN
@@ -47,25 +55,18 @@ class AdminController extends Controller
             });
         }
 
-        // [BARU] AMBIL DATA CCTV UNTUK SUPER ADMIN (50 Aktivitas Terbaru)
+        // AMBIL DATA CCTV UNTUK SUPER ADMIN (50 Aktivitas Terbaru)
         $cctv_logs = ActivityLog::latest()->take(50)->get();
-
-        // CEK BERDASARKAN "ROLE" ASLI DI DATABASE
-        if ($user->role == 'div_pastoral') {
-            return redirect('/admin/pastoral');
-        }
-
-        // TAMBAHKAN INI: Jika yang login Divisi Prayer
-        if ($user->role == 'div_prayer') {
-            return redirect('/admin/prayer');
-        }
         
-        // [BARU] Tambahkan $cctv_logs ke dalam compact
         return view('admin.dashboard', compact('user', 'stats', 'cellSchedules', 'members', 'galleries', 'cctv_logs'));
     }
 
     // --- FUNGSI SUPER ADMIN: APPROVE / REJECT AKUN ---
     public function approveUser($id) {
+        if (auth()->user()->role !== 'super_admin') {
+            abort(403, 'Hanya Super Admin yang berhak menyetujui akun pengurus.');
+        }
+
         $user = User::findOrFail($id);
         $user->status = 'approved';
         $user->save();
@@ -73,6 +74,10 @@ class AdminController extends Controller
     }
 
     public function rejectUser($id) {
+        if (auth()->user()->role !== 'super_admin') {
+            abort(403, 'Hanya Super Admin yang berhak menolak akun pengurus.');
+        }
+
         User::findOrFail($id)->delete(); // Langsung hapus akun yang ditolak
         return back()->with('success', 'Akun berhasil ditolak dan dihapus!');
     }
@@ -80,6 +85,10 @@ class AdminController extends Controller
     // --- FUNGSI SUPER ADMIN: HAPUS AKUN PENGURUS ---
     public function destroyUser($id)
     {
+        if (auth()->user()->role !== 'super_admin') {
+            abort(403, 'Hanya Super Admin yang berhak menghapus akun pengurus.');
+        }
+
         $targetUser = User::findOrFail($id);
         
         // Proteksi tambahan: Pastikan tidak menghapus diri sendiri
@@ -493,6 +502,10 @@ class AdminController extends Controller
     // --- FUNGSI UNTUK MENGHAPUS DATA JEMAAT PASTORAL ---
     public function deleteMember($id)
     {
+        if (!in_array(auth()->user()->role, ['super_admin', 'div_pastoral'])) {
+            abort(403, 'Anda tidak memiliki hak akses untuk menghapus data jemaat.');
+        }
+
         $member = Member::findOrFail($id);
         $name = $member->name;
         

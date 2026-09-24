@@ -440,10 +440,10 @@
                                 <strong class="d-block text-white mb-1">Browser Memblokir Akses Kamera (Status: Not Secure)</strong>
                                 <span class="text-light opacity-90">Google Chrome membatasi izin kamera hanya untuk koneksi <strong>HTTPS</strong> atau <strong>localhost</strong>. Karena dibuka via domain lokal HTTP (.test), browser mengunci webcam.</span>
                                 <div class="mt-2 d-flex flex-wrap gap-2">
-                                    <a href="http://localhost/dot-teens/public/admin/events/scan/{{ $selectedEvent->id }}" class="btn btn-sm btn-success fw-bold text-dark rounded-pill px-3 shadow">
-                                        <i class="fa-solid fa-bolt me-1 text-dark"></i> Buka via Localhost (Kamera Aktif)
+                                    <a href="http://localhost/dot-teens/public/admin/events/scan/{{ $selectedEvent->id }}" class="btn btn-sm btn-success fw-bold text-white rounded-pill px-3 shadow">
+                                        <i class="fa-solid fa-bolt me-1 text-white"></i> Buka via Localhost (Kamera Aktif)
                                     </a>
-                                    <a id="btnSwitchHttps" href="#" class="btn btn-sm btn-light fw-bold text-dark rounded-pill px-3">
+                                    <a id="btnSwitchHttps" href="#" class="btn btn-sm btn-light fw-bold rounded-pill px-3" style="color: #0A1628 !important;">
                                         <i class="fa-solid fa-lock me-1 text-success"></i> Buka via HTTPS
                                     </a>
                                 </div>
