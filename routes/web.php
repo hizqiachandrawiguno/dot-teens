@@ -8,6 +8,7 @@ use App\Http\Controllers\AdminController;
 use App\Http\Controllers\PublicController;
 use App\Http\Controllers\EventController;
 use App\Http\Controllers\EventRegistrationController;
+use App\Http\Controllers\CashController;
 
 // ==========================================
 // RUTE HALAMAN DEPAN (PUBLIC)
@@ -229,6 +230,27 @@ Route::get('/install-event-revival', function () {
 });
 
 
+// Setup otomatis Tabel Kas & Keuangan Volunteer
+Route::get('/install-kas', function () {
+    try {
+        \App\Http\Controllers\CashController::ensureTablesExist();
+        return "<div style='font-family:sans-serif; text-align:center; padding:50px; background:#0F172A; color:#F3F4F6; min-height:100vh; display:flex; flex-direction:column; justify-content:center; align-items:center;'>
+            <div style='background:rgba(255,255,255,0.05); padding:40px; border-radius:24px; border:1px solid rgba(16,185,129,0.3); max-width:520px; box-shadow: 0 20px 40px rgba(0,0,0,0.5);'>
+                <div style='font-size:52px; margin-bottom:15px;'>💰</div>
+                <h2 style='color:#10B981; margin-bottom:15px;'>Tabel Kas & Keuangan Berhasil Dipasang! ✅</h2>
+                <p style='color:#94A3B8; font-size:15px; line-height:1.6; margin-bottom:25px;'>
+                    Tabel <code>cash_volunteers</code>, <code>cash_periods</code>, <code>cash_payments</code>, <code>cash_expenses</code>, dan <code>cash_settings</code> sudah siap digunakan!
+                </p>
+                <div style='display:flex; gap:12px; justify-content:center;'>
+                    <a href='/admin/kas' style='padding:12px 24px; background:linear-gradient(135deg, #10B981, #059669); color:#fff; text-decoration:none; border-radius:12px; font-weight:600;'>Buka Dashboard Kas</a>
+                </div>
+            </div>
+        </div>";
+    } catch (\Throwable $e) {
+        return "<h2 style='color:red;'>Gagal: " . htmlspecialchars($e->getMessage()) . "</h2>";
+    }
+});
+
 // ==========================================
 // RUTE ADMIN DASHBOARD (DILINDUNGI MIDDLEWARE)
 // ==========================================
@@ -289,6 +311,21 @@ Route::middleware('auth')->group(function () {
 
     // Fitur Toggle Pop Up Banner Beranda
     Route::post('/admin/events/{id}/toggle-popup', [EventController::class, 'togglePopup'])->name('admin.events.toggle_popup')->whereNumber('id');
+
+    // Fitur Divisi Keuangan / Bendahara (Kas Volunteer)
+    Route::get('/admin/kas', [CashController::class, 'index'])->name('admin.kas');
+    Route::get('/admin/kas/send-wa/{id}', [CashController::class, 'sendWaReminder'])->name('admin.kas.send_wa');
+    Route::post('/admin/kas/payment/store', [CashController::class, 'storePayment'])->name('admin.kas.payment.store');
+    Route::post('/admin/kas/payment/delete/{id}', [CashController::class, 'deletePayment'])->name('admin.kas.payment.delete');
+    Route::post('/admin/kas/expense/store', [CashController::class, 'storeExpense'])->name('admin.kas.expense.store');
+    Route::post('/admin/kas/expense/delete/{id}', [CashController::class, 'deleteExpense'])->name('admin.kas.expense.delete');
+    Route::post('/admin/kas/volunteer/store', [CashController::class, 'storeVolunteer'])->name('admin.kas.volunteer.store');
+    Route::post('/admin/kas/volunteer/update/{id}', [CashController::class, 'updateVolunteer'])->name('admin.kas.volunteer.update');
+    Route::post('/admin/kas/volunteer/delete/{id}', [CashController::class, 'deleteVolunteer'])->name('admin.kas.volunteer.delete');
+    Route::post('/admin/kas/sync-users', [CashController::class, 'syncFromUsers'])->name('admin.kas.sync');
+    Route::post('/admin/kas/period/store', [CashController::class, 'storePeriod'])->name('admin.kas.period.store');
+    Route::post('/admin/kas/settings', [CashController::class, 'updateSettings'])->name('admin.kas.settings.update');
+    Route::get('/admin/kas/export-csv', [CashController::class, 'exportCsv'])->name('admin.kas.export');
 
     // Fitur Admin Event Kalender
     Route::resource('admin/events', EventController::class)->whereNumber('event');

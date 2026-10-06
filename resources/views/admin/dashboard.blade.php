@@ -262,13 +262,16 @@
             </div>
 
             <div class="d-flex align-items-center gap-2 gap-md-3">
+                <a href="/admin/kas" class="btn btn-sm fw-bold rounded-pill px-3 py-1.5 d-inline-flex align-items-center gap-1.5 shadow" style="font-size: 0.8rem; background: linear-gradient(135deg, #10B981, #059669); border: none; color: #FFFFFF !important;">
+                    <i class="fa-solid fa-wallet" style="color: #FFFFFF;"></i> <span>Dashboard Kas</span>
+                </a>
                 <a href="{{ route('admin.events.scan') }}" class="btn btn-sm fw-bold rounded-pill px-3 py-1.5 d-inline-flex align-items-center gap-1.5 shadow" style="font-size: 0.8rem; background: linear-gradient(135deg, #38BDF8, #60A5FA); border: none; color: #0A1628 !important;">
                     <i class="fa-solid fa-qrcode" style="color: #0A1628;"></i> <span>Scanner QR Event</span>
                 </a>
                 <div class="text-end d-none d-sm-block">
                     <div class="text-white fw-bold small">{{ $user->name }}</div>
                     <span class="badge rounded-pill px-2 py-1" style="background: rgba(96, 165, 250, 0.15); color:#60A5FA; border: 1px solid rgba(96, 165, 250, 0.3); font-size: 0.7rem;">
-                        <i class="fa-solid fa-shield me-1 text-warning"></i> {{ $user->role == 'super_admin' ? 'SUPER ADMIN' : ($user->role == 'volunteer' ? 'VOLUNTEER / USHER' : 'KETUA ' . strtoupper(str_replace('_', ' ', $user->role))) }}
+                        <i class="fa-solid fa-shield me-1 text-warning"></i> {{ $user->role == 'super_admin' ? 'SUPER ADMIN' : ($user->role == 'bendahara' ? 'BENDAHARA / KEUANGAN' : ($user->role == 'volunteer' ? 'VOLUNTEER / USHER' : 'KETUA ' . strtoupper(str_replace('_', ' ', $user->role)))) }}
                     </span>
                 </div>
                 <form action="{{ route('logout') }}" method="POST">
@@ -572,6 +575,7 @@
                             <select id="filterDivisi" class="form-select form-select-sm w-auto rounded-pill px-3 py-1 text-white" style="cursor: pointer;">
                                 <option value="all">⚡ Semua Divisi</option>
                                 <option value="super_admin">Super Admin</option>
+                                <option value="bendahara">Bendahara / Keuangan</option>
                                 <option value="volunteer">Volunteer / Usher</option>
                                 <option value="div_acara">Divisi Acara</option>
                                 <option value="div_cell">Divisi Cell</option>

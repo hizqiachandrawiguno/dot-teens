@@ -31,6 +31,10 @@ class AdminController extends Controller
             return redirect('/admin/prayer');
         }
 
+        if ($user->role == 'bendahara') {
+            return redirect('/admin/kas');
+        }
+
         // 2. JIKA YANG LOGIN SUPER ADMIN ATAU DIVISI LAIN
         $members = Member::all();
         $cellSchedules = CellSchedule::all();
