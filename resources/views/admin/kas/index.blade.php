@@ -15,66 +15,38 @@
 
     <style>
         :root {
-            --primary-accent: #38BDF8;
-            --emerald-accent: #10B981;
-            --emerald-glow: rgba(16, 185, 129, 0.25);
-            --amber-accent: #F59E0B;
-            --rose-accent: #F43F5E;
-            --purple-accent: #A855F7;
-            --bg-navy: #0A1628;
-            --card-bg: #112340;
-            --card-border: rgba(56, 189, 248, 0.2);
-            --navy-input: #172A46;
+            --primary-accent: #2563EB;
+            --bg-navy: #0B132B;
+            --card-bg: #111C2E;
+            --card-border: rgba(255, 255, 255, 0.08);
+            --navy-input: #0D1726;
             --text-light: #F8FAFC;
             --text-muted: #94A3B8;
         }
 
         body {
-            background-color: #0A1628 !important;
+            background-color: #0B132B !important;
             color: #F8FAFC !important;
             font-family: 'Plus Jakarta Sans', sans-serif;
             min-height: 100vh;
-            background-image: 
-                radial-gradient(circle at 12% 12%, rgba(56, 189, 248, 0.08), transparent 30%),
-                radial-gradient(circle at 88% 88%, rgba(16, 185, 129, 0.07), transparent 30%),
-                radial-gradient(circle at 50% 50%, rgba(168, 85, 247, 0.04), transparent 45%);
-            background-attachment: fixed;
         }
 
         .navbar-custom {
-            background: #0D1C33;
+            background: #0D1726;
             border-bottom: 1px solid var(--card-border);
-            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.5);
-        }
-
-        .text-gradient {
-            background: linear-gradient(90deg, #38BDF8, #60A5FA);
-            -webkit-background-clip: text;
-            -webkit-text-fill-color: transparent;
-        }
-
-        .text-gradient-emerald {
-            background: linear-gradient(90deg, #34D399, #10B981);
-            -webkit-background-clip: text;
-            -webkit-text-fill-color: transparent;
-        }
-
-        .text-gradient-amber {
-            background: linear-gradient(90deg, #FCD34D, #F59E0B);
-            -webkit-background-clip: text;
-            -webkit-text-fill-color: transparent;
+            box-shadow: 0 4px 16px rgba(0, 0, 0, 0.3);
         }
 
         .glass-card {
             background: var(--card-bg);
             border: 1px solid var(--card-border);
-            border-radius: 20px;
+            border-radius: 16px;
             padding: 24px;
-            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.35);
-            transition: all 0.3s ease;
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.25);
+            transition: border-color 0.2s ease;
         }
         .glass-card:hover {
-            border-color: rgba(56, 189, 248, 0.4);
+            border-color: rgba(255, 255, 255, 0.15);
         }
 
         /* TEXT CONTRAST & VISIBILITY OVERRIDES */
@@ -86,250 +58,257 @@
         }
         .stat-label {
             color: #94A3B8 !important;
-            font-size: 0.78rem !important;
-            font-weight: 700 !important;
+            font-size: 0.75rem !important;
+            font-weight: 600 !important;
             text-transform: uppercase !important;
-            letter-spacing: 0.6px !important;
+            letter-spacing: 0.5px !important;
             display: block;
             margin-bottom: 4px;
         }
         .stat-subtext {
-            color: #CBD5E1 !important;
-            font-size: 0.82rem !important;
+            color: #94A3B8 !important;
+            font-size: 0.8rem !important;
             font-weight: 500 !important;
         }
 
         /* STAT CARDS */
         .stat-card {
-            background: #112340 !important;
+            background: var(--card-bg) !important;
             border: 1px solid var(--card-border);
-            border-radius: 20px;
-            padding: 22px 24px;
+            border-radius: 16px;
+            padding: 20px 22px;
             position: relative;
             overflow: hidden;
-            box-shadow: 0 8px 24px rgba(0, 0, 0, 0.35);
-            transition: transform 0.25s ease, box-shadow 0.25s ease, border-color 0.25s ease;
+            box-shadow: 0 4px 16px rgba(0, 0, 0, 0.2);
+            transition: transform 0.2s ease, border-color 0.2s ease;
         }
         .stat-card:hover {
-            transform: translateY(-3px);
-            box-shadow: 0 14px 30px rgba(0, 0, 0, 0.45);
+            transform: translateY(-2px);
+            border-color: rgba(255, 255, 255, 0.16);
         }
-        .stat-card.card-emerald { border-left: 4px solid #10B981; }
-        .stat-card.card-rose    { border-left: 4px solid #F43F5E; }
-        .stat-card.card-cyan    { border-left: 4px solid #38BDF8; }
-        .stat-card.card-amber   { border-left: 4px solid #F59E0B; }
-        .stat-card.card-purple  { border-left: 4px solid #A855F7; }
 
         .stat-icon {
-            width: 48px;
-            height: 48px;
-            border-radius: 14px;
+            width: 44px;
+            height: 44px;
+            border-radius: 12px;
             display: flex;
             align-items: center;
             justify-content: center;
-            font-size: 1.4rem;
+            font-size: 1.15rem;
+            background: rgba(255, 255, 255, 0.05);
+            color: #94A3B8;
         }
 
         /* PILL MINI BADGE */
         .pill-mini {
             display: inline-flex;
             align-items: center;
-            gap: 6px;
-            padding: 4px 10px;
-            border-radius: 50px;
-            font-size: 0.76rem;
-            font-weight: 600;
+            gap: 5px;
+            padding: 2px 9px;
+            border-radius: 6px;
+            font-size: 0.72rem;
+            font-weight: 500;
+            background: rgba(255, 255, 255, 0.05) !important;
+            border: 1px solid rgba(255, 255, 255, 0.08) !important;
+            color: #94A3B8 !important;
+        }
+        .pill-mini i {
+            color: #64748B !important;
         }
 
         /* TABS CUSTOM */
         .nav-pills-custom {
-            gap: 8px;
-            background: rgba(13, 28, 51, 0.7);
+            gap: 6px;
+            background: rgba(255, 255, 255, 0.03);
             padding: 6px;
-            border-radius: 16px;
+            border-radius: 14px;
             border: 1px solid var(--card-border);
             display: flex;
             flex-wrap: wrap;
         }
         .nav-pills-custom .nav-link {
             color: #94A3B8;
-            font-weight: 600;
-            font-size: 0.88rem;
-            border-radius: 12px;
-            padding: 10px 18px;
+            font-weight: 500;
+            font-size: 0.85rem;
+            border-radius: 10px;
+            padding: 8px 16px;
             transition: all 0.2s ease;
             display: inline-flex;
             align-items: center;
             gap: 6px;
         }
+        .nav-pills-custom .nav-link i {
+            color: #64748B;
+            transition: color 0.2s ease;
+        }
         .nav-pills-custom .nav-link:hover {
             color: #F8FAFC;
             background: rgba(255, 255, 255, 0.05);
         }
+        .nav-pills-custom .nav-link:hover i {
+            color: #CBD5E1;
+        }
         .nav-pills-custom .nav-link.active {
-            color: #0A1628 !important;
-            background: linear-gradient(135deg, #38BDF8, #60A5FA) !important;
-            box-shadow: 0 4px 14px rgba(56, 189, 248, 0.35);
-            font-weight: 700;
+            color: #FFFFFF !important;
+            background: #2563EB !important;
+            box-shadow: none !important;
+            font-weight: 600;
         }
         .nav-pills-custom .nav-link.active i {
-            color: #0A1628 !important;
+            color: #FFFFFF !important;
         }
 
-        /* TABLE CUSTOM WITH SUPERIOR CONTRAST */
+        /* TABLE CUSTOM WITH CLEAN CONTRAST */
         .table, .table-custom {
             --bs-table-bg: transparent !important;
             --bs-table-accent-bg: transparent !important;
             --bs-table-striped-bg: transparent !important;
-            --bs-table-hover-bg: #142745 !important;
+            --bs-table-hover-bg: #16243A !important;
             --bs-table-color: #F8FAFC !important;
             margin-bottom: 0;
             border-collapse: separate;
-            border-spacing: 0 8px;
+            border-spacing: 0 6px;
         }
         .table-custom thead th {
-            background-color: #0F1E36 !important;
-            color: #93C5FD !important;
-            font-size: 0.78rem;
-            font-weight: 700;
+            background-color: #0D1726 !important;
+            color: #94A3B8 !important;
+            font-size: 0.75rem;
+            font-weight: 600;
             text-transform: uppercase;
-            letter-spacing: 0.6px;
+            letter-spacing: 0.5px;
             border: none;
-            padding: 14px 16px;
+            padding: 12px 16px;
         }
         .table-custom tbody tr, .table-custom tbody td {
-            background-color: #112340 !important;
+            background-color: #111C2E !important;
             color: #F8FAFC !important;
-            border-top: 1px solid rgba(255, 255, 255, 0.06);
-            border-bottom: 1px solid rgba(255, 255, 255, 0.06);
+            border-top: 1px solid rgba(255, 255, 255, 0.04);
+            border-bottom: 1px solid rgba(255, 255, 255, 0.04);
         }
         .table-custom tbody tr:hover td {
-            background-color: #172D4D !important;
+            background-color: #16243A !important;
         }
         .table-custom tbody td {
-            padding: 14px 16px;
+            padding: 12px 16px;
             vertical-align: middle;
-            font-size: 0.88rem;
+            font-size: 0.86rem;
         }
         .table-custom tbody tr td:first-child {
-            border-left: 1px solid rgba(255, 255, 255, 0.06);
-            border-top-left-radius: 12px;
-            border-bottom-left-radius: 12px;
+            border-left: 1px solid rgba(255, 255, 255, 0.04);
+            border-top-left-radius: 10px;
+            border-bottom-left-radius: 10px;
         }
         .table-custom tbody tr td:last-child {
-            border-right: 1px solid rgba(255, 255, 255, 0.06);
-            border-top-right-radius: 12px;
-            border-bottom-right-radius: 12px;
+            border-right: 1px solid rgba(255, 255, 255, 0.04);
+            border-top-right-radius: 10px;
+            border-bottom-right-radius: 10px;
         }
 
         /* BADGES */
         .badge-status {
-            padding: 6px 12px;
+            padding: 4px 10px;
             border-radius: 50px;
-            font-size: 0.76rem;
-            font-weight: 700;
+            font-size: 0.74rem;
+            font-weight: 600;
             letter-spacing: 0.3px;
             display: inline-flex;
             align-items: center;
             gap: 5px;
         }
         .badge-lunas {
-            background: rgba(16, 185, 129, 0.18);
+            background: rgba(16, 185, 129, 0.12);
             color: #34D399;
-            border: 1px solid rgba(16, 185, 129, 0.35);
+            border: 1px solid rgba(16, 185, 129, 0.25);
         }
         .badge-tunggak {
-            background: rgba(244, 63, 94, 0.18);
+            background: rgba(244, 63, 94, 0.12);
             color: #FB7185;
-            border: 1px solid rgba(244, 63, 94, 0.35);
+            border: 1px solid rgba(244, 63, 94, 0.25);
         }
         .badge-inflow {
-            background: rgba(16, 185, 129, 0.18);
+            background: rgba(16, 185, 129, 0.12);
             color: #34D399;
-            border: 1px solid rgba(16, 185, 129, 0.35);
+            border: 1px solid rgba(16, 185, 129, 0.25);
+            font-size: 0.72rem;
+            font-weight: 600;
         }
         .badge-expense {
-            background: rgba(244, 63, 94, 0.18);
+            background: rgba(244, 63, 94, 0.12);
             color: #FB7185;
-            border: 1px solid rgba(244, 63, 94, 0.35);
+            border: 1px solid rgba(244, 63, 94, 0.25);
+            font-size: 0.72rem;
+            font-weight: 600;
         }
 
         /* MODAL DARK STYLING */
         .modal-content {
-            background-color: #112340;
-            border: 1px solid rgba(56, 189, 248, 0.3);
-            border-radius: 20px;
-            box-shadow: 0 20px 50px rgba(0, 0, 0, 0.6);
+            background-color: #111C2E;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 16px;
+            box-shadow: 0 16px 40px rgba(0, 0, 0, 0.6);
             color: #F8FAFC;
         }
         .modal-header {
-            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
-            padding: 20px 24px;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+            padding: 18px 24px;
         }
         .modal-footer {
-            border-top: 1px solid rgba(255, 255, 255, 0.1);
-            padding: 16px 24px;
+            border-top: 1px solid rgba(255, 255, 255, 0.08);
+            padding: 14px 24px;
         }
         .form-control, .form-select {
-            background-color: #172A46 !important;
-            border: 1px solid rgba(56, 189, 248, 0.25) !important;
+            background-color: #0D1726 !important;
+            border: 1px solid rgba(255, 255, 255, 0.12) !important;
             color: #F8FAFC !important;
-            border-radius: 12px;
-            padding: 10px 14px;
+            border-radius: 10px;
+            padding: 8px 12px;
         }
         .form-control:focus, .form-select:focus {
-            border-color: #38BDF8 !important;
-            box-shadow: 0 0 0 3px rgba(56, 189, 248, 0.2) !important;
+            border-color: #2563EB !important;
+            box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.2) !important;
         }
         .form-control::placeholder {
             color: #64748B !important;
         }
 
-        /* BUTTONS */
-        .btn-cyan-action {
-            background: linear-gradient(135deg, #0284C7, #2563EB);
+        /* UNIFIED BUTTONS */
+        .btn-action-primary {
+            background: #2563EB;
             color: #FFFFFF !important;
             border: none;
-            font-weight: 600;
+            font-weight: 500;
+            transition: background 0.2s ease;
         }
-        .btn-cyan-action:hover {
-            background: linear-gradient(135deg, #0369A1, #1D4ED8);
+        .btn-action-primary:hover {
+            background: #1D4ED8;
             color: #FFFFFF !important;
         }
-        .btn-emerald-action {
-            background: linear-gradient(135deg, #10B981, #059669);
-            color: #FFFFFF !important;
-            border: none;
-            font-weight: 600;
+        .btn-action-secondary {
+            background: rgba(255, 255, 255, 0.04);
+            color: #F1F5F9 !important;
+            border: 1px solid rgba(255, 255, 255, 0.12);
+            font-weight: 500;
+            transition: all 0.2s ease;
         }
-        .btn-emerald-action:hover {
-            background: linear-gradient(135deg, #059669, #047857);
+        .btn-action-secondary:hover {
+            background: rgba(255, 255, 255, 0.08);
             color: #FFFFFF !important;
-        }
-        .btn-rose-action {
-            background: linear-gradient(135deg, #F43F5E, #E11D48);
-            color: #FFFFFF !important;
-            border: none;
-            font-weight: 600;
-        }
-        .btn-rose-action:hover {
-            background: linear-gradient(135deg, #E11D48, #BE123C);
-            color: #FFFFFF !important;
+            border-color: rgba(255, 255, 255, 0.2);
         }
 
         /* THUMBNAIL PREVIEW */
         .img-thumb-preview {
-            width: 44px;
-            height: 44px;
+            width: 40px;
+            height: 40px;
             object-fit: cover;
             border-radius: 8px;
-            border: 1px solid rgba(56, 189, 248, 0.3);
+            border: 1px solid rgba(255, 255, 255, 0.12);
             cursor: pointer;
             transition: transform 0.2s ease;
         }
         .img-thumb-preview:hover {
-            transform: scale(1.08);
-            border-color: #38BDF8;
+            transform: scale(1.06);
+            border-color: rgba(255, 255, 255, 0.3);
         }
     </style>
 </head>
@@ -341,9 +320,9 @@
             <div class="d-flex align-items-center gap-3">
                 <a class="navbar-brand d-flex align-items-center gap-2 m-0" href="/admin/dashboard">
                     <img src="{{ asset('images/logo.png') }}" alt="DOT" style="height: 38px; object-fit: contain;">
-                    <span class="fw-bold fs-5 text-white">DOT <span class="text-gradient">Bendahara</span></span>
+                    <span class="fw-bold fs-5 text-white">DOT Bendahara</span>
                 </a>
-                <span class="badge rounded-pill px-3 py-1.5 d-none d-md-inline-block" style="background: rgba(16, 185, 129, 0.15); color: #34D399; border: 1px solid rgba(16, 185, 129, 0.3); font-size: 0.75rem;">
+                <span class="badge rounded-pill px-3 py-1.5 d-none d-md-inline-block" style="background: rgba(255, 255, 255, 0.05); color: #CBD5E1; border: 1px solid rgba(255, 255, 255, 0.1); font-size: 0.75rem;">
                     <i class="fa-solid fa-coins me-1"></i> Cashflow & Kas DOT Teens
                 </span>
             </div>
@@ -354,7 +333,7 @@
                 </a>
                 <div class="text-end d-none d-sm-block">
                     <div class="text-white fw-bold small">{{ $user->name }}</div>
-                    <span class="badge rounded-pill px-2 py-0.5" style="background: rgba(56, 189, 248, 0.15); color:#38BDF8; font-size: 0.7rem;">
+                    <span class="badge rounded-pill px-2 py-0.5" style="background: rgba(255, 255, 255, 0.08); color: #CBD5E1; font-size: 0.7rem;">
                         {{ $user->role == 'super_admin' ? 'Super Admin' : 'Bendahara Tim' }}
                     </span>
                 </div>
@@ -372,7 +351,7 @@
 
         <!-- ALERT NOTIFIKASI -->
         @if(session('success'))
-            <div class="alert alert-success alert-dismissible fade show rounded-4 shadow-sm border-0 mb-4" style="background: rgba(16, 185, 129, 0.2); border: 1px solid rgba(16, 185, 129, 0.4) !important; color: #6EE7B7;" role="alert">
+            <div class="alert alert-success alert-dismissible fade show rounded-4 shadow-sm border-0 mb-4" style="background: rgba(16, 185, 129, 0.15); border: 1px solid rgba(16, 185, 129, 0.3) !important; color: #6EE7B7;" role="alert">
                 <div class="d-flex align-items-center">
                     <i class="fa-solid fa-circle-check fs-4 me-2.5"></i>
                     <div><strong>Berhasil!</strong> {{ session('success') }}</div>
@@ -382,7 +361,7 @@
         @endif
 
         @if($errors->any())
-            <div class="alert alert-danger alert-dismissible fade show rounded-4 shadow-sm border-0 mb-4" style="background: rgba(244, 63, 94, 0.2); border: 1px solid rgba(244, 63, 94, 0.4) !important; color: #FDA4AF;" role="alert">
+            <div class="alert alert-danger alert-dismissible fade show rounded-4 shadow-sm border-0 mb-4" style="background: rgba(244, 63, 94, 0.15); border: 1px solid rgba(244, 63, 94, 0.3) !important; color: #FDA4AF;" role="alert">
                 <div class="d-flex align-items-center">
                     <i class="fa-solid fa-triangle-exclamation fs-4 me-2.5"></i>
                     <div>
@@ -402,41 +381,41 @@
         <div class="d-flex flex-column flex-lg-row justify-content-between align-items-lg-center gap-3 mb-4 pb-2">
             <div>
                 <h2 class="fw-bold text-white mb-1">
-                    <i class="fa-solid fa-scale-balanced text-info me-2"></i> Cashflow & <span class="text-gradient">Keuangan Bendahara</span>
+                    <i class="fa-solid fa-scale-balanced text-secondary me-2"></i> Cashflow & Keuangan Bendahara
                 </h2>
-                <p class="text-light-sub mb-0" style="font-size: 0.92rem;">
+                <p class="text-muted mb-0" style="font-size: 0.9rem;">
                     Pencatatan arus kas masuk (Dana Usaha, Janji Iman, Dana Donatur, Kas Pengerja) serta seluruh pengeluaran operasional DOT Teens secara transparan & akurat.
                 </p>
             </div>
             
             <div class="d-flex flex-wrap gap-2">
-                <button class="btn btn-emerald-action rounded-pill px-3.5 py-2 shadow-sm d-flex align-items-center gap-2" data-bs-toggle="modal" data-bs-target="#modalInflow">
-                    <i class="fa-solid fa-circle-arrow-down"></i> <span>+ Catat Pemasukan</span>
+                <button class="btn btn-action-primary rounded-pill px-3.5 py-2 shadow-sm d-flex align-items-center gap-2" data-bs-toggle="modal" data-bs-target="#modalInflow">
+                    <i class="fa-solid fa-plus"></i> <span>Catat Pemasukan</span>
                 </button>
-                <button class="btn btn-rose-action rounded-pill px-3.5 py-2 shadow-sm d-flex align-items-center gap-2" data-bs-toggle="modal" data-bs-target="#modalExpense">
-                    <i class="fa-solid fa-circle-arrow-up"></i> <span>- Catat Pengeluaran</span>
+                <button class="btn btn-action-secondary rounded-pill px-3.5 py-2 shadow-sm d-flex align-items-center gap-2" data-bs-toggle="modal" data-bs-target="#modalExpense">
+                    <i class="fa-solid fa-minus"></i> <span>Catat Pengeluaran</span>
                 </button>
-                <button class="btn btn-cyan-action rounded-pill px-3 py-2 shadow-sm d-flex align-items-center gap-2" data-bs-toggle="modal" data-bs-target="#modalPayment">
-                    <i class="fa-solid fa-hand-holding-dollar"></i> <span>Bayar Kas Pengerja</span>
+                <button class="btn btn-action-secondary rounded-pill px-3.5 py-2 shadow-sm d-flex align-items-center gap-2" data-bs-toggle="modal" data-bs-target="#modalPayment">
+                    <i class="fa-solid fa-wallet"></i> <span>Bayar Kas Pengerja</span>
                 </button>
                 <div class="dropdown">
-                    <button class="btn btn-outline-info rounded-pill px-3 py-2 d-flex align-items-center gap-2 dropdown-toggle" type="button" data-bs-toggle="dropdown">
-                        <i class="fa-solid fa-file-excel"></i> <span>Export Laporan</span>
+                    <button class="btn btn-action-secondary rounded-pill px-3 py-2 d-flex align-items-center gap-2 dropdown-toggle" type="button" data-bs-toggle="dropdown">
+                        <i class="fa-regular fa-file-lines"></i> <span>Export Laporan</span>
                     </button>
-                    <ul class="dropdown-menu dropdown-menu-end shadow-lg" style="background: #112340; border: 1px solid rgba(56, 189, 248, 0.3);">
+                    <ul class="dropdown-menu dropdown-menu-end shadow-lg" style="background: #111C2E; border: 1px solid rgba(255, 255, 255, 0.1);">
                         <li>
                             <a class="dropdown-item text-white py-2" href="{{ route('admin.kas.export_cashflow') }}">
-                                <i class="fa-solid fa-file-invoice-dollar text-success me-2"></i> Export Buku Kas (Cash Flow)
+                                <i class="fa-solid fa-file-invoice-dollar text-secondary me-2"></i> Export Buku Kas (Cash Flow)
                             </a>
                         </li>
                         <li>
                             <a class="dropdown-item text-white py-2" href="{{ route('admin.kas.export') }}">
-                                <i class="fa-solid fa-users text-info me-2"></i> Export Rekap Iuran Pengerja
+                                <i class="fa-solid fa-users text-secondary me-2"></i> Export Rekap Iuran Pengerja
                             </a>
                         </li>
                     </ul>
                 </div>
-                <button class="btn btn-outline-secondary rounded-pill px-3 py-2 d-flex align-items-center gap-1.5" data-bs-toggle="modal" data-bs-target="#modalSettings">
+                <button class="btn btn-action-secondary rounded-pill px-3 py-2 d-flex align-items-center gap-1.5" data-bs-toggle="modal" data-bs-target="#modalSettings">
                     <i class="fa-solid fa-gear"></i> <span class="d-none d-md-inline">Rekening</span>
                 </button>
             </div>
@@ -446,7 +425,7 @@
         <div class="row g-3 mb-4">
             <!-- Saldo Bersih Saat Ini -->
             <div class="col-12 col-sm-6 col-xl-3">
-                <div class="stat-card card-emerald">
+                <div class="stat-card">
                     <div class="d-flex justify-content-between align-items-start">
                         <div>
                             <span class="stat-label">Saldo Kas Riil Saat Ini</span>
@@ -454,93 +433,93 @@
                                 Rp {{ number_format($saldoAkhir, 0, ',', '.') }}
                             </h3>
                         </div>
-                        <div class="stat-icon" style="background: rgba(16, 185, 129, 0.15); color: #34D399;">
+                        <div class="stat-icon">
                             <i class="fa-solid fa-wallet"></i>
                         </div>
                     </div>
                     <div class="mt-3 pt-2 border-top border-secondary border-opacity-25 d-flex justify-content-between stat-subtext">
-                        <span>Total Masuk: <strong class="text-success">Rp {{ number_format($totalMasuk, 0, ',', '.') }}</strong></span>
-                        <span>Keluar: <strong class="text-danger">Rp {{ number_format($totalKeluar, 0, ',', '.') }}</strong></span>
+                        <span>Total Masuk: <strong class="text-light">Rp {{ number_format($totalMasuk, 0, ',', '.') }}</strong></span>
+                        <span>Keluar: <strong class="text-light">Rp {{ number_format($totalKeluar, 0, ',', '.') }}</strong></span>
                     </div>
                 </div>
             </div>
 
             <!-- Total Pemasukan Arus Kas -->
             <div class="col-12 col-sm-6 col-xl-3">
-                <div class="stat-card card-cyan">
+                <div class="stat-card">
                     <div class="d-flex justify-content-between align-items-start">
                         <div>
-                            <span class="stat-label" style="color: #7DD3FC !important;">Total Pemasukan Arus Kas</span>
-                            <h3 class="fw-bold text-info mt-1 mb-0">Rp {{ number_format($totalMasuk, 0, ',', '.') }}</h3>
+                            <span class="stat-label">Total Pemasukan Arus Kas</span>
+                            <h3 class="fw-bold text-white mt-1 mb-0">Rp {{ number_format($totalMasuk, 0, ',', '.') }}</h3>
                         </div>
-                        <div class="stat-icon" style="background: rgba(56, 189, 248, 0.15); color: #38BDF8;">
+                        <div class="stat-icon">
                             <i class="fa-solid fa-arrow-trend-up"></i>
                         </div>
                     </div>
                     <div class="mt-3 pt-2 border-top border-secondary border-opacity-25 stat-subtext d-flex justify-content-between flex-wrap gap-1" style="font-size: 0.76rem;">
-                        <span>Danus: <strong class="text-white">Rp {{ number_format($totalDanaUsaha, 0, ',', '.') }}</strong></span>
-                        <span>Janji Iman: <strong class="text-white">Rp {{ number_format($totalJanjiIman, 0, ',', '.') }}</strong></span>
-                        <span>Donatur: <strong class="text-white">Rp {{ number_format($totalDonatur, 0, ',', '.') }}</strong></span>
+                        <span>Danus: <strong class="text-light">Rp {{ number_format($totalDanaUsaha, 0, ',', '.') }}</strong></span>
+                        <span>Janji Iman: <strong class="text-light">Rp {{ number_format($totalJanjiIman, 0, ',', '.') }}</strong></span>
+                        <span>Donatur: <strong class="text-light">Rp {{ number_format($totalDonatur, 0, ',', '.') }}</strong></span>
                     </div>
                 </div>
             </div>
 
             <!-- Total Pengeluaran Kas -->
             <div class="col-12 col-sm-6 col-xl-3">
-                <div class="stat-card card-rose">
+                <div class="stat-card">
                     <div class="d-flex justify-content-between align-items-start">
                         <div>
-                            <span class="stat-label" style="color: #FDA4AF !important;">Total Pengeluaran Kas</span>
-                            <h3 class="fw-bold text-danger mt-1 mb-0">Rp {{ number_format($totalKeluar, 0, ',', '.') }}</h3>
+                            <span class="stat-label">Total Pengeluaran Kas</span>
+                            <h3 class="fw-bold text-white mt-1 mb-0">Rp {{ number_format($totalKeluar, 0, ',', '.') }}</h3>
                         </div>
-                        <div class="stat-icon" style="background: rgba(244, 63, 94, 0.15); color: #FB7185;">
+                        <div class="stat-icon">
                             <i class="fa-solid fa-cart-shopping"></i>
                         </div>
                     </div>
-                    <div class="mt-3 pt-2 border-top border-secondary border-opacity-25 stat-subtext text-light-sub">
-                        <i class="fa-solid fa-receipt text-warning me-1"></i> {{ $allExpenses->total() }} transaksi pengeluaran belanja/operasional
+                    <div class="mt-3 pt-2 border-top border-secondary border-opacity-25 stat-subtext text-muted">
+                        <i class="fa-regular fa-file-lines me-1"></i> {{ $allExpenses->total() }} transaksi belanja / operasional
                     </div>
                 </div>
             </div>
 
             <!-- Arus Kas Bulan Berjalan -->
             <div class="col-12 col-sm-6 col-xl-3">
-                <div class="stat-card card-amber">
+                <div class="stat-card">
                     <div class="d-flex justify-content-between align-items-start">
                         <div>
-                            <span class="stat-label" style="color: #FCD34D !important;">Arus Kas Bulan Ini ({{ date('F Y') }})</span>
-                            <h3 class="fw-bold {{ $netBulanIni >= 0 ? 'text-warning' : 'text-danger' }} mt-1 mb-0">
+                            <span class="stat-label">Arus Kas Bulan Ini ({{ date('F Y') }})</span>
+                            <h3 class="fw-bold text-white mt-1 mb-0">
                                 {{ $netBulanIni >= 0 ? '+' : '' }}Rp {{ number_format($netBulanIni, 0, ',', '.') }}
                             </h3>
                         </div>
-                        <div class="stat-icon" style="background: rgba(245, 158, 11, 0.15); color: #F59E0B;">
+                        <div class="stat-icon">
                             <i class="fa-solid fa-chart-line"></i>
                         </div>
                     </div>
                     <div class="mt-3 pt-2 border-top border-secondary border-opacity-25 stat-subtext d-flex justify-content-between">
-                        <span>Masuk: <strong class="text-success">+Rp {{ number_format($masukBulanIni, 0, ',', '.') }}</strong></span>
-                        <span>Keluar: <strong class="text-danger">-Rp {{ number_format($keluarBulanIni, 0, ',', '.') }}</strong></span>
+                        <span>Masuk: <strong class="text-light">+Rp {{ number_format($masukBulanIni, 0, ',', '.') }}</strong></span>
+                        <span>Keluar: <strong class="text-light">-Rp {{ number_format($keluarBulanIni, 0, ',', '.') }}</strong></span>
                     </div>
                 </div>
             </div>
         </div>
 
         <!-- REKENING BANNER INFO -->
-        <div class="glass-card mb-4 py-3 px-4 d-flex flex-column flex-md-row justify-content-between align-items-md-center gap-3" style="border-left: 4px solid #38BDF8; background: rgba(13, 28, 51, 0.85);">
+        <div class="glass-card mb-4 py-3 px-4 d-flex flex-column flex-md-row justify-content-between align-items-md-center gap-3">
             <div class="d-flex align-items-center gap-3">
-                <div class="bg-primary bg-opacity-20 text-info p-2.5 rounded-circle fs-5">
+                <div class="bg-white bg-opacity-10 text-light p-2.5 rounded-circle fs-5 d-flex align-items-center justify-content-center" style="width: 40px; height: 40px;">
                     <i class="fa-solid fa-building-columns"></i>
                 </div>
                 <div>
-                    <div class="small fw-bold text-uppercase" style="color: #93C5FD; letter-spacing: 0.6px;">Rekening Resmi Kas DOT Teens (Janji Iman / Donatur / Iuran):</div>
+                    <div class="small fw-semibold text-uppercase text-muted" style="letter-spacing: 0.5px; font-size: 0.75rem;">Rekening Resmi Kas DOT Teens (Janji Iman / Donatur / Iuran):</div>
                     <div class="fw-bold text-white fs-5 mt-0.5">{{ $bankInfo }}</div>
                 </div>
             </div>
             <div class="d-flex gap-2">
-                <button class="btn btn-sm btn-outline-secondary rounded-pill px-3" onclick="copyRekening('{{ $bankInfo }}')">
+                <button class="btn btn-sm btn-action-secondary rounded-pill px-3" onclick="copyRekening('{{ $bankInfo }}')">
                     <i class="fa-regular fa-copy me-1"></i> Salin Rekening
                 </button>
-                <button class="btn btn-sm btn-outline-info rounded-pill px-3 fw-semibold" data-bs-toggle="modal" data-bs-target="#modalSettings">
+                <button class="btn btn-sm btn-action-secondary rounded-pill px-3 fw-medium" data-bs-toggle="modal" data-bs-target="#modalSettings">
                     <i class="fa-solid fa-pen-to-square me-1"></i> Ubah Info
                 </button>
             </div>
@@ -551,42 +530,42 @@
             <ul class="nav nav-pills nav-pills-custom" id="kasTabs" role="tablist">
                 <li class="nav-item">
                     <button class="nav-link active" id="tab-cashflow-btn" data-bs-toggle="pill" data-bs-target="#tab-cashflow" type="button">
-                        <i class="fa-solid fa-book text-info me-1.5"></i> <strong>Buku Kas (Cashflow Ledger)</strong>
-                        <span class="badge bg-primary bg-opacity-30 rounded-pill ms-1 px-2">{{ $ledgerDisplay->count() }}</span>
+                        <i class="fa-solid fa-book me-1.5"></i> <strong>Buku Kas (Cashflow Ledger)</strong>
+                        <span class="badge bg-secondary bg-opacity-25 text-light rounded-pill ms-1 px-2">{{ $ledgerDisplay->count() }}</span>
                     </button>
                 </li>
                 <li class="nav-item">
                     <button class="nav-link" id="tab-inflows-btn" data-bs-toggle="pill" data-bs-target="#tab-inflows" type="button">
-                        <i class="fa-solid fa-hand-holding-dollar text-success me-1.5"></i> <strong>Pemasukan (Danus, Janji Iman, Donatur)</strong>
-                        <span class="badge bg-success bg-opacity-30 rounded-pill ms-1 px-2">{{ $allInflows->total() }}</span>
+                        <i class="fa-solid fa-hand-holding-dollar me-1.5"></i> <strong>Pemasukan (Danus, Janji Iman, Donatur)</strong>
+                        <span class="badge bg-secondary bg-opacity-25 text-light rounded-pill ms-1 px-2">{{ $allInflows->total() }}</span>
                     </button>
                 </li>
                 <li class="nav-item">
                     <button class="nav-link" id="tab-pengeluaran-btn" data-bs-toggle="pill" data-bs-target="#tab-pengeluaran" type="button">
-                        <i class="fa-solid fa-receipt text-danger me-1.5"></i> <strong>Pengeluaran (Belanja & Nota)</strong>
-                        <span class="badge bg-danger bg-opacity-30 rounded-pill ms-1 px-2">{{ $allExpenses->total() }}</span>
+                        <i class="fa-solid fa-receipt me-1.5"></i> <strong>Pengeluaran (Belanja & Nota)</strong>
+                        <span class="badge bg-secondary bg-opacity-25 text-light rounded-pill ms-1 px-2">{{ $allExpenses->total() }}</span>
                     </button>
                 </li>
                 <li class="nav-item">
                     <button class="nav-link" id="tab-tunggakan-btn" data-bs-toggle="pill" data-bs-target="#tab-tunggakan" type="button">
-                        <i class="fa-brands fa-whatsapp text-success me-1.5 fs-6"></i> <strong>Kas Bulanan Pengerja (WA)</strong>
+                        <i class="fa-solid fa-users me-1.5"></i> <strong>Kas Bulanan Pengerja (WA)</strong>
                         @php
                             $menunggakCount = collect($volunteerSummary)->where('total_tunggakan', '>', 0)->count();
                         @endphp
                         @if($menunggakCount > 0)
-                            <span class="badge bg-danger rounded-pill ms-1 px-2">{{ $menunggakCount }} nunggak</span>
+                            <span class="badge bg-danger bg-opacity-75 rounded-pill ms-1 px-2">{{ $menunggakCount }} nunggak</span>
                         @endif
                     </button>
                 </li>
                 <li class="nav-item">
                     <button class="nav-link" id="tab-pengerja-btn" data-bs-toggle="pill" data-bs-target="#tab-pengerja" type="button">
-                        <i class="fa-solid fa-users me-1.5 text-secondary"></i> Master Pengerja & Periode
+                        <i class="fa-solid fa-sliders me-1.5"></i> Master Pengerja & Periode
                     </button>
                 </li>
                 @if($cctv_kas->isNotEmpty())
                 <li class="nav-item">
                     <button class="nav-link" id="tab-cctv-btn" data-bs-toggle="pill" data-bs-target="#tab-cctv" type="button">
-                        <i class="fa-solid fa-video text-warning me-1.5"></i> CCTV Audit Log
+                        <i class="fa-solid fa-shield-halved me-1.5"></i> CCTV Audit Log
                     </button>
                 </li>
                 @endif
@@ -602,37 +581,37 @@
                 <div class="glass-card">
                     <div class="d-flex flex-column flex-md-row justify-content-between align-items-md-center gap-3 mb-4">
                         <div>
-                            <h4 class="fw-bold text-white mb-1"><i class="fa-solid fa-book-open-reader text-info me-2"></i> Buku Kas Umum (General Ledger)</h4>
-                            <p class="text-light-sub mb-0 small">Catatan arus kas gabungan pemasukan dan pengeluaran secara kronologis lengkap dengan saldo berjalan.</p>
+                            <h4 class="fw-bold text-white mb-1"><i class="fa-solid fa-book-open-reader text-secondary me-2"></i> Buku Kas Umum (General Ledger)</h4>
+                            <p class="text-muted mb-0 small">Catatan arus kas gabungan pemasukan dan pengeluaran secara kronologis lengkap dengan saldo berjalan.</p>
                         </div>
                         <div class="d-flex gap-2 flex-wrap">
-                            <a href="{{ route('admin.kas.export_cashflow') }}" class="btn btn-sm btn-outline-success rounded-pill px-3 d-flex align-items-center gap-1.5">
+                            <a href="{{ route('admin.kas.export_cashflow') }}" class="btn btn-sm btn-action-secondary rounded-pill px-3 d-flex align-items-center gap-1.5">
                                 <i class="fa-solid fa-file-csv"></i> Unduh CSV Excel
                             </a>
                         </div>
                     </div>
 
                     <!-- FILTER BUKU KAS -->
-                    <div class="p-3 rounded-4 mb-4" style="background: rgba(13, 28, 51, 0.7); border: 1px solid rgba(56, 189, 248, 0.15);">
+                    <div class="p-3 rounded-4 mb-4" style="background: rgba(255, 255, 255, 0.02); border: 1px solid var(--card-border);">
                         <form action="/admin/kas" method="GET" class="row g-2 align-items-center">
                             <input type="hidden" name="tab" value="tab-cashflow">
                             <div class="col-12 col-md-3">
                                 <label class="small text-muted fw-semibold mb-1">Filter Jenis Transaksi</label>
                                 <select name="ledger_type" class="form-select form-select-sm" onchange="this.form.submit()">
-                                    <option value="all">⚡ Semua Jenis Arus Kas</option>
-                                    <option value="inflow" {{ request('ledger_type') == 'inflow' ? 'selected' : '' }}>🟢 Pemasukan Saja (+)</option>
-                                    <option value="expense" {{ request('ledger_type') == 'expense' ? 'selected' : '' }}>🔴 Pengeluaran Saja (-)</option>
+                                    <option value="all">Semua Jenis Arus Kas</option>
+                                    <option value="inflow" {{ request('ledger_type') == 'inflow' ? 'selected' : '' }}>Pemasukan Saja (+)</option>
+                                    <option value="expense" {{ request('ledger_type') == 'expense' ? 'selected' : '' }}>Pengeluaran Saja (-)</option>
                                 </select>
                             </div>
                             <div class="col-12 col-md-3">
                                 <label class="small text-muted fw-semibold mb-1">Filter Kategori Sumber</label>
                                 <select name="ledger_cat" class="form-select form-select-sm" onchange="this.form.submit()">
-                                    <option value="all">⚡ Semua Kategori</option>
-                                    <option value="dana_usaha" {{ request('ledger_cat') == 'dana_usaha' ? 'selected' : '' }}>🛍️ Dana Usaha</option>
-                                    <option value="janji_iman" {{ request('ledger_cat') == 'janji_iman' ? 'selected' : '' }}>🙏 Janji Iman</option>
-                                    <option value="donatur" {{ request('ledger_cat') == 'donatur' ? 'selected' : '' }}>🎁 Dana Donatur</option>
-                                    <option value="kas_volunteer" {{ request('ledger_cat') == 'kas_volunteer' ? 'selected' : '' }}>👥 Kas Pengerja</option>
-                                    <option value="pengeluaran" {{ request('ledger_cat') == 'pengeluaran' ? 'selected' : '' }}>💸 Pengeluaran Operasional</option>
+                                    <option value="all">Semua Kategori</option>
+                                    <option value="dana_usaha" {{ request('ledger_cat') == 'dana_usaha' ? 'selected' : '' }}>Dana Usaha</option>
+                                    <option value="janji_iman" {{ request('ledger_cat') == 'janji_iman' ? 'selected' : '' }}>Janji Iman</option>
+                                    <option value="donatur" {{ request('ledger_cat') == 'donatur' ? 'selected' : '' }}>Dana Donatur</option>
+                                    <option value="kas_volunteer" {{ request('ledger_cat') == 'kas_volunteer' ? 'selected' : '' }}>Kas Pengerja</option>
+                                    <option value="pengeluaran" {{ request('ledger_cat') == 'pengeluaran' ? 'selected' : '' }}>Pengeluaran Operasional</option>
                                 </select>
                             </div>
                             <div class="col-12 col-md-3">
@@ -640,8 +619,8 @@
                                 <input type="month" name="ledger_month" class="form-control form-control-sm" value="{{ request('ledger_month') }}" onchange="this.form.submit()">
                             </div>
                             <div class="col-12 col-md-3 d-flex align-items-end gap-2">
-                                <button type="submit" class="btn btn-sm btn-info rounded-pill px-3 w-50">Terapkan</button>
-                                <a href="/admin/kas" class="btn btn-sm btn-outline-secondary rounded-pill px-3 w-50">Reset</a>
+                                <button type="submit" class="btn btn-sm btn-action-primary rounded-pill px-3 w-50">Terapkan</button>
+                                <a href="/admin/kas" class="btn btn-sm btn-action-secondary rounded-pill px-3 w-50">Reset</a>
                             </div>
                         </form>
                     </div>
@@ -680,13 +659,13 @@
                                                 </span>
                                             @endif
                                             <div>
-                                                <span class="pill-mini" style="background: {{ $item->category_bg }}; color: {{ $item->category_color }};">
+                                                <span class="pill-mini">
                                                     <i class="fa-solid {{ $item->category_icon }}"></i> {{ $item->category_label }}
                                                 </span>
                                             </div>
                                         </td>
                                         <td>
-                                            <div class="fw-bold text-white fs-6">{{ $item->title }}</div>
+                                            <div class="fw-semibold text-white fs-6">{{ $item->title }}</div>
                                             @if($item->notes)
                                                 <div class="text-muted small text-truncate" style="max-width: 250px;" title="{{ $item->notes }}">
                                                     <i class="fa-regular fa-comment-dots me-1"></i> {{ $item->notes }}
@@ -707,7 +686,7 @@
                                             @endif
                                         </td>
                                         <td>
-                                            <span class="fw-bold text-info">Rp {{ number_format($item->running_balance, 0, ',', '.') }}</span>
+                                            <span class="fw-bold text-light">Rp {{ number_format($item->running_balance, 0, ',', '.') }}</span>
                                         </td>
                                         <td>
                                             @if($item->proof_url)
@@ -722,7 +701,7 @@
                                         <td class="text-end">
                                             <form action="{{ $item->delete_route }}" method="POST" class="d-inline" onsubmit="return confirm('Apakah Anda yakin ingin menghapus data transaksi ini?')">
                                                 @csrf
-                                                <button type="submit" class="btn btn-sm btn-outline-danger rounded-circle p-1.5" title="Hapus Transaksi">
+                                                <button type="submit" class="btn btn-sm btn-action-secondary rounded-circle p-1.5" title="Hapus Transaksi">
                                                     <i class="fa-solid fa-trash-can"></i>
                                                 </button>
                                             </form>
@@ -734,7 +713,7 @@
                                             <div class="text-muted">
                                                 <i class="fa-solid fa-inbox fs-1 mb-3 d-block text-secondary"></i>
                                                 <h5>Belum Ada Catatan Transaksi Cashflow</h5>
-                                                <p class="small">Klik tombol "+ Catat Pemasukan" atau "- Catat Pengeluaran" di bagian atas untuk memulai pembukuan.</p>
+                                                <p class="small">Klik tombol "Catat Pemasukan" atau "Catat Pengeluaran" di bagian atas untuk memulai pembukuan.</p>
                                             </div>
                                         </td>
                                     </tr>
@@ -753,13 +732,13 @@
                     <!-- 3 KARTU KATEGORI PEMASUKAN -->
                     <div class="row g-3 mb-4">
                         <div class="col-12 col-md-4">
-                            <div class="stat-card" style="border-left: 4px solid #3B82F6; background: rgba(59, 130, 246, 0.08) !important;">
+                            <div class="stat-card">
                                 <div class="d-flex justify-content-between align-items-start">
                                     <div>
-                                        <span class="stat-label" style="color: #93C5FD !important;">1. Total Dana Usaha (Danus)</span>
+                                        <span class="stat-label">1. Total Dana Usaha (Danus)</span>
                                         <h4 class="fw-bold text-white mt-1 mb-0">Rp {{ number_format($totalDanaUsaha, 0, ',', '.') }}</h4>
                                     </div>
-                                    <div class="stat-icon" style="background: rgba(59, 130, 246, 0.2); color: #60A5FA;">
+                                    <div class="stat-icon">
                                         <i class="fa-solid fa-store"></i>
                                     </div>
                                 </div>
@@ -768,13 +747,13 @@
                         </div>
 
                         <div class="col-12 col-md-4">
-                            <div class="stat-card" style="border-left: 4px solid #A855F7; background: rgba(168, 85, 247, 0.08) !important;">
+                            <div class="stat-card">
                                 <div class="d-flex justify-content-between align-items-start">
                                     <div>
-                                        <span class="stat-label" style="color: #D8B4FE !important;">2. Total Janji Iman</span>
+                                        <span class="stat-label">2. Total Janji Iman</span>
                                         <h4 class="fw-bold text-white mt-1 mb-0">Rp {{ number_format($totalJanjiIman, 0, ',', '.') }}</h4>
                                     </div>
-                                    <div class="stat-icon" style="background: rgba(168, 85, 247, 0.2); color: #C084FC;">
+                                    <div class="stat-icon">
                                         <i class="fa-solid fa-hand-holding-heart"></i>
                                     </div>
                                 </div>
@@ -783,13 +762,13 @@
                         </div>
 
                         <div class="col-12 col-md-4">
-                            <div class="stat-card" style="border-left: 4px solid #10B981; background: rgba(16, 185, 129, 0.08) !important;">
+                            <div class="stat-card">
                                 <div class="d-flex justify-content-between align-items-start">
                                     <div>
-                                        <span class="stat-label" style="color: #6EE7B7 !important;">3. Total Dana Donatur</span>
+                                        <span class="stat-label">3. Total Dana Donatur</span>
                                         <h4 class="fw-bold text-white mt-1 mb-0">Rp {{ number_format($totalDonatur, 0, ',', '.') }}</h4>
                                     </div>
-                                    <div class="stat-icon" style="background: rgba(16, 185, 129, 0.2); color: #34D399;">
+                                    <div class="stat-icon">
                                         <i class="fa-solid fa-circle-dollar-to-slot"></i>
                                     </div>
                                 </div>
@@ -804,25 +783,25 @@
                             <form action="/admin/kas" method="GET" class="d-flex flex-wrap gap-2">
                                 <input type="hidden" name="tab" value="tab-inflows">
                                 <div class="input-group" style="max-width: 280px;">
-                                    <span class="input-group-text border-secondary" style="background-color: #172A46 !important; color: #38BDF8 !important;"><i class="fa-solid fa-magnifying-glass"></i></span>
+                                    <span class="input-group-text border-secondary bg-dark text-muted"><i class="fa-solid fa-magnifying-glass"></i></span>
                                     <input type="text" name="inflow_search" class="form-control form-control-sm" placeholder="Cari donatur / judul..." value="{{ request('inflow_search') }}">
                                 </div>
                                 <select name="inflow_cat" class="form-select form-select-sm" style="max-width: 190px;" onchange="this.form.submit()">
-                                    <option value="all">⚡ Semua Kategori</option>
-                                    <option value="dana_usaha" {{ request('inflow_cat') == 'dana_usaha' ? 'selected' : '' }}>🛍️ Dana Usaha</option>
-                                    <option value="janji_iman" {{ request('inflow_cat') == 'janji_iman' ? 'selected' : '' }}>🙏 Janji Iman</option>
-                                    <option value="donatur" {{ request('inflow_cat') == 'donatur' ? 'selected' : '' }}>🎁 Dana Donatur</option>
-                                    <option value="lain_lain" {{ request('inflow_cat') == 'lain_lain' ? 'selected' : '' }}>📦 Lainnya</option>
+                                    <option value="all">Semua Kategori</option>
+                                    <option value="dana_usaha" {{ request('inflow_cat') == 'dana_usaha' ? 'selected' : '' }}>Dana Usaha</option>
+                                    <option value="janji_iman" {{ request('inflow_cat') == 'janji_iman' ? 'selected' : '' }}>Janji Iman</option>
+                                    <option value="donatur" {{ request('inflow_cat') == 'donatur' ? 'selected' : '' }}>Dana Donatur</option>
+                                    <option value="lain_lain" {{ request('inflow_cat') == 'lain_lain' ? 'selected' : '' }}>Lainnya</option>
                                 </select>
-                                <button type="submit" class="btn btn-sm btn-info rounded-pill px-3">Filter</button>
+                                <button type="submit" class="btn btn-sm btn-action-secondary rounded-pill px-3">Filter</button>
                                 @if(request('inflow_search') || request('inflow_cat'))
-                                    <a href="/admin/kas?tab=tab-inflows" class="btn btn-sm btn-outline-secondary rounded-pill px-3">Reset</a>
+                                    <a href="/admin/kas?tab=tab-inflows" class="btn btn-sm btn-action-secondary rounded-pill px-3">Reset</a>
                                 @endif
                             </form>
                         </div>
 
                         <div class="col-12 col-md-5 text-md-end">
-                            <button class="btn btn-sm btn-emerald-action rounded-pill px-3 py-1.5" data-bs-toggle="modal" data-bs-target="#modalInflow">
+                            <button class="btn btn-sm btn-action-primary rounded-pill px-3 py-1.5" data-bs-toggle="modal" data-bs-target="#modalInflow">
                                 <i class="fa-solid fa-plus-circle me-1"></i> Catat Pemasukan Baru
                             </button>
                         </div>
@@ -851,7 +830,7 @@
                                             <div class="fw-bold text-white">{{ $inf->received_date->format('d M Y') }}</div>
                                         </td>
                                         <td>
-                                            <span class="pill-mini" style="background: {{ $inf->category_info['bg'] }}; border: 1px solid {{ $inf->category_info['border'] }}; color: {{ $inf->category_info['color'] }};">
+                                            <span class="pill-mini">
                                                 <i class="fa-solid {{ $inf->category_info['icon'] }}"></i> {{ $inf->category_info['label'] }}
                                             </span>
                                         </td>
@@ -866,11 +845,11 @@
                                         <td>
                                             <div class="fw-semibold text-white">{{ $inf->payer_name ?: 'Donatur Anonim' }}</div>
                                             @if($inf->phone)
-                                                <span class="text-muted small"><i class="fa-brands fa-whatsapp text-success me-1"></i> {{ $inf->phone }}</span>
+                                                <span class="text-muted small"><i class="fa-brands fa-whatsapp text-secondary me-1"></i> {{ $inf->phone }}</span>
                                             @endif
                                         </td>
                                         <td>
-                                            <span class="badge bg-dark border border-secondary text-info px-2.5 py-1 rounded-pill">
+                                            <span class="badge bg-secondary bg-opacity-25 text-light px-2.5 py-1 rounded-pill">
                                                 <i class="fa-solid {{ $inf->payment_method_badge['icon'] }} me-1"></i> {{ $inf->payment_method_badge['label'] }}
                                             </span>
                                         </td>
@@ -890,7 +869,7 @@
                                         <td class="text-end">
                                             <form action="{{ route('admin.kas.inflow.delete', $inf->id) }}" method="POST" class="d-inline" onsubmit="return confirm('Hapus data pemasukan ini?')">
                                                 @csrf
-                                                <button type="submit" class="btn btn-sm btn-outline-danger rounded-circle p-1.5" title="Hapus Data">
+                                                <button type="submit" class="btn btn-sm btn-action-secondary rounded-circle p-1.5" title="Hapus Data">
                                                     <i class="fa-solid fa-trash-can"></i>
                                                 </button>
                                             </form>
@@ -926,14 +905,14 @@
                 <div class="glass-card">
                     <!-- RANGKUMAN PENGELUARAN PER KATEGORI -->
                     <div class="mb-4">
-                        <div class="small fw-bold text-uppercase text-secondary mb-2" style="letter-spacing: 0.6px;">
-                            <i class="fa-solid fa-pie-chart text-warning me-1"></i> Rincian Pengeluaran Duit Berdasarkan Kategori Keperluan:
+                        <div class="small fw-semibold text-uppercase text-muted mb-2" style="letter-spacing: 0.5px; font-size: 0.75rem;">
+                            <i class="fa-solid fa-chart-pie text-secondary me-1"></i> Rincian Pengeluaran Duit Berdasarkan Kategori Keperluan:
                         </div>
                         <div class="d-flex flex-wrap gap-2">
                             @forelse($expensesByCategory as $ec)
-                                <div class="px-3 py-2 rounded-3 border border-secondary border-opacity-25" style="background: rgba(17, 35, 64, 0.7);">
+                                <div class="px-3 py-2 rounded-3 border border-secondary border-opacity-25" style="background: rgba(255, 255, 255, 0.03);">
                                     <span class="text-muted small d-block">{{ $ec->category }}</span>
-                                    <strong class="text-danger fs-6">Rp {{ number_format($ec->total_amount, 0, ',', '.') }}</strong>
+                                    <strong class="text-light fs-6">Rp {{ number_format($ec->total_amount, 0, ',', '.') }}</strong>
                                     <span class="text-secondary small">({{ $ec->total_tx }} nota)</span>
                                 </div>
                             @empty
@@ -948,29 +927,29 @@
                             <form action="/admin/kas" method="GET" class="d-flex flex-wrap gap-2">
                                 <input type="hidden" name="tab" value="tab-pengeluaran">
                                 <div class="input-group" style="max-width: 280px;">
-                                    <span class="input-group-text border-secondary" style="background-color: #172A46 !important; color: #38BDF8 !important;"><i class="fa-solid fa-magnifying-glass"></i></span>
+                                    <span class="input-group-text border-secondary bg-dark text-muted"><i class="fa-solid fa-magnifying-glass"></i></span>
                                     <input type="text" name="expense_search" class="form-control form-control-sm" placeholder="Cari keperluan belanja..." value="{{ request('expense_search') }}">
                                 </div>
                                 <select name="expense_cat" class="form-select form-select-sm" style="max-width: 190px;" onchange="this.form.submit()">
-                                    <option value="all">⚡ Semua Kategori</option>
-                                    <option value="Konsumsi" {{ request('expense_cat') == 'Konsumsi' ? 'selected' : '' }}>🍔 Konsumsi</option>
-                                    <option value="Acara & Revival" {{ request('expense_cat') == 'Acara & Revival' ? 'selected' : '' }}>🎉 Acara & Revival</option>
-                                    <option value="Logistik & Perlengkapan" {{ request('expense_cat') == 'Logistik & Perlengkapan' ? 'selected' : '' }}>📦 Logistik</option>
-                                    <option value="Multimedia & Desain" {{ request('expense_cat') == 'Multimedia & Desain' ? 'selected' : '' }}>🎨 Multimedia</option>
-                                    <option value="Musik & Sound" {{ request('expense_cat') == 'Musik & Sound' ? 'selected' : '' }}>🎸 Musik & Sound</option>
-                                    <option value="Modal Dana Usaha" {{ request('expense_cat') == 'Modal Dana Usaha' ? 'selected' : '' }}>🛍️ Modal Danus</option>
-                                    <option value="Transportasi & Operasional" {{ request('expense_cat') == 'Transportasi & Operasional' ? 'selected' : '' }}>⚡ Operasional</option>
-                                    <option value="Diakonia & Kasih" {{ request('expense_cat') == 'Diakonia & Kasih' ? 'selected' : '' }}>❤️ Diakonia</option>
+                                    <option value="all">Semua Kategori</option>
+                                    <option value="Konsumsi" {{ request('expense_cat') == 'Konsumsi' ? 'selected' : '' }}>Konsumsi</option>
+                                    <option value="Acara & Revival" {{ request('expense_cat') == 'Acara & Revival' ? 'selected' : '' }}>Acara & Revival</option>
+                                    <option value="Logistik & Perlengkapan" {{ request('expense_cat') == 'Logistik & Perlengkapan' ? 'selected' : '' }}>Logistik</option>
+                                    <option value="Multimedia & Desain" {{ request('expense_cat') == 'Multimedia & Desain' ? 'selected' : '' }}>Multimedia</option>
+                                    <option value="Musik & Sound" {{ request('expense_cat') == 'Musik & Sound' ? 'selected' : '' }}>Musik & Sound</option>
+                                    <option value="Modal Dana Usaha" {{ request('expense_cat') == 'Modal Dana Usaha' ? 'selected' : '' }}>Modal Danus</option>
+                                    <option value="Transportasi & Operasional" {{ request('expense_cat') == 'Transportasi & Operasional' ? 'selected' : '' }}>Operasional</option>
+                                    <option value="Diakonia & Kasih" {{ request('expense_cat') == 'Diakonia & Kasih' ? 'selected' : '' }}>Diakonia</option>
                                 </select>
-                                <button type="submit" class="btn btn-sm btn-info rounded-pill px-3">Filter</button>
+                                <button type="submit" class="btn btn-sm btn-action-secondary rounded-pill px-3">Filter</button>
                                 @if(request('expense_search') || request('expense_cat'))
-                                    <a href="/admin/kas?tab=tab-pengeluaran" class="btn btn-sm btn-outline-secondary rounded-pill px-3">Reset</a>
+                                    <a href="/admin/kas?tab=tab-pengeluaran" class="btn btn-sm btn-action-secondary rounded-pill px-3">Reset</a>
                                 @endif
                             </form>
                         </div>
 
                         <div class="col-12 col-md-5 text-md-end">
-                            <button class="btn btn-sm btn-rose-action rounded-pill px-3 py-1.5" data-bs-toggle="modal" data-bs-target="#modalExpense">
+                            <button class="btn btn-sm btn-action-secondary rounded-pill px-3 py-1.5" data-bs-toggle="modal" data-bs-target="#modalExpense">
                                 <i class="fa-solid fa-plus-circle me-1"></i> Catat Pengeluaran Baru
                             </button>
                         </div>
@@ -997,12 +976,12 @@
                                             <div class="fw-bold text-white">{{ $exp->expense_date->format('d M Y') }}</div>
                                         </td>
                                         <td>
-                                            <span class="pill-mini" style="background: {{ $exp->category_info['bg'] }}; border: 1px solid {{ $exp->category_info['border'] }}; color: {{ $exp->category_info['color'] }};">
+                                            <span class="pill-mini">
                                                 <i class="fa-solid {{ $exp->category_info['icon'] }}"></i> {{ $exp->category_info['label'] }}
                                             </span>
                                         </td>
                                         <td>
-                                            <div class="fw-bold text-white fs-6">{{ $exp->title }}</div>
+                                            <div class="fw-semibold text-white fs-6">{{ $exp->title }}</div>
                                             @if($exp->notes)
                                                 <div class="text-muted small text-truncate" style="max-width: 300px;">
                                                     <i class="fa-regular fa-file-lines me-1"></i> {{ $exp->notes }}
@@ -1025,7 +1004,7 @@
                                         <td class="text-end">
                                             <form action="{{ route('admin.kas.expense.delete', $exp->id) }}" method="POST" class="d-inline" onsubmit="return confirm('Hapus pengeluaran ini?')">
                                                 @csrf
-                                                <button type="submit" class="btn btn-sm btn-outline-danger rounded-circle p-1.5" title="Hapus Data">
+                                                <button type="submit" class="btn btn-sm btn-action-secondary rounded-circle p-1.5" title="Hapus Data">
                                                     <i class="fa-solid fa-trash-can"></i>
                                                 </button>
                                             </form>
@@ -1065,29 +1044,29 @@
                             <form action="/admin/kas" method="GET" class="d-flex flex-wrap gap-2">
                                 <input type="hidden" name="tab" value="tab-tunggakan">
                                 <div class="input-group" style="max-width: 320px;">
-                                    <span class="input-group-text border-secondary" style="background-color: #172A46 !important; color: #38BDF8 !important;"><i class="fa-solid fa-magnifying-glass"></i></span>
+                                    <span class="input-group-text border-secondary bg-dark text-muted"><i class="fa-solid fa-magnifying-glass"></i></span>
                                     <input type="text" name="search" class="form-control form-control-sm" placeholder="Cari nama atau No. WA..." value="{{ request('search') }}">
                                 </div>
                                 <select name="division" class="form-select form-select-sm" style="max-width: 200px;" onchange="this.form.submit()">
-                                    <option value="">⚡ Semua Divisi</option>
+                                    <option value="">Semua Divisi</option>
                                     @foreach($divisions as $div)
                                         <option value="{{ $div }}" {{ request('division') == $div ? 'selected' : '' }}>{{ $div }}</option>
                                     @endforeach
                                 </select>
-                                <button type="submit" class="btn btn-sm btn-info rounded-pill px-3">Filter</button>
+                                <button type="submit" class="btn btn-sm btn-action-secondary rounded-pill px-3">Filter</button>
                                 @if(request('search') || request('division'))
-                                    <a href="/admin/kas?tab=tab-tunggakan" class="btn btn-sm btn-outline-secondary rounded-pill px-3">Reset</a>
+                                    <a href="/admin/kas?tab=tab-tunggakan" class="btn btn-sm btn-action-secondary rounded-pill px-3">Reset</a>
                                 @endif
                             </form>
                         </div>
 
                         <div class="col-12 col-md-5 text-md-end d-flex justify-content-md-end gap-2 flex-wrap">
-                            <button class="btn btn-sm btn-outline-info rounded-pill px-3" data-bs-toggle="modal" data-bs-target="#modalVolunteer">
+                            <button class="btn btn-sm btn-action-primary rounded-pill px-3" data-bs-toggle="modal" data-bs-target="#modalVolunteer">
                                 <i class="fa-solid fa-user-plus me-1"></i> Tambah Pengerja
                             </button>
                             <form action="{{ route('admin.kas.sync') }}" method="POST" class="d-inline">
                                 @csrf
-                                <button type="submit" class="btn btn-sm btn-outline-secondary rounded-pill px-3" title="Impor otomatis pengurus website yang sudah approved">
+                                <button type="submit" class="btn btn-sm btn-action-secondary rounded-pill px-3" title="Impor otomatis pengurus website yang sudah approved">
                                     <i class="fa-solid fa-rotate me-1"></i> Sync Pengurus
                                 </button>
                             </form>
@@ -1120,23 +1099,23 @@
                                     <tr>
                                         <td>
                                             <div class="d-flex align-items-center gap-2.5">
-                                                <div class="bg-primary bg-opacity-20 text-info rounded-circle d-flex align-items-center justify-content-center fw-bold" style="width: 38px; height: 38px; font-size: 0.9rem;">
+                                                <div class="bg-secondary bg-opacity-25 text-light rounded-circle d-flex align-items-center justify-content-center fw-bold" style="width: 36px; height: 36px; font-size: 0.85rem;">
                                                     {{ strtoupper(substr($v->name, 0, 1)) }}
                                                 </div>
                                                 <div>
-                                                    <div class="fw-bold text-white fs-6">{{ $v->name }}</div>
+                                                    <div class="fw-semibold text-white fs-6">{{ $v->name }}</div>
                                                     <span class="text-muted small" style="font-size: 0.72rem;">Iuran: Rp {{ number_format($v->monthly_due, 0, ',', '.') }}/bln</span>
                                                 </div>
                                             </div>
                                         </td>
                                         <td>
-                                            <span class="badge rounded-pill px-2.5 py-1" style="background: rgba(56, 189, 248, 0.12); color: #7DD3FC; border: 1px solid rgba(56, 189, 248, 0.25);">
+                                            <span class="badge rounded-pill px-2.5 py-1 bg-secondary bg-opacity-25 text-light">
                                                 {{ $v->division }}
                                             </span>
                                         </td>
                                         <td>
                                             <a href="https://wa.me/{{ preg_replace('/^0/', '62', preg_replace('/[^0-9]/', '', $v->phone)) }}" target="_blank" class="text-decoration-none text-light-sub">
-                                                <i class="fa-brands fa-whatsapp text-success me-1"></i> {{ $v->phone }}
+                                                <i class="fa-brands fa-whatsapp text-secondary me-1"></i> {{ $v->phone }}
                                             </a>
                                         </td>
                                         <td>
@@ -1152,7 +1131,7 @@
                                         </td>
                                         <td>
                                             @if($isLunas)
-                                                <span class="text-success small fw-semibold"><i class="fa-solid fa-check-double me-1"></i> Semua periode terbayar</span>
+                                                <span class="text-muted small"><i class="fa-solid fa-check-double me-1"></i> Semua periode terbayar</span>
                                             @else
                                                 <div class="d-flex flex-wrap gap-1" style="max-width: 250px;">
                                                     @foreach($unpaid as $up)
@@ -1173,14 +1152,14 @@
                                         <td class="text-end">
                                             <div class="d-inline-flex gap-1.5 align-items-center">
                                                 @if(!$isLunas)
-                                                    <a href="{{ route('admin.kas.send_wa', $v->id) }}" target="_blank" class="btn btn-sm btn-success rounded-pill px-3 fw-semibold d-inline-flex align-items-center gap-1.5 shadow-sm" style="background: linear-gradient(135deg, #10B981, #059669); border:none;" title="Kirim Pesan WhatsApp Pengingat">
+                                                    <a href="{{ route('admin.kas.send_wa', $v->id) }}" target="_blank" class="btn btn-sm btn-outline-success rounded-pill px-3 fw-medium d-inline-flex align-items-center gap-1.5" title="Kirim Pesan WhatsApp Pengingat">
                                                         <i class="fa-brands fa-whatsapp fs-6"></i> <span>Kirim WA</span>
                                                     </a>
                                                 @endif
-                                                <button type="button" class="btn btn-sm btn-outline-info rounded-pill px-2.5 py-1" onclick="quickPay({{ $v->id }}, '{{ addslashes($v->name) }}', {{ json_encode($unpaid->pluck('id')) }})" title="Catat Bayar">
+                                                <button type="button" class="btn btn-sm btn-action-secondary rounded-pill px-2.5 py-1" onclick="quickPay({{ $v->id }}, '{{ addslashes($v->name) }}', {{ json_encode($unpaid->pluck('id')) }})" title="Catat Bayar">
                                                     <i class="fa-solid fa-plus-circle me-1"></i> Bayar
                                                 </button>
-                                                <button type="button" class="btn btn-sm btn-outline-secondary rounded-circle p-1.5" onclick="editVolunteer({{ json_encode($v) }})" title="Edit Data">
+                                                <button type="button" class="btn btn-sm btn-action-secondary rounded-circle p-1.5" onclick="editVolunteer({{ json_encode($v) }})" title="Edit Data">
                                                     <i class="fa-solid fa-pen-to-square"></i>
                                                 </button>
                                             </div>
@@ -1211,8 +1190,8 @@
                     <div class="col-12 col-lg-8">
                         <div class="glass-card">
                             <div class="d-flex justify-content-between align-items-center mb-3">
-                                <h5 class="fw-bold text-white mb-0"><i class="fa-solid fa-users-gear text-info me-2"></i> Master Data Pengerja ({{ $volunteers->count() }})</h5>
-                                <button class="btn btn-sm btn-info rounded-pill px-3" data-bs-toggle="modal" data-bs-target="#modalVolunteer">
+                                <h5 class="fw-bold text-white mb-0"><i class="fa-solid fa-users-gear text-secondary me-2"></i> Master Data Pengerja ({{ $volunteers->count() }})</h5>
+                                <button class="btn btn-sm btn-action-primary rounded-pill px-3" data-bs-toggle="modal" data-bs-target="#modalVolunteer">
                                     <i class="fa-solid fa-plus me-1"></i> Pengerja Baru
                                 </button>
                             </div>
@@ -1231,16 +1210,16 @@
                                         @foreach($volunteers as $v)
                                             <tr>
                                                 <td class="fw-bold text-white">{{ $v->name }}</td>
-                                                <td><span class="badge bg-secondary">{{ $v->division }}</span></td>
+                                                <td><span class="badge bg-secondary bg-opacity-25 text-light">{{ $v->division }}</span></td>
                                                 <td class="text-light-sub">{{ $v->phone }}</td>
                                                 <td>Rp {{ number_format($v->monthly_due, 0, ',', '.') }}</td>
                                                 <td class="text-end">
-                                                    <button class="btn btn-sm btn-outline-warning rounded-circle p-1.5" onclick="editVolunteer({{ json_encode($v) }})">
+                                                    <button class="btn btn-sm btn-action-secondary rounded-circle p-1.5" onclick="editVolunteer({{ json_encode($v) }})">
                                                         <i class="fa-solid fa-pencil"></i>
                                                     </button>
                                                     <form action="{{ route('admin.kas.volunteer.delete', $v->id) }}" method="POST" class="d-inline" onsubmit="return confirm('Hapus pengerja {{ $v->name }} dari sistem kas?')">
                                                         @csrf
-                                                        <button type="submit" class="btn btn-sm btn-outline-danger rounded-circle p-1.5">
+                                                        <button type="submit" class="btn btn-sm btn-action-secondary rounded-circle p-1.5">
                                                             <i class="fa-solid fa-trash"></i>
                                                         </button>
                                                     </form>
@@ -1256,8 +1235,8 @@
                     <div class="col-12 col-lg-4">
                         <div class="glass-card mb-4">
                             <div class="d-flex justify-content-between align-items-center mb-3">
-                                <h5 class="fw-bold text-white mb-0"><i class="fa-solid fa-calendar-days text-info me-2"></i> Periode Kas</h5>
-                                <button class="btn btn-sm btn-outline-info rounded-pill px-2.5" data-bs-toggle="modal" data-bs-target="#modalPeriod">
+                                <h5 class="fw-bold text-white mb-0"><i class="fa-solid fa-calendar-days text-secondary me-2"></i> Periode Kas</h5>
+                                <button class="btn btn-sm btn-action-secondary rounded-pill px-2.5" data-bs-toggle="modal" data-bs-target="#modalPeriod">
                                     <i class="fa-solid fa-plus me-1"></i> Buka Periode
                                 </button>
                             </div>
@@ -1269,7 +1248,7 @@
                                             <span class="text-muted small">Jatuh Tempo: {{ $p->due_date ? date('d M Y', strtotime($p->due_date)) : '-' }}</span>
                                         </div>
                                         <div class="text-end">
-                                            <span class="badge bg-primary bg-opacity-20 text-info fw-bold">Rp {{ number_format($p->amount, 0, ',', '.') }}</span>
+                                            <span class="badge bg-secondary bg-opacity-25 text-light fw-bold">Rp {{ number_format($p->amount, 0, ',', '.') }}</span>
                                         </div>
                                     </div>
                                 @empty
@@ -1287,7 +1266,7 @@
             @if($cctv_kas->isNotEmpty())
             <div class="tab-pane fade" id="tab-cctv" role="tabpanel">
                 <div class="glass-card">
-                    <h5 class="fw-bold text-white mb-3"><i class="fa-solid fa-video text-warning me-2"></i> CCTV Audit Trail Keuangan</h5>
+                    <h5 class="fw-bold text-white mb-3"><i class="fa-solid fa-shield-halved text-secondary me-2"></i> CCTV Audit Log</h5>
                     <div class="table-responsive">
                         <table class="table table-custom align-middle">
                             <thead>
@@ -1304,10 +1283,10 @@
                                         <td class="text-muted small">{{ $log->created_at->format('d M Y H:i:s') }}</td>
                                         <td>
                                             <span class="fw-bold text-white">{{ $log->user_name }}</span>
-                                            <span class="badge bg-secondary ms-1">{{ $log->role }}</span>
+                                            <span class="badge bg-secondary bg-opacity-25 text-light ms-1">{{ $log->role }}</span>
                                         </td>
                                         <td>
-                                            <span class="badge bg-info bg-opacity-20 text-info">{{ $log->action }}</span>
+                                            <span class="badge bg-secondary bg-opacity-25 text-light">{{ $log->action }}</span>
                                         </td>
                                         <td class="text-light-sub small">{{ $log->description }}</td>
                                     </tr>
@@ -1330,7 +1309,7 @@
             <div class="modal-content">
                 <div class="modal-header">
                     <h5 class="modal-title fw-bold text-white">
-                        <i class="fa-solid fa-circle-dollar-to-slot text-success me-2"></i> Catat Pemasukan Kas / Cashflow
+                        <i class="fa-solid fa-plus-circle text-secondary me-2"></i> Catat Pemasukan Kas / Cashflow
                     </h5>
                     <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
                 </div>
@@ -1341,10 +1320,10 @@
                             <div class="col-12 col-md-6">
                                 <label class="form-label small fw-semibold text-muted">Kategori Sumber Pemasukan *</label>
                                 <select name="category" id="inflow_category_select" class="form-select" required onchange="updateInflowLabels()">
-                                    <option value="dana_usaha">🛍️ Dana Usaha (Danus / Penjualan / Bazaar)</option>
-                                    <option value="janji_iman">🙏 Janji Iman (Komitmen Iman Pribadi)</option>
-                                    <option value="donatur">🎁 Dana Donatur / Donasi Sukarela</option>
-                                    <option value="lain_lain">📦 Pemasukan Lain-lain</option>
+                                    <option value="dana_usaha">Dana Usaha (Danus / Penjualan / Bazaar)</option>
+                                    <option value="janji_iman">Janji Iman (Komitmen Iman Pribadi)</option>
+                                    <option value="donatur">Dana Donatur / Donasi Sukarela</option>
+                                    <option value="lain_lain">Pemasukan Lain-lain</option>
                                 </select>
                             </div>
 
@@ -1376,9 +1355,9 @@
                             <div class="col-12 col-md-4">
                                 <label class="form-label small fw-semibold text-muted">Metode Pembayaran *</label>
                                 <select name="payment_method" class="form-select" required>
-                                    <option value="transfer">💳 Transfer Bank</option>
-                                    <option value="cash">💵 Tunai / Cash</option>
-                                    <option value="qris">📱 QRIS</option>
+                                    <option value="transfer">Transfer Bank</option>
+                                    <option value="cash">Tunai / Cash</option>
+                                    <option value="qris">QRIS</option>
                                 </select>
                             </div>
 
@@ -1395,8 +1374,8 @@
                         </div>
                     </div>
                     <div class="modal-footer">
-                        <button type="button" class="btn btn-outline-secondary rounded-pill px-3" data-bs-dismiss="modal">Batal</button>
-                        <button type="submit" class="btn btn-emerald-action rounded-pill px-4 fw-bold">
+                        <button type="button" class="btn btn-action-secondary rounded-pill px-3" data-bs-dismiss="modal">Batal</button>
+                        <button type="submit" class="btn btn-action-primary rounded-pill px-4 fw-semibold">
                             <i class="fa-solid fa-check me-1"></i> Simpan Pemasukan
                         </button>
                     </div>
@@ -1411,7 +1390,7 @@
             <div class="modal-content">
                 <div class="modal-header">
                     <h5 class="modal-title fw-bold text-white">
-                        <i class="fa-solid fa-receipt text-danger me-2"></i> Catat Pengeluaran Kas (Buku Kas Keluar)
+                        <i class="fa-solid fa-minus-circle text-secondary me-2"></i> Catat Pengeluaran Kas (Buku Kas Keluar)
                     </h5>
                     <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
                 </div>
@@ -1432,15 +1411,15 @@
                             <div class="col-12 col-md-6">
                                 <label class="form-label small fw-semibold text-muted">Kategori Keperluan *</label>
                                 <select name="category" class="form-select" required>
-                                    <option value="Konsumsi">🍔 Konsumsi (Makan / Minum Pengerja)</option>
-                                    <option value="Acara & Revival">🎉 Acara, Doorprize & Souvenir</option>
-                                    <option value="Logistik & Perlengkapan">📦 Logistik, Kabel & Perlengkapan</option>
-                                    <option value="Multimedia & Desain">🎨 Multimedia, Desain & Banner</option>
-                                    <option value="Musik & Sound">🎸 Musik & Sound System</option>
-                                    <option value="Modal Dana Usaha">🛍️ Modal Bahan Dana Usaha</option>
-                                    <option value="Transportasi & Operasional">⚡ Transportasi & Operasional</option>
-                                    <option value="Diakonia & Kasih">❤️ Diakonia & Tanda Kasih</option>
-                                    <option value="Lainnya">📦 Lainnya</option>
+                                    <option value="Konsumsi">Konsumsi (Makan / Minum Pengerja)</option>
+                                    <option value="Acara & Revival">Acara, Doorprize & Souvenir</option>
+                                    <option value="Logistik & Perlengkapan">Logistik, Kabel & Perlengkapan</option>
+                                    <option value="Multimedia & Desain">Multimedia, Desain & Banner</option>
+                                    <option value="Musik & Sound">Musik & Sound System</option>
+                                    <option value="Modal Dana Usaha">Modal Bahan Dana Usaha</option>
+                                    <option value="Transportasi & Operasional">Transportasi & Operasional</option>
+                                    <option value="Diakonia & Kasih">Diakonia & Tanda Kasih</option>
+                                    <option value="Lainnya">Lainnya</option>
                                 </select>
                             </div>
 
@@ -1462,8 +1441,8 @@
                         </div>
                     </div>
                     <div class="modal-footer">
-                        <button type="button" class="btn btn-outline-secondary rounded-pill px-3" data-bs-dismiss="modal">Batal</button>
-                        <button type="submit" class="btn btn-rose-action rounded-pill px-4 fw-bold">
+                        <button type="button" class="btn btn-action-secondary rounded-pill px-3" data-bs-dismiss="modal">Batal</button>
+                        <button type="submit" class="btn btn-action-primary rounded-pill px-4 fw-semibold">
                             <i class="fa-solid fa-check me-1"></i> Simpan Pengeluaran
                         </button>
                     </div>
@@ -1477,7 +1456,7 @@
         <div class="modal-dialog modal-dialog-centered">
             <div class="modal-content">
                 <div class="modal-header">
-                    <h5 class="modal-title fw-bold text-white"><i class="fa-solid fa-money-bill-wave text-success me-2"></i> Bayar Kas Pengerja</h5>
+                    <h5 class="modal-title fw-bold text-white"><i class="fa-solid fa-wallet text-secondary me-2"></i> Bayar Kas Pengerja</h5>
                     <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
                 </div>
                 <form action="{{ route('admin.kas.payment.store') }}" method="POST" enctype="multipart/form-data">
@@ -1501,7 +1480,7 @@
                                         <input class="form-check-input period-checkbox" type="checkbox" name="period_ids[]" value="{{ $p->id }}" id="period_{{ $p->id }}">
                                         <label class="form-check-label text-white d-flex justify-content-between" for="period_{{ $p->id }}">
                                             <span>{{ $p->name }}</span>
-                                            <span class="text-info fw-bold">Rp {{ number_format($p->amount, 0, ',', '.') }}</span>
+                                            <span class="text-light fw-semibold">Rp {{ number_format($p->amount, 0, ',', '.') }}</span>
                                         </label>
                                     </div>
                                 @endforeach
@@ -1516,8 +1495,8 @@
                             <div class="col-6">
                                 <label class="form-label small fw-semibold text-muted">Metode Pembayaran</label>
                                 <select name="payment_method" class="form-select" required>
-                                    <option value="cash">💵 Tunai (Cash)</option>
-                                    <option value="transfer">💳 Transfer Bank / QRIS</option>
+                                    <option value="cash">Tunai (Cash)</option>
+                                    <option value="transfer">Transfer Bank / QRIS</option>
                                 </select>
                             </div>
                         </div>
@@ -1533,8 +1512,8 @@
                         </div>
                     </div>
                     <div class="modal-footer">
-                        <button type="button" class="btn btn-outline-secondary rounded-pill px-3" data-bs-dismiss="modal">Batal</button>
-                        <button type="submit" class="btn btn-success rounded-pill px-4 fw-bold">
+                        <button type="button" class="btn btn-action-secondary rounded-pill px-3" data-bs-dismiss="modal">Batal</button>
+                        <button type="submit" class="btn btn-action-primary rounded-pill px-4 fw-semibold">
                             <i class="fa-solid fa-check me-1"></i> Simpan Pembayaran
                         </button>
                     </div>
@@ -1548,7 +1527,7 @@
         <div class="modal-dialog modal-dialog-centered">
             <div class="modal-content">
                 <div class="modal-header">
-                    <h5 class="modal-title fw-bold text-white" id="modalVolunteerTitle"><i class="fa-solid fa-user-plus text-info me-2"></i> Tambah Pengerja Baru</h5>
+                    <h5 class="modal-title fw-bold text-white" id="modalVolunteerTitle"><i class="fa-solid fa-user-plus text-secondary me-2"></i> Tambah Pengerja Baru</h5>
                     <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
                 </div>
                 <form id="formVolunteer" action="{{ route('admin.kas.volunteer.store') }}" method="POST">
@@ -1562,7 +1541,7 @@
                         <div class="mb-3">
                             <label class="form-label small fw-semibold text-muted">Nomor WhatsApp</label>
                             <div class="input-group">
-                                <span class="input-group-text bg-dark border-secondary text-success"><i class="fa-brands fa-whatsapp"></i></span>
+                                <span class="input-group-text bg-dark border-secondary text-secondary"><i class="fa-brands fa-whatsapp"></i></span>
                                 <input type="text" name="phone" id="vol_phone" class="form-control" placeholder="08123456789" required>
                             </div>
                         </div>
@@ -1588,8 +1567,8 @@
                         </div>
                     </div>
                     <div class="modal-footer">
-                        <button type="button" class="btn btn-outline-secondary rounded-pill px-3" data-bs-dismiss="modal">Batal</button>
-                        <button type="submit" class="btn btn-info rounded-pill px-4 fw-bold">
+                        <button type="button" class="btn btn-action-secondary rounded-pill px-3" data-bs-dismiss="modal">Batal</button>
+                        <button type="submit" class="btn btn-action-primary rounded-pill px-4 fw-semibold">
                             <i class="fa-solid fa-save me-1"></i> Simpan
                         </button>
                     </div>
@@ -1603,7 +1582,7 @@
         <div class="modal-dialog modal-dialog-centered">
             <div class="modal-content">
                 <div class="modal-header">
-                    <h5 class="modal-title fw-bold text-white"><i class="fa-regular fa-calendar-plus text-info me-2"></i> Buka Periode Kas Baru</h5>
+                    <h5 class="modal-title fw-bold text-white"><i class="fa-regular fa-calendar-plus text-secondary me-2"></i> Buka Periode Kas Baru</h5>
                     <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
                 </div>
                 <form action="{{ route('admin.kas.period.store') }}" method="POST">
@@ -1625,8 +1604,8 @@
                         </div>
                     </div>
                     <div class="modal-footer">
-                        <button type="button" class="btn btn-outline-secondary rounded-pill px-3" data-bs-dismiss="modal">Batal</button>
-                        <button type="submit" class="btn btn-cyan-action rounded-pill px-4 fw-bold">
+                        <button type="button" class="btn btn-action-secondary rounded-pill px-3" data-bs-dismiss="modal">Batal</button>
+                        <button type="submit" class="btn btn-action-primary rounded-pill px-4 fw-semibold">
                             <i class="fa-solid fa-check me-1"></i> Buka Periode
                         </button>
                     </div>
@@ -1640,7 +1619,7 @@
         <div class="modal-dialog modal-dialog-centered">
             <div class="modal-content">
                 <div class="modal-header">
-                    <h5 class="modal-title fw-bold text-white"><i class="fa-solid fa-gear text-info me-2"></i> Pengaturan Informasi Rekening</h5>
+                    <h5 class="modal-title fw-bold text-white"><i class="fa-solid fa-gear text-secondary me-2"></i> Pengaturan Informasi Rekening</h5>
                     <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
                 </div>
                 <form action="{{ route('admin.kas.settings.update') }}" method="POST">
@@ -1657,8 +1636,8 @@
                         </div>
                     </div>
                     <div class="modal-footer">
-                        <button type="button" class="btn btn-outline-secondary rounded-pill px-3" data-bs-dismiss="modal">Batal</button>
-                        <button type="submit" class="btn btn-info rounded-pill px-4 fw-bold">
+                        <button type="button" class="btn btn-action-secondary rounded-pill px-3" data-bs-dismiss="modal">Batal</button>
+                        <button type="submit" class="btn btn-action-primary rounded-pill px-4 fw-semibold">
                             <i class="fa-solid fa-save me-1"></i> Simpan
                         </button>
                     </div>
@@ -1679,7 +1658,7 @@
                     <img id="lightboxImage" src="" alt="Bukti" class="img-fluid rounded-3" style="max-height: 80vh; object-fit: contain;">
                 </div>
                 <div class="modal-footer py-2 justify-content-between">
-                    <a id="lightboxDownload" href="" target="_blank" class="btn btn-sm btn-outline-info rounded-pill px-3">
+                    <a id="lightboxDownload" href="" target="_blank" class="btn btn-sm btn-action-secondary rounded-pill px-3">
                         <i class="fa-solid fa-arrow-up-right-from-square me-1"></i> Buka Ukuran Penuh
                     </a>
                     <button type="button" class="btn btn-sm btn-secondary rounded-pill px-3" data-bs-dismiss="modal">Tutup</button>
@@ -1757,7 +1736,7 @@
 
         // Edit Pengerja
         function editVolunteer(v) {
-            document.getElementById('modalVolunteerTitle').innerHTML = '<i class="fa-solid fa-pen-to-square text-warning me-2"></i> Edit Pengerja';
+            document.getElementById('modalVolunteerTitle').innerHTML = '<i class="fa-solid fa-pen-to-square text-secondary me-2"></i> Edit Pengerja';
             document.getElementById('formVolunteer').action = '/admin/kas/volunteer/update/' + v.id;
             document.getElementById('vol_name').value = v.name;
             document.getElementById('vol_phone').value = v.phone;
@@ -1772,7 +1751,7 @@
 
         // Reset form volunteer
         document.getElementById('modalVolunteer').addEventListener('hidden.bs.modal', function () {
-            document.getElementById('modalVolunteerTitle').innerHTML = '<i class="fa-solid fa-user-plus text-info me-2"></i> Tambah Pengerja Baru';
+            document.getElementById('modalVolunteerTitle').innerHTML = '<i class="fa-solid fa-user-plus text-secondary me-2"></i> Tambah Pengerja Baru';
             document.getElementById('formVolunteer').action = '{{ route("admin.kas.volunteer.store") }}';
             document.getElementById('vol_name').value = '';
             document.getElementById('vol_phone').value = '';
