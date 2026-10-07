@@ -7,6 +7,7 @@ use App\Models\CashVolunteer;
 use App\Models\CashPeriod;
 use App\Models\CashPayment;
 use App\Models\CashExpense;
+use App\Models\CashInflow;
 use App\Models\CashSetting;
 use App\Models\ActivityLog;
 use App\Models\User;
@@ -77,6 +78,23 @@ class CashController extends Controller
             });
         }
 
+        if (!Schema::hasTable('cash_inflows')) {
+            Schema::create('cash_inflows', function (Blueprint $table) {
+                $table->id();
+                $table->string('title');
+                $table->string('category', 50)->default('dana_usaha'); // dana_usaha, janji_iman, donatur, lain_lain
+                $table->unsignedBigInteger('amount');
+                $table->date('received_date');
+                $table->string('payer_name')->nullable();
+                $table->string('phone', 30)->nullable();
+                $table->string('payment_method', 30)->default('transfer'); // transfer, cash, qris
+                $table->text('notes')->nullable();
+                $table->string('proof_image')->nullable();
+                $table->string('recorded_by')->default('Bendahara');
+                $table->timestamps();
+            });
+        }
+
         if (!Schema::hasTable('cash_settings')) {
             Schema::create('cash_settings', function (Blueprint $table) {
                 $table->id();
@@ -88,7 +106,7 @@ class CashController extends Controller
     }
 
     /**
-     * Dashboard Utama Kas DOT Teens
+     * Dashboard Utama Kas & Cash Flow DOT Teens
      */
     public function index(Request $request)
     {
@@ -125,7 +143,9 @@ class CashController extends Controller
         }
         $defaultNominal = CashSetting::get('default_nominal', '10000');
 
-        // Query Volunteer
+        // ==========================================
+        // 1. DATA VOLUNTEER & KAS BULANAN
+        // ==========================================
         $volunteerQuery = CashVolunteer::query()->where('is_active', true);
         if ($request->filled('division')) {
             $volunteerQuery->where('division', $request->division);
@@ -140,7 +160,6 @@ class CashController extends Controller
         $volunteers = $volunteerQuery->with('payments')->orderBy('name', 'asc')->get();
         $allPeriods = CashPeriod::where('is_active', true)->orderBy('id', 'asc')->get();
 
-        // Hitung tunggakan dan tautan WhatsApp One-Click untuk setiap volunteer
         $totalTunggakanKeseluruhan = 0;
         $volunteerSummary = [];
 
@@ -158,27 +177,201 @@ class CashController extends Controller
             ];
         }
 
-        // Ringkasan Finansial
-        $totalMasuk = (int) CashPayment::sum('amount_paid');
+        // ==========================================
+        // 2. KALKULASI ARUS KAS / CASHFLOW TERPADU
+        // ==========================================
+        $totalKasVolunteer = (int) CashPayment::sum('amount_paid');
+        $totalDanaUsaha = (int) CashInflow::where('category', 'dana_usaha')->sum('amount');
+        $totalJanjiIman = (int) CashInflow::where('category', 'janji_iman')->sum('amount');
+        $totalDonatur = (int) CashInflow::where('category', 'donatur')->sum('amount');
+        $totalLainLainInflow = (int) CashInflow::where('category', 'lain_lain')->sum('amount');
+        $totalInflows = $totalDanaUsaha + $totalJanjiIman + $totalDonatur + $totalLainLainInflow;
+
+        // Total Masuk (Semua Sumber: Kas + Danus + Janji Iman + Donatur)
+        $totalMasuk = $totalKasVolunteer + $totalInflows;
+
+        // Total Keluar
         $totalKeluar = (int) CashExpense::sum('amount');
+
+        // Saldo Kas Riil
         $saldoAkhir = $totalMasuk - $totalKeluar;
 
-        // Pemasukan bulan ini & pengeluaran bulan ini
+        // Perhitungan Bulan Ini
         $currentMonth = date('Y-m');
-        $masukBulanIni = (int) CashPayment::where('paid_at', 'like', "$currentMonth%")->sum('amount_paid');
+        $kasVolBulanIni = (int) CashPayment::where('paid_at', 'like', "$currentMonth%")->sum('amount_paid');
+        $inflowBulanIni = (int) CashInflow::where('received_date', 'like', "$currentMonth%")->sum('amount');
+        $masukBulanIni = $kasVolBulanIni + $inflowBulanIni;
         $keluarBulanIni = (int) CashExpense::where('expense_date', 'like', "$currentMonth%")->sum('amount');
+        $netBulanIni = $masukBulanIni - $keluarBulanIni;
 
-        // Data Transaksi Terbaru
-        $recentPayments = CashPayment::with(['volunteer', 'period'])->latest()->take(10)->get();
-        $recentExpenses = CashExpense::latest()->take(10)->get();
-        $allExpenses = CashExpense::latest()->paginate(15);
+        // Breakdown Pengeluaran per Kategori ("Pengeluaran untuk apa aja")
+        $expensesByCategory = CashExpense::selectRaw('category, SUM(amount) as total_amount, COUNT(id) as total_tx')
+            ->groupBy('category')
+            ->orderByDesc('total_amount')
+            ->get();
+
+        // ==========================================
+        // 3. DAFTAR PEMASUKAN KHUSUS (INFLOWS)
+        // ==========================================
+        $inflowQuery = CashInflow::query();
+        if ($request->filled('inflow_cat') && $request->inflow_cat !== 'all') {
+            $inflowQuery->where('category', $request->inflow_cat);
+        }
+        if ($request->filled('inflow_search')) {
+            $inflowQuery->where(function($q) use ($request) {
+                $q->where('title', 'like', '%' . $request->inflow_search . '%')
+                  ->orWhere('payer_name', 'like', '%' . $request->inflow_search . '%')
+                  ->orWhere('notes', 'like', '%' . $request->inflow_search . '%');
+            });
+        }
+        $allInflows = $inflowQuery->latest('received_date')->latest('id')->paginate(15, ['*'], 'inflows_page');
+
+        // ==========================================
+        // 4. DAFTAR PENGELUARAN (EXPENSES)
+        // ==========================================
+        $expenseQuery = CashExpense::query();
+        if ($request->filled('expense_cat') && $request->expense_cat !== 'all') {
+            $expenseQuery->where('category', $request->expense_cat);
+        }
+        if ($request->filled('expense_search')) {
+            $expenseQuery->where(function($q) use ($request) {
+                $q->where('title', 'like', '%' . $request->expense_search . '%')
+                  ->orWhere('notes', 'like', '%' . $request->expense_search . '%');
+            });
+        }
+        $allExpenses = $expenseQuery->latest('expense_date')->latest('id')->paginate(15, ['*'], 'expenses_page');
+
+        // ==========================================
+        // 5. BUKU KAS UMUM (GENERAL CASH FLOW LEDGER)
+        // Gabungan semua transaksi secara kronologis + Running Balance
+        // ==========================================
+        $ledgerItems = collect();
+
+        // A. Dari Kas Volunteer
+        $allPayments = CashPayment::with(['volunteer', 'period'])->get();
+        foreach ($allPayments as $p) {
+            $volName = $p->volunteer->name ?? 'Pengerja';
+            $perName = $p->period->name ?? 'Periode';
+            $ledgerItems->push((object)[
+                'id' => $p->id,
+                'source_type' => 'kas_payment',
+                'date' => $p->paid_at->format('Y-m-d'),
+                'type' => 'inflow',
+                'category_key' => 'kas_volunteer',
+                'category_label' => 'Kas Pengerja',
+                'category_bg' => 'rgba(16, 185, 129, 0.18)',
+                'category_color' => '#34D399',
+                'category_icon' => 'fa-users',
+                'title' => "Iuran {$perName} - {$volName}",
+                'person' => $volName,
+                'amount' => (int) $p->amount_paid,
+                'payment_method' => $p->payment_method,
+                'notes' => $p->notes,
+                'proof_url' => $p->proof_image ? (file_exists(public_path('uploads/cash_proofs/' . basename($p->proof_image))) ? asset('uploads/cash_proofs/' . basename($p->proof_image)) : asset($p->proof_image)) : null,
+                'recorded_by' => $p->recorded_by ?? 'Bendahara',
+                'delete_route' => route('admin.kas.payment.delete', $p->id),
+                'created_at' => $p->created_at,
+            ]);
+        }
+
+        // B. Dari Inflows (Dana Usaha, Janji Iman, Donatur, Lainnya)
+        $rawInflows = CashInflow::all();
+        foreach ($rawInflows as $inf) {
+            $catInfo = $inf->category_info;
+            $ledgerItems->push((object)[
+                'id' => $inf->id,
+                'source_type' => 'inflow',
+                'date' => $inf->received_date->format('Y-m-d'),
+                'type' => 'inflow',
+                'category_key' => $inf->category,
+                'category_label' => $catInfo['label'],
+                'category_bg' => $catInfo['bg'],
+                'category_color' => $catInfo['color'],
+                'category_icon' => $catInfo['icon'],
+                'title' => $inf->title,
+                'person' => $inf->payer_name ?: 'Donatur / Pembeli',
+                'amount' => (int) $inf->amount,
+                'payment_method' => $inf->payment_method,
+                'notes' => $inf->notes,
+                'proof_url' => $inf->proof_url,
+                'recorded_by' => $inf->recorded_by ?? 'Bendahara',
+                'delete_route' => route('admin.kas.inflow.delete', $inf->id),
+                'created_at' => $inf->created_at,
+            ]);
+        }
+
+        // C. Dari Pengeluaran (Expenses)
+        $rawExpenses = CashExpense::all();
+        foreach ($rawExpenses as $exp) {
+            $catInfo = $exp->category_info;
+            $ledgerItems->push((object)[
+                'id' => $exp->id,
+                'source_type' => 'expense',
+                'date' => $exp->expense_date->format('Y-m-d'),
+                'type' => 'expense',
+                'category_key' => 'pengeluaran',
+                'category_label' => $catInfo['label'],
+                'category_bg' => $catInfo['bg'],
+                'category_color' => $catInfo['color'],
+                'category_icon' => $catInfo['icon'],
+                'title' => $exp->title,
+                'person' => $exp->category ?: 'Operasional',
+                'amount' => (int) $exp->amount,
+                'payment_method' => 'cash',
+                'notes' => $exp->notes,
+                'proof_url' => $exp->receipt_url,
+                'recorded_by' => $exp->recorded_by ?? 'Bendahara',
+                'delete_route' => route('admin.kas.expense.delete', $exp->id),
+                'created_at' => $exp->created_at,
+            ]);
+        }
+
+        // Hitung Saldo Berjalan (Urut kronologis tertua ke terbaru)
+        $sortedChronological = $ledgerItems->sortBy([
+            ['date', 'asc'],
+            ['created_at', 'asc'],
+            ['id', 'asc'],
+        ])->values();
+
+        $running = 0;
+        foreach ($sortedChronological as $item) {
+            if ($item->type === 'inflow') {
+                $running += $item->amount;
+            } else {
+                $running -= $item->amount;
+            }
+            $item->running_balance = $running;
+        }
+
+        // Untuk tampilan Buku Kas Ledger, tampilkan transaksi terbaru di paling atas
+        $ledgerDisplay = $sortedChronological->reverse()->values();
+
+        // Terapkan filter jika ada
+        if ($request->filled('ledger_type') && $request->ledger_type !== 'all') {
+            $ledgerDisplay = $ledgerDisplay->where('type', $request->ledger_type)->values();
+        }
+        if ($request->filled('ledger_cat') && $request->ledger_cat !== 'all') {
+            $ledgerDisplay = $ledgerDisplay->where('category_key', $request->ledger_cat)->values();
+        }
+        if ($request->filled('ledger_month')) {
+            $ledgerDisplay = $ledgerDisplay->filter(function($i) use ($request) {
+                return str_starts_with($i->date, $request->ledger_month);
+            })->values();
+        }
+
+        // Data transaksi ringkas terbaru
+        $recentPayments = CashPayment::with(['volunteer', 'period'])->latest()->take(6)->get();
+        $recentExpenses = CashExpense::latest()->take(6)->get();
+        $recentInflows = CashInflow::latest()->take(6)->get();
 
         // Ambil daftar divisi unik untuk filter
         $divisions = CashVolunteer::distinct()->pluck('division')->filter()->values();
 
         // Log CCTV jika ada tabel activity_logs
         if (Schema::hasTable('activity_logs')) {
-            $cctv_kas = ActivityLog::where('action', 'like', '%KAS%')->latest()->take(15)->get();
+            $cctv_kas = ActivityLog::where('action', 'like', '%KAS%')
+                ->orWhere('action', 'like', '%CASHFLOW%')
+                ->latest()->take(15)->get();
         } else {
             $cctv_kas = collect();
         }
@@ -188,54 +381,193 @@ class CashController extends Controller
             'volunteers',
             'volunteerSummary',
             'allPeriods',
+            'totalKasVolunteer',
+            'totalDanaUsaha',
+            'totalJanjiIman',
+            'totalDonatur',
+            'totalLainLainInflow',
+            'totalInflows',
             'totalMasuk',
             'totalKeluar',
             'saldoAkhir',
             'masukBulanIni',
             'keluarBulanIni',
+            'netBulanIni',
             'totalTunggakanKeseluruhan',
             'bankInfo',
             'defaultNominal',
             'recentPayments',
             'recentExpenses',
+            'recentInflows',
+            'allInflows',
             'allExpenses',
+            'ledgerDisplay',
+            'expensesByCategory',
             'divisions',
             'cctv_kas'
         ));
     }
 
     /**
-     * Fitur One-Click WhatsApp: Rekam CCTV & Redirect ke WhatsApp Web/App
+     * Catat Pemasukan Baru (Dana Usaha, Janji Iman, Dana Donatur, Lainnya)
      */
-    public function sendWaReminder($id)
+    public function storeInflow(Request $request)
     {
-        $user = auth()->user();
-        $volunteer = CashVolunteer::with('payments')->findOrFail($id);
-        $allPeriods = CashPeriod::where('is_active', true)->orderBy('id', 'asc')->get();
-        $unpaidPeriods = $volunteer->getUnpaidPeriods($allPeriods);
+        $request->validate([
+            'title' => 'required|string|max:255',
+            'category' => 'required|in:dana_usaha,janji_iman,donatur,lain_lain',
+            'amount' => 'required|numeric|min:1',
+            'received_date' => 'required|date',
+            'payer_name' => 'nullable|string|max:255',
+            'phone' => 'nullable|string|max:30',
+            'payment_method' => 'required|in:transfer,cash,qris',
+            'notes' => 'nullable|string',
+            'proof_image' => 'nullable|image|mimes:jpeg,png,jpg,webp|max:5120',
+        ]);
 
-        if ($unpaidPeriods->isEmpty()) {
-            return back()->with('success', "Pengerja {$volunteer->name} sudah lunas semua kasnya!");
+        $proofPath = null;
+        if ($request->hasFile('proof_image')) {
+            $destDir = public_path('uploads/cash_inflows');
+            if (!file_exists($destDir)) {
+                mkdir($destDir, 0755, true);
+            }
+            $fileName = 'inflow_' . time() . '_' . uniqid() . '.' . $request->file('proof_image')->extension();
+            $request->file('proof_image')->move($destDir, $fileName);
+            $proofPath = 'uploads/cash_inflows/' . $fileName;
         }
 
-        $bankInfo = CashSetting::get('bank_info', 'BCA 6390086774 a.n Hizqia Chandra Wiguno');
-        $waUrl = $volunteer->generateWaLink($unpaidPeriods, $bankInfo);
+        $user = auth()->user();
 
-        // Rekam CCTV Log
+        $inflow = CashInflow::create([
+            'title' => $request->title,
+            'category' => $request->category,
+            'amount' => (int) $request->amount,
+            'received_date' => $request->received_date,
+            'payer_name' => $request->payer_name,
+            'phone' => $request->phone,
+            'payment_method' => $request->payment_method,
+            'notes' => $request->notes,
+            'proof_image' => $proofPath,
+            'recorded_by' => $user->name,
+        ]);
+
+        if (Schema::hasTable('activity_logs')) {
+            $categoryLabel = $inflow->category_info['label'] ?? 'Pemasukan';
+            ActivityLog::create([
+                'user_name' => $user->name,
+                'role' => $user->role,
+                'action' => 'CATAT PEMASUKAN CASHFLOW',
+                'description' => "{$user->name} mencatat pemasukan [{$categoryLabel}]: {$inflow->title} (Rp " . number_format($inflow->amount, 0, ',', '.') . ") dari {$inflow->payer_name}",
+            ]);
+        }
+
+        return back()->with('success', "Pemasukan {$inflow->category_info['label']} sebesar Rp " . number_format($inflow->amount, 0, ',', '.') . " berhasil dicatat.");
+    }
+
+    /**
+     * Hapus Pemasukan Cashflow
+     */
+    public function deleteInflow($id)
+    {
+        $inflow = CashInflow::findOrFail($id);
+        $title = $inflow->title;
+        $amount = $inflow->amount;
+
+        if ($inflow->proof_image && file_exists(public_path($inflow->proof_image))) {
+            @unlink(public_path($inflow->proof_image));
+        }
+
+        $inflow->delete();
+
+        if (Schema::hasTable('activity_logs')) {
+            ActivityLog::create([
+                'user_name' => auth()->user()->name,
+                'role' => auth()->user()->role,
+                'action' => 'HAPUS PEMASUKAN CASHFLOW',
+                'description' => auth()->user()->name . " menghapus pemasukan {$title} (Rp " . number_format($amount, 0, ',', '.') . ")",
+            ]);
+        }
+
+        return back()->with('success', 'Data pemasukan berhasil dihapus.');
+    }
+
+    /**
+     * Catat Pengeluaran Kas (Buku Kas Keluar & Nota)
+     */
+    public function storeExpense(Request $request)
+    {
+        $request->validate([
+            'title' => 'required|string|max:255',
+            'amount' => 'required|numeric|min:1',
+            'expense_date' => 'required|date',
+            'category' => 'required|string|max:100',
+            'notes' => 'nullable|string',
+            'receipt_image' => 'nullable|image|mimes:jpeg,png,jpg,webp|max:5120',
+        ]);
+
+        $receiptPath = null;
+        if ($request->hasFile('receipt_image')) {
+            $destDir = public_path('uploads/cash_receipts');
+            if (!file_exists($destDir)) {
+                mkdir($destDir, 0755, true);
+            }
+            $fileName = 'receipt_' . time() . '_' . uniqid() . '.' . $request->file('receipt_image')->extension();
+            $request->file('receipt_image')->move($destDir, $fileName);
+            $receiptPath = 'uploads/cash_receipts/' . $fileName;
+        }
+
+        $user = auth()->user();
+
+        $expense = CashExpense::create([
+            'title' => $request->title,
+            'amount' => (int) $request->amount,
+            'expense_date' => $request->expense_date,
+            'category' => $request->category,
+            'notes' => $request->notes,
+            'receipt_image' => $receiptPath,
+            'recorded_by' => $user->name,
+        ]);
+
         if (Schema::hasTable('activity_logs')) {
             ActivityLog::create([
                 'user_name' => $user->name,
                 'role' => $user->role,
-                'action' => 'KIRIM WA KAS',
-                'description' => "{$user->name} mengirimkan pengingat tunggakan kas via WhatsApp ke {$volunteer->name} (Total: Rp " . number_format($unpaidPeriods->sum('amount'), 0, ',', '.') . ")",
+                'action' => 'CATAT PENGELUARAN CASHFLOW',
+                'description' => "{$user->name} mencatat pengeluaran [{$request->category}]: {$request->title} (Rp " . number_format($request->amount, 0, ',', '.') . ")",
             ]);
         }
 
-        return redirect()->away($waUrl);
+        return back()->with('success', 'Pengeluaran kas berhasil dicatat.');
     }
 
     /**
-     * Catat Pembayaran Kas (Bisa pilih 1 atau beberapa periode sekaligus)
+     * Hapus Pengeluaran Kas
+     */
+    public function deleteExpense($id)
+    {
+        $expense = CashExpense::findOrFail($id);
+        $title = $expense->title;
+
+        if ($expense->receipt_image && file_exists(public_path($expense->receipt_image))) {
+            @unlink(public_path($expense->receipt_image));
+        }
+
+        $expense->delete();
+
+        if (Schema::hasTable('activity_logs')) {
+            ActivityLog::create([
+                'user_name' => auth()->user()->name,
+                'role' => auth()->user()->role,
+                'action' => 'HAPUS PENGELUARAN CASHFLOW',
+                'description' => auth()->user()->name . " menghapus data pengeluaran kas: {$title}",
+            ]);
+        }
+
+        return back()->with('success', 'Data pengeluaran berhasil dihapus.');
+    }
+
+    /**
+     * Catat Pembayaran Kas Volunteer (Bisa pilih 1 atau beberapa periode sekaligus)
      */
     public function storePayment(Request $request)
     {
@@ -255,7 +587,13 @@ class CashController extends Controller
         // Upload bukti jika ada
         $proofPath = null;
         if ($request->hasFile('proof_image')) {
-            $proofPath = $request->file('proof_image')->store('cash_proofs', 'public');
+            $destDir = public_path('uploads/cash_proofs');
+            if (!file_exists($destDir)) {
+                mkdir($destDir, 0755, true);
+            }
+            $fileName = 'proof_' . time() . '_' . uniqid() . '.' . $request->file('proof_image')->extension();
+            $request->file('proof_image')->move($destDir, $fileName);
+            $proofPath = 'uploads/cash_proofs/' . $fileName;
         }
 
         $recordedCount = 0;
@@ -293,7 +631,7 @@ class CashController extends Controller
     }
 
     /**
-     * Hapus Pembayaran Kas
+     * Hapus Pembayaran Kas Volunteer
      */
     public function deletePayment($id)
     {
@@ -316,67 +654,33 @@ class CashController extends Controller
     }
 
     /**
-     * Catat Pengeluaran Kas
+     * Fitur One-Click WhatsApp: Rekam CCTV & Redirect ke WhatsApp Web/App
      */
-    public function storeExpense(Request $request)
+    public function sendWaReminder($id)
     {
-        $request->validate([
-            'title' => 'required|string|max:255',
-            'amount' => 'required|numeric|min:1',
-            'expense_date' => 'required|date',
-            'category' => 'required|string',
-            'notes' => 'nullable|string',
-            'receipt_image' => 'nullable|image|max:3072',
-        ]);
+        $user = auth()->user();
+        $volunteer = CashVolunteer::with('payments')->findOrFail($id);
+        $allPeriods = CashPeriod::where('is_active', true)->orderBy('id', 'asc')->get();
+        $unpaidPeriods = $volunteer->getUnpaidPeriods($allPeriods);
 
-        $receiptPath = null;
-        if ($request->hasFile('receipt_image')) {
-            $receiptPath = $request->file('receipt_image')->store('cash_receipts', 'public');
+        if ($unpaidPeriods->isEmpty()) {
+            return back()->with('success', "Pengerja {$volunteer->name} sudah lunas semua kasnya!");
         }
 
-        $user = auth()->user();
+        $bankInfo = CashSetting::get('bank_info', 'BCA 6390086774 a.n Hizqia Chandra Wiguno');
+        $waUrl = $volunteer->generateWaLink($unpaidPeriods, $bankInfo);
 
-        CashExpense::create([
-            'title' => $request->title,
-            'amount' => (int) $request->amount,
-            'expense_date' => $request->expense_date,
-            'category' => $request->category,
-            'notes' => $request->notes,
-            'receipt_image' => $receiptPath,
-            'recorded_by' => $user->name,
-        ]);
-
+        // Rekam CCTV Log
         if (Schema::hasTable('activity_logs')) {
             ActivityLog::create([
                 'user_name' => $user->name,
                 'role' => $user->role,
-                'action' => 'CATAT PENGELUARAN KAS',
-                'description' => "{$user->name} mencatat pengeluaran kas: {$request->title} (Rp " . number_format($request->amount, 0, ',', '.') . ")",
+                'action' => 'KIRIM WA KAS',
+                'description' => "{$user->name} mengirimkan pengingat tunggakan kas via WhatsApp ke {$volunteer->name} (Total: Rp " . number_format($unpaidPeriods->sum('amount'), 0, ',', '.') . ")",
             ]);
         }
 
-        return back()->with('success', 'Pengeluaran kas berhasil dicatat.');
-    }
-
-    /**
-     * Hapus Pengeluaran Kas
-     */
-    public function deleteExpense($id)
-    {
-        $expense = CashExpense::findOrFail($id);
-        $title = $expense->title;
-        $expense->delete();
-
-        if (Schema::hasTable('activity_logs')) {
-            ActivityLog::create([
-                'user_name' => auth()->user()->name,
-                'role' => auth()->user()->role,
-                'action' => 'HAPUS PENGELUARAN KAS',
-                'description' => auth()->user()->name . " menghapus data pengeluaran kas: {$title}",
-            ]);
-        }
-
-        return back()->with('success', 'Data pengeluaran berhasil dihapus.');
+        return redirect()->away($waUrl);
     }
 
     /**
@@ -462,7 +766,6 @@ class CashController extends Controller
         foreach ($users as $u) {
             $exists = CashVolunteer::where('name', $u->name)->first();
             if (!$exists) {
-                // Konversi role jadi nama divisi yang manusiawi
                 $divName = match($u->role) {
                     'volunteer' => 'Volunteer / Usher',
                     'bendahara' => 'Bendahara',
@@ -479,7 +782,7 @@ class CashController extends Controller
                 CashVolunteer::create([
                     'user_id' => $u->id,
                     'name' => $u->name,
-                    'phone' => '08123456789', // Default placeholder jika belum ada no telp
+                    'phone' => '08123456789',
                     'division' => $divName,
                     'monthly_due' => 10000,
                     'is_active' => true,
@@ -541,11 +844,11 @@ class CashController extends Controller
     }
 
     /**
-     * Export Laporan Kas ke CSV (Kompatibel Excel)
+     * Export Rekap Iuran Kas Volunteer ke CSV
      */
     public function exportCsv()
     {
-        $fileName = 'Laporan_Kas_DOT_' . date('Y_m_d') . '.csv';
+        $fileName = 'Rekap_Kas_Volunteer_DOT_' . date('Y_m_d') . '.csv';
 
         $volunteers = CashVolunteer::with('payments')->where('is_active', true)->orderBy('name', 'asc')->get();
         $periods = CashPeriod::where('is_active', true)->orderBy('id', 'asc')->get();
@@ -560,10 +863,8 @@ class CashController extends Controller
 
         $callback = function () use ($volunteers, $periods) {
             $file = fopen('php://output', 'w');
-            // Menambahkan UTF-8 BOM agar terbaca rapi di Excel
             fprintf($file, chr(0xEF).chr(0xBB).chr(0xBF));
 
-            // Header Kolom
             $headerCols = ['No', 'Nama Pengerja', 'Divisi', 'No. WhatsApp', 'Status Kas', 'Total Tunggakan (Rp)'];
             foreach ($periods as $p) {
                 $headerCols[] = $p->name;
@@ -592,6 +893,159 @@ class CashController extends Controller
 
                 fputcsv($file, $row);
             }
+
+            fclose($file);
+        };
+
+        return response()->stream($callback, 200, $headers);
+    }
+
+    /**
+     * Export Buku Kas Arus Kas (Cash Flow Ledger) Lengkap ke CSV / Excel
+     */
+    public function exportCashflowCsv(Request $request)
+    {
+        $fileName = 'Laporan_Cashflow_DOT_Teens_' . date('Y_m_d_His') . '.csv';
+
+        $headers = [
+            "Content-type"        => "text/csv; charset=UTF-8",
+            "Content-Disposition" => "attachment; filename=$fileName",
+            "Pragma"              => "no-cache",
+            "Cache-Control"       => "must-revalidate, post-check=0, pre-check=0",
+            "Expires"             => "0"
+        ];
+
+        $callback = function () {
+            $file = fopen('php://output', 'w');
+            // Menambahkan UTF-8 BOM agar rapi saat dibuka di Microsoft Excel
+            fprintf($file, chr(0xEF).chr(0xBB).chr(0xBF));
+
+            // Judul Dokumen
+            fputcsv($file, ['LAPORAN ARUS KAS (CASH FLOW) BENDAHARA - DOT TEENS']);
+            fputcsv($file, ['Tanggal Unduh:', date('d F Y H:i:s')]);
+            fputcsv($file, []);
+
+            // Header Kolom Tabel
+            fputcsv($file, [
+                'No',
+                'Tanggal',
+                'Tipe Arus Kas',
+                'Kategori',
+                'Keperluan / Judul Transaksi',
+                'Sumber Dana / Donatur / Pengerja',
+                'Pemasukan (Rp)',
+                'Pengeluaran (Rp)',
+                'Saldo Berjalan (Rp)',
+                'Metode Bayar',
+                'Dicatat Oleh',
+                'Catatan / Keterangan',
+            ]);
+
+            // Kumpulkan semua transaksi
+            $ledger = collect();
+
+            // Kas Pengerja
+            $payments = CashPayment::with(['volunteer', 'period'])->get();
+            foreach ($payments as $p) {
+                $ledger->push((object)[
+                    'date' => $p->paid_at->format('Y-m-d'),
+                    'type' => 'PEMASUKAN',
+                    'category' => 'Kas Pengerja',
+                    'title' => "Iuran " . ($p->period->name ?? 'Kas') . " - " . ($p->volunteer->name ?? 'Pengerja'),
+                    'person' => $p->volunteer->name ?? 'Pengerja',
+                    'inflow' => (int) $p->amount_paid,
+                    'expense' => 0,
+                    'method' => strtoupper($p->payment_method),
+                    'recorded_by' => $p->recorded_by ?? 'Bendahara',
+                    'notes' => $p->notes ?? '',
+                    'created_at' => $p->created_at,
+                ]);
+            }
+
+            // Pemasukan Khusus (Danus, Janji Iman, Donatur, Lainnya)
+            $inflows = CashInflow::all();
+            foreach ($inflows as $inf) {
+                $ledger->push((object)[
+                    'date' => $inf->received_date->format('Y-m-d'),
+                    'type' => 'PEMASUKAN',
+                    'category' => $inf->category_info['label'] ?? 'Pemasukan',
+                    'title' => $inf->title,
+                    'person' => $inf->payer_name ?: 'Donatur / Pembeli',
+                    'inflow' => (int) $inf->amount,
+                    'expense' => 0,
+                    'method' => strtoupper($inf->payment_method),
+                    'recorded_by' => $inf->recorded_by ?? 'Bendahara',
+                    'notes' => $inf->notes ?? '',
+                    'created_at' => $inf->created_at,
+                ]);
+            }
+
+            // Pengeluaran (Expenses)
+            $expenses = CashExpense::all();
+            foreach ($expenses as $exp) {
+                $ledger->push((object)[
+                    'date' => $exp->expense_date->format('Y-m-d'),
+                    'type' => 'PENGELUARAN',
+                    'category' => $exp->category_info['label'] ?? $exp->category,
+                    'title' => $exp->title,
+                    'person' => $exp->category ?: 'Operasional',
+                    'inflow' => 0,
+                    'expense' => (int) $exp->amount,
+                    'method' => 'CASH',
+                    'recorded_by' => $exp->recorded_by ?? 'Bendahara',
+                    'notes' => $exp->notes ?? '',
+                    'created_at' => $exp->created_at,
+                ]);
+            }
+
+            // Sort tertua ke terbaru untuk hitung saldo berjalan
+            $sorted = $ledger->sortBy([
+                ['date', 'asc'],
+                ['created_at', 'asc'],
+            ])->values();
+
+            $running = 0;
+            $totalIn = 0;
+            $totalOut = 0;
+            $no = 1;
+
+            foreach ($sorted as $item) {
+                $running += ($item->inflow - $item->expense);
+                $totalIn += $item->inflow;
+                $totalOut += $item->expense;
+
+                fputcsv($file, [
+                    $no++,
+                    $item->date,
+                    $item->type,
+                    $item->category,
+                    $item->title,
+                    $item->person,
+                    $item->inflow > 0 ? $item->inflow : '',
+                    $item->expense > 0 ? $item->expense : '',
+                    $running,
+                    $item->method,
+                    $item->recorded_by,
+                    $item->notes,
+                ]);
+            }
+
+            // Baris Total Akumulasi
+            fputcsv($file, []);
+            fputcsv($file, [
+                '',
+                'TOTAL AKUMULASI',
+                '',
+                '',
+                '',
+                '',
+                $totalIn,
+                $totalOut,
+                $totalIn - $totalOut,
+                '',
+                '',
+                '',
+            ]);
 
             fclose($file);
         };

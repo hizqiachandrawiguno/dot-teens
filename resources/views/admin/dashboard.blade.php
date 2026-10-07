@@ -263,7 +263,7 @@
 
             <div class="d-flex align-items-center gap-2 gap-md-3">
                 <a href="/admin/kas" class="btn btn-sm fw-bold rounded-pill px-3 py-1.5 d-inline-flex align-items-center gap-1.5 shadow" style="font-size: 0.8rem; background: linear-gradient(135deg, #10B981, #059669); border: none; color: #FFFFFF !important;">
-                    <i class="fa-solid fa-wallet" style="color: #FFFFFF;"></i> <span>Dashboard Kas</span>
+                    <i class="fa-solid fa-scale-balanced" style="color: #FFFFFF;"></i> <span>Cashflow & Kas</span>
                 </a>
                 <a href="{{ route('admin.events.scan') }}" class="btn btn-sm fw-bold rounded-pill px-3 py-1.5 d-inline-flex align-items-center gap-1.5 shadow" style="font-size: 0.8rem; background: linear-gradient(135deg, #38BDF8, #60A5FA); border: none; color: #0A1628 !important;">
                     <i class="fa-solid fa-qrcode" style="color: #0A1628;"></i> <span>Scanner QR Event</span>
