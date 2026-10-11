@@ -11,6 +11,7 @@ use App\Models\CashInflow;
 use App\Models\CashSetting;
 use App\Models\ActivityLog;
 use App\Models\User;
+use App\Models\Member;
 use Illuminate\Support\Facades\Schema;
 use Illuminate\Database\Schema\Blueprint;
 
@@ -25,13 +26,18 @@ class CashController extends Controller
             Schema::create('cash_volunteers', function (Blueprint $table) {
                 $table->id();
                 $table->foreignId('user_id')->nullable()->constrained('users')->nullOnDelete();
+                $table->foreignId('member_id')->nullable()->constrained('members')->nullOnDelete();
                 $table->string('name');
                 $table->string('phone', 30);
-                $table->string('division', 100)->default('Pengerja / Volunteer');
-                $table->unsignedInteger('monthly_due')->default(10000);
+                $table->string('division', 100)->default('Remaja DOT Teens');
+                $table->unsignedInteger('monthly_due')->default(20000); // 4 mgg x 5.000
                 $table->boolean('is_active')->default(true);
                 $table->text('notes')->nullable();
                 $table->timestamps();
+            });
+        } elseif (!Schema::hasColumn('cash_volunteers', 'member_id')) {
+            Schema::table('cash_volunteers', function (Blueprint $table) {
+                $table->foreignId('member_id')->nullable()->after('user_id')->constrained('members')->nullOnDelete();
             });
         }
 
@@ -39,11 +45,16 @@ class CashController extends Controller
             Schema::create('cash_periods', function (Blueprint $table) {
                 $table->id();
                 $table->string('name', 100);
-                $table->unsignedInteger('amount')->default(10000);
+                $table->unsignedTinyInteger('weeks_count')->default(4); // 4 atau 5 minggu
+                $table->unsignedInteger('amount')->default(20000);     // 4 mgg = 20.000, 5 mgg = 25.000
                 $table->date('due_date')->nullable();
                 $table->boolean('is_active')->default(true);
                 $table->string('description')->nullable();
                 $table->timestamps();
+            });
+        } elseif (!Schema::hasColumn('cash_periods', 'weeks_count')) {
+            Schema::table('cash_periods', function (Blueprint $table) {
+                $table->unsignedTinyInteger('weeks_count')->default(4)->after('amount');
             });
         }
 
@@ -103,6 +114,21 @@ class CashController extends Controller
                 $table->timestamps();
             });
         }
+
+        // Perbarui nominal periode kas lama yang masih Rp 10.000 agar mengikuti aturan 5.000/minggu
+        try {
+            if (CashPeriod::count() > 0) {
+                CashPeriod::where('amount', 10000)->where(function($q) {
+                    $q->where('name', 'like', '%September%')
+                      ->orWhere('name', 'like', '%Oktober%');
+                })->update(['amount' => 20000, 'weeks_count' => 4]);
+
+                CashPeriod::where('amount', 10000)->where('name', 'like', '%November%')
+                    ->update(['amount' => 25000, 'weeks_count' => 5]);
+            }
+        } catch (\Throwable $e) {
+            // Abaikan jika query update gagal saat runtime
+        }
     }
 
     /**
@@ -111,7 +137,7 @@ class CashController extends Controller
     public function index(Request $request)
     {
         $user = auth()->user();
-        if (!in_array($user->role, ['super_admin', 'bendahara'])) {
+        if (!in_array($user->role, ['super_admin', 'bendahara', 'admin'])) {
             abort(403, 'Akses terbatas untuk Bendahara atau Super Admin.');
         }
 
@@ -121,15 +147,27 @@ class CashController extends Controller
         if (CashPeriod::count() == 0) {
             CashPeriod::create([
                 'name' => 'Kas September 2026',
-                'amount' => 10000,
+                'weeks_count' => 4,
+                'amount' => 20000,
                 'due_date' => '2026-09-30',
                 'is_active' => true,
+                'description' => '4 Minggu x Rp 5.000/minggu',
             ]);
             CashPeriod::create([
                 'name' => 'Kas Oktober 2026',
-                'amount' => 10000,
+                'weeks_count' => 4,
+                'amount' => 20000,
                 'due_date' => '2026-10-31',
                 'is_active' => true,
+                'description' => '4 Minggu x Rp 5.000/minggu',
+            ]);
+            CashPeriod::create([
+                'name' => 'Kas November 2026',
+                'weeks_count' => 5,
+                'amount' => 25000,
+                'due_date' => '2026-11-30',
+                'is_active' => true,
+                'description' => '5 Minggu x Rp 5.000/minggu',
             ]);
         }
 
@@ -141,10 +179,10 @@ class CashController extends Controller
         } else {
             $bankInfo = $savedBankInfo;
         }
-        $defaultNominal = CashSetting::get('default_nominal', '10000');
+        $defaultNominal = CashSetting::get('default_nominal', '5000');
 
         // ==========================================
-        // 1. DATA VOLUNTEER & KAS BULANAN
+        // 1. DATA ANAK / REMEJA & TRACKING KAS MINGGUAN
         // ==========================================
         $volunteerQuery = CashVolunteer::query()->where('is_active', true);
         if ($request->filled('division')) {
@@ -157,7 +195,7 @@ class CashController extends Controller
             });
         }
 
-        $volunteers = $volunteerQuery->with('payments')->orderBy('name', 'asc')->get();
+        $volunteers = $volunteerQuery->with(['payments', 'member'])->orderBy('name', 'asc')->get();
         $allPeriods = CashPeriod::where('is_active', true)->orderBy('id', 'asc')->get();
 
         $totalTunggakanKeseluruhan = 0;
@@ -165,16 +203,37 @@ class CashController extends Controller
 
         foreach ($volunteers as $v) {
             $unpaidPeriods = $v->getUnpaidPeriods($allPeriods);
-            $tunggakanAmount = $unpaidPeriods->sum('amount');
+            $tunggakanAmount = $v->getTotalTunggakan($allPeriods);
             $totalTunggakanKeseluruhan += $tunggakanAmount;
+
+            $periodStatuses = [];
+            foreach ($allPeriods as $p) {
+                $periodStatuses[$p->id] = $v->getPeriodDetail($p);
+            }
+
+            $hasPaidSomething = $v->payments->where('amount_paid', '>', 0)->count() > 0;
+            $statusLabel = ($tunggakanAmount == 0) ? 'LUNAS' : ($hasPaidSomething ? 'SEBAGIAN' : 'MENUNGGAK');
 
             $volunteerSummary[] = [
                 'model' => $v,
                 'unpaid_periods' => $unpaidPeriods,
                 'total_tunggakan' => $tunggakanAmount,
                 'wa_link' => $v->generateWaLink($unpaidPeriods, $bankInfo),
-                'paid_count' => $v->payments->count(),
+                'paid_count' => $v->payments->where('amount_paid', '>', 0)->count(),
+                'period_statuses' => $periodStatuses,
+                'status_label' => $statusLabel,
             ];
+        }
+
+        // Terapkan Filter Status Pembayaran jika dipilih
+        if ($request->filled('status_filter')) {
+            if ($request->status_filter === 'lunas') {
+                $volunteerSummary = array_values(array_filter($volunteerSummary, fn($i) => $i['total_tunggakan'] == 0));
+            } elseif ($request->status_filter === 'nunggak') {
+                $volunteerSummary = array_values(array_filter($volunteerSummary, fn($i) => $i['total_tunggakan'] > 0));
+            } elseif ($request->status_filter === 'sebagian') {
+                $volunteerSummary = array_values(array_filter($volunteerSummary, fn($i) => $i['status_label'] === 'SEBAGIAN'));
+            }
         }
 
         // ==========================================
@@ -187,7 +246,7 @@ class CashController extends Controller
         $totalLainLainInflow = (int) CashInflow::where('category', 'lain_lain')->sum('amount');
         $totalInflows = $totalDanaUsaha + $totalJanjiIman + $totalDonatur + $totalLainLainInflow;
 
-        // Total Masuk (Semua Sumber: Kas + Danus + Janji Iman + Donatur)
+        // Total Masuk (Semua Sumber: Kas Anak + Danus + Janji Iman + Donatur)
         $totalMasuk = $totalKasVolunteer + $totalInflows;
 
         // Total Keluar
@@ -204,7 +263,7 @@ class CashController extends Controller
         $keluarBulanIni = (int) CashExpense::where('expense_date', 'like', "$currentMonth%")->sum('amount');
         $netBulanIni = $masukBulanIni - $keluarBulanIni;
 
-        // Breakdown Pengeluaran per Kategori ("Pengeluaran untuk apa aja")
+        // Breakdown Pengeluaran per Kategori
         $expensesByCategory = CashExpense::selectRaw('category, SUM(amount) as total_amount, COUNT(id) as total_tx')
             ->groupBy('category')
             ->orderByDesc('total_amount')
@@ -243,14 +302,13 @@ class CashController extends Controller
 
         // ==========================================
         // 5. BUKU KAS UMUM (GENERAL CASH FLOW LEDGER)
-        // Gabungan semua transaksi secara kronologis + Running Balance
         // ==========================================
         $ledgerItems = collect();
 
-        // A. Dari Kas Volunteer
+        // A. Dari Kas Anak & Remaja
         $allPayments = CashPayment::with(['volunteer', 'period'])->get();
         foreach ($allPayments as $p) {
-            $volName = $p->volunteer->name ?? 'Pengerja';
+            $volName = $p->volunteer->name ?? 'Anak / Anggota';
             $perName = $p->period->name ?? 'Periode';
             $ledgerItems->push((object)[
                 'id' => $p->id,
@@ -258,11 +316,11 @@ class CashController extends Controller
                 'date' => $p->paid_at->format('Y-m-d'),
                 'type' => 'inflow',
                 'category_key' => 'kas_volunteer',
-                'category_label' => 'Kas Pengerja',
+                'category_label' => 'Kas Anak',
                 'category_bg' => 'rgba(255, 255, 255, 0.05)',
                 'category_color' => '#CBD5E1',
-                'category_icon' => 'fa-users',
-                'title' => "Iuran {$perName} - {$volName}",
+                'category_icon' => 'fa-child-reaching',
+                'title' => "Uang Kas {$perName} - {$volName}",
                 'person' => $volName,
                 'amount' => (int) $p->amount_paid,
                 'payment_method' => $p->payment_method,
@@ -452,26 +510,25 @@ class CashController extends Controller
         ]);
 
         if (Schema::hasTable('activity_logs')) {
-            $categoryLabel = $inflow->category_info['label'] ?? 'Pemasukan';
+            $catLabel = $inflow->category_info['label'] ?? $request->category;
             ActivityLog::create([
                 'user_name' => $user->name,
                 'role' => $user->role,
                 'action' => 'CATAT PEMASUKAN CASHFLOW',
-                'description' => "{$user->name} mencatat pemasukan [{$categoryLabel}]: {$inflow->title} (Rp " . number_format($inflow->amount, 0, ',', '.') . ") dari {$inflow->payer_name}",
+                'description' => "{$user->name} mencatat pemasukan [{$catLabel}]: {$request->title} (Rp " . number_format($request->amount, 0, ',', '.') . ")",
             ]);
         }
 
-        return back()->with('success', "Pemasukan {$inflow->category_info['label']} sebesar Rp " . number_format($inflow->amount, 0, ',', '.') . " berhasil dicatat.");
+        return back()->with('success', 'Pemasukan kas berhasil dicatat.');
     }
 
     /**
-     * Hapus Pemasukan Cashflow
+     * Hapus Pemasukan Kas
      */
     public function deleteInflow($id)
     {
         $inflow = CashInflow::findOrFail($id);
         $title = $inflow->title;
-        $amount = $inflow->amount;
 
         if ($inflow->proof_image && file_exists(public_path($inflow->proof_image))) {
             @unlink(public_path($inflow->proof_image));
@@ -484,7 +541,7 @@ class CashController extends Controller
                 'user_name' => auth()->user()->name,
                 'role' => auth()->user()->role,
                 'action' => 'HAPUS PEMASUKAN CASHFLOW',
-                'description' => auth()->user()->name . " menghapus pemasukan {$title} (Rp " . number_format($amount, 0, ',', '.') . ")",
+                'description' => auth()->user()->name . " menghapus data pemasukan kas: {$title}",
             ]);
         }
 
@@ -492,7 +549,7 @@ class CashController extends Controller
     }
 
     /**
-     * Catat Pengeluaran Kas (Buku Kas Keluar & Nota)
+     * Catat Pengeluaran Baru
      */
     public function storeExpense(Request $request)
     {
@@ -567,16 +624,22 @@ class CashController extends Controller
     }
 
     /**
-     * Catat Pembayaran Kas Volunteer (Bisa pilih 1 atau beberapa periode sekaligus)
+     * Catat Pembayaran Kas Anak / Remaja
+     * Mendukung: Pembayaran lunas, cicil per minggu (@ Rp 5.000), atau custom amount.
      */
     public function storePayment(Request $request)
     {
         $request->validate([
             'cash_volunteer_id' => 'required|exists:cash_volunteers,id',
-            'period_ids' => 'required|array|min:1',
+            'period_id' => 'nullable|exists:cash_periods,id',
+            'period_ids' => 'nullable|array',
             'period_ids.*' => 'exists:cash_periods,id',
             'paid_at' => 'required|date',
-            'payment_method' => 'required|in:cash,transfer',
+            'payment_method' => 'required|in:cash,transfer,qris',
+            'pay_type' => 'nullable|in:full,weeks,custom',
+            'weeks_count_paid' => 'nullable|integer|min:1|max:5',
+            'custom_amount' => 'nullable|numeric|min:1000',
+            'payment_mode' => 'nullable|in:add,set',
             'notes' => 'nullable|string',
             'proof_image' => 'nullable|image|max:3072',
         ]);
@@ -597,9 +660,39 @@ class CashController extends Controller
         }
 
         $recordedCount = 0;
-        foreach ($request->period_ids as $periodId) {
-            $period = CashPeriod::find($periodId);
-            if (!$period) continue;
+        $totalPaidThisTime = 0;
+
+        // Skenario 1: Bayar single period dengan opsi mingguan / kustom / lunas
+        if ($request->filled('period_id')) {
+            $period = CashPeriod::findOrFail($request->period_id);
+            $existing = CashPayment::where('cash_volunteer_id', $volunteer->id)
+                ->where('cash_period_id', $period->id)
+                ->first();
+            $prevPaid = $existing ? $existing->amount_paid : 0;
+
+            $payType = $request->pay_type ?: 'full';
+            $mode = $request->payment_mode ?: 'add';
+
+            if ($payType === 'weeks') {
+                $weeks = (int)$request->weeks_count_paid ?: 1;
+                $amountNow = $weeks * 5000;
+                $noteDesc = "Bayar {$weeks} minggu (@ Rp 5.000 = Rp " . number_format($amountNow, 0, ',', '.') . ")";
+            } elseif ($payType === 'custom') {
+                $amountNow = (int)$request->custom_amount;
+                $noteDesc = "Bayar nominal Rp " . number_format($amountNow, 0, ',', '.');
+            } else { // 'full'
+                $remaining = max(0, $period->amount - $prevPaid);
+                $amountNow = $remaining > 0 ? $remaining : $period->amount;
+                $noteDesc = "Bayar lunas periode ({$period->weeks_count} mgg - Rp " . number_format($period->amount, 0, ',', '.') . ")";
+            }
+
+            if ($mode === 'set') {
+                $newTotal = min($period->amount, $amountNow);
+            } else {
+                $newTotal = min($period->amount, $prevPaid + $amountNow);
+            }
+
+            $combinedNotes = trim(($request->notes ? $request->notes . ' | ' : '') . $noteDesc);
 
             CashPayment::updateOrCreate(
                 [
@@ -607,15 +700,49 @@ class CashController extends Controller
                     'cash_period_id' => $period->id,
                 ],
                 [
-                    'amount_paid' => $period->amount,
+                    'amount_paid' => $newTotal,
                     'paid_at' => $request->paid_at,
                     'payment_method' => $request->payment_method,
-                    'proof_image' => $proofPath,
-                    'notes' => $request->notes,
+                    'proof_image' => $proofPath ?: ($existing ? $existing->proof_image : null),
+                    'notes' => $combinedNotes,
                     'recorded_by' => $user->name,
                 ]
             );
-            $recordedCount++;
+
+            $recordedCount = 1;
+            $totalPaidThisTime = $amountNow;
+        } 
+        // Skenario 2: Bayar multi-periode (checkbox array)
+        elseif ($request->filled('period_ids')) {
+            foreach ($request->period_ids as $periodId) {
+                $period = CashPeriod::find($periodId);
+                if (!$period) continue;
+
+                $existing = CashPayment::where('cash_volunteer_id', $volunteer->id)
+                    ->where('cash_period_id', $period->id)
+                    ->first();
+                $prevPaid = $existing ? $existing->amount_paid : 0;
+                $remaining = max(0, $period->amount - $prevPaid);
+
+                CashPayment::updateOrCreate(
+                    [
+                        'cash_volunteer_id' => $volunteer->id,
+                        'cash_period_id' => $period->id,
+                    ],
+                    [
+                        'amount_paid' => $period->amount,
+                        'paid_at' => $request->paid_at,
+                        'payment_method' => $request->payment_method,
+                        'proof_image' => $proofPath ?: ($existing ? $existing->proof_image : null),
+                        'notes' => $request->notes ?: "Lunas Kas ({$period->weeks_count} mgg x Rp 5.000)",
+                        'recorded_by' => $user->name,
+                    ]
+                );
+                $recordedCount++;
+                $totalPaidThisTime += ($remaining > 0 ? $remaining : $period->amount);
+            }
+        } else {
+            return back()->with('error', 'Silakan pilih periode kas yang ingin dibayar.');
         }
 
         if (Schema::hasTable('activity_logs')) {
@@ -623,20 +750,20 @@ class CashController extends Controller
                 'user_name' => $user->name,
                 'role' => $user->role,
                 'action' => 'CATAT PEMBAYARAN KAS',
-                'description' => "{$user->name} mencatat pembayaran {$recordedCount} periode kas untuk {$volunteer->name}",
+                'description' => "{$user->name} mencatat pembayaran kas anak: {$volunteer->name} sebesar Rp " . number_format($totalPaidThisTime, 0, ',', '.') . " ({$recordedCount} periode)",
             ]);
         }
 
-        return back()->with('success', "Berhasil mencatat pembayaran kas {$volunteer->name} untuk {$recordedCount} periode.");
+        return back()->with('success', "Berhasil mencatat pembayaran kas {$volunteer->name} sebesar Rp " . number_format($totalPaidThisTime, 0, ',', '.') . ".");
     }
 
     /**
-     * Hapus Pembayaran Kas Volunteer
+     * Hapus Pembayaran Kas
      */
     public function deletePayment($id)
     {
         $payment = CashPayment::with(['volunteer', 'period'])->findOrFail($id);
-        $volunteerName = $payment->volunteer->name ?? 'Pengerja';
+        $volunteerName = $payment->volunteer->name ?? 'Anak / Anggota';
         $periodName = $payment->period->name ?? 'Periode';
 
         $payment->delete();
@@ -664,7 +791,7 @@ class CashController extends Controller
         $unpaidPeriods = $volunteer->getUnpaidPeriods($allPeriods);
 
         if ($unpaidPeriods->isEmpty()) {
-            return back()->with('success', "Pengerja {$volunteer->name} sudah lunas semua kasnya!");
+            return back()->with('success', "Anak/Remaja {$volunteer->name} sudah lunas semua kasnya!");
         }
 
         $bankInfo = CashSetting::get('bank_info', 'BCA 6390086774 a.n Hizqia Chandra Wiguno');
@@ -672,11 +799,12 @@ class CashController extends Controller
 
         // Rekam CCTV Log
         if (Schema::hasTable('activity_logs')) {
+            $totalSisa = $volunteer->getTotalTunggakan($allPeriods);
             ActivityLog::create([
                 'user_name' => $user->name,
                 'role' => $user->role,
                 'action' => 'KIRIM WA KAS',
-                'description' => "{$user->name} mengirimkan pengingat tunggakan kas via WhatsApp ke {$volunteer->name} (Total: Rp " . number_format($unpaidPeriods->sum('amount'), 0, ',', '.') . ")",
+                'description' => "{$user->name} mengirimkan pengingat tunggakan kas via WhatsApp ke {$volunteer->name} (Total Sisa: Rp " . number_format($totalSisa, 0, ',', '.') . ")",
             ]);
         }
 
@@ -684,7 +812,7 @@ class CashController extends Controller
     }
 
     /**
-     * Tambah Pengerja / Volunteer Baru
+     * Tambah Data Anak / Remaja Kas Baru
      */
     public function storeVolunteer(Request $request)
     {
@@ -700,7 +828,7 @@ class CashController extends Controller
             'name' => $request->name,
             'phone' => $request->phone,
             'division' => $request->division,
-            'monthly_due' => $request->monthly_due ?: 10000,
+            'monthly_due' => $request->monthly_due ?: 20000,
             'notes' => $request->notes,
             'is_active' => true,
         ]);
@@ -709,16 +837,16 @@ class CashController extends Controller
             ActivityLog::create([
                 'user_name' => auth()->user()->name,
                 'role' => auth()->user()->role,
-                'action' => 'TAMBAH PENGERJA KAS',
-                'description' => auth()->user()->name . " menambahkan pengerja baru: {$volunteer->name} ({$volunteer->division})",
+                'action' => 'TAMBAH ANAK KAS',
+                'description' => auth()->user()->name . " menambahkan data anak kas baru: {$volunteer->name} ({$volunteer->division})",
             ]);
         }
 
-        return back()->with('success', "Pengerja {$volunteer->name} berhasil ditambahkan ke daftar kas.");
+        return back()->with('success', "Anak/Remaja {$volunteer->name} berhasil ditambahkan ke daftar kas.");
     }
 
     /**
-     * Update Pengerja / Volunteer
+     * Update Data Anak / Remaja Kas
      */
     public function updateVolunteer(Request $request, $id)
     {
@@ -740,11 +868,11 @@ class CashController extends Controller
             'notes' => $request->notes,
         ]);
 
-        return back()->with('success', "Data pengerja {$volunteer->name} berhasil diperbarui.");
+        return back()->with('success', "Data {$volunteer->name} berhasil diperbarui.");
     }
 
     /**
-     * Hapus Pengerja
+     * Hapus Data Anak dari Sistem Kas
      */
     public function deleteVolunteer($id)
     {
@@ -752,11 +880,66 @@ class CashController extends Controller
         $name = $volunteer->name;
         $volunteer->delete();
 
-        return back()->with('success', "Pengerja {$name} berhasil dihapus dari sistem kas.");
+        return back()->with('success', "Data {$name} berhasil dihapus dari sistem kas.");
     }
 
     /**
-     * Sinkronisasi Otomatis dari Tabel Pengurus (Users) ke Pengerja Kas
+     * Sinkronisasi Otomatis dari Database Jemaat (Members) ke Daftar Kas Anak
+     */
+    public function syncFromMembers()
+    {
+        $members = Member::all();
+        $importedCount = 0;
+        $linkedCount = 0;
+
+        foreach ($members as $m) {
+            $division = $m->fire_cell ?: ($m->cell_name ?: ($m->school ?: 'Remaja DOT Teens'));
+            $phone = $m->phone_number ?: ($m->phone ?: '08123456789');
+
+            $existing = CashVolunteer::where('member_id', $m->id)
+                ->orWhere('name', $m->name)
+                ->first();
+
+            if (!$existing) {
+                CashVolunteer::create([
+                    'member_id' => $m->id,
+                    'name' => $m->name,
+                    'phone' => $phone,
+                    'division' => $division,
+                    'monthly_due' => 20000, // Default 4 minggu x 5.000
+                    'is_active' => true,
+                    'notes' => 'Sinkronisasi dari data jemaat/anak',
+                ]);
+                $importedCount++;
+            } else {
+                if (!$existing->member_id) {
+                    $existing->member_id = $m->id;
+                }
+                if (empty($existing->phone) || $existing->phone === '08123456789') {
+                    $existing->phone = $phone;
+                }
+                if ($existing->division === 'Pengerja / Volunteer' || empty($existing->division)) {
+                    $existing->division = $division;
+                }
+                $existing->save();
+                $linkedCount++;
+            }
+        }
+
+        if (Schema::hasTable('activity_logs')) {
+            ActivityLog::create([
+                'user_name' => auth()->user()->name,
+                'role' => auth()->user()->role,
+                'action' => 'SINKRONISASI KAS ANAK',
+                'description' => auth()->user()->name . " mensinkronkan {$importedCount} data anak dari database member ke sistem kas",
+            ]);
+        }
+
+        return back()->with('success', "Berhasil mensinkronkan {$importedCount} anak baru dari database jemaat ({$linkedCount} data diperbarui).");
+    }
+
+    /**
+     * Sinkronisasi Otomatis dari Tabel Pengurus (Users) ke Kas
      */
     public function syncFromUsers()
     {
@@ -784,32 +967,40 @@ class CashController extends Controller
                     'name' => $u->name,
                     'phone' => '08123456789',
                     'division' => $divName,
-                    'monthly_due' => 10000,
+                    'monthly_due' => 20000,
                     'is_active' => true,
-                    'notes' => 'Sinkronisasi otomatis dari akun pengurus website',
+                    'notes' => 'Sinkronisasi dari akun pengurus website',
                 ]);
                 $importedCount++;
             }
         }
 
-        return back()->with('success', "Berhasil mensinkronkan {$importedCount} akun pengurus ke daftar kas pengerja.");
+        return back()->with('success', "Berhasil mensinkronkan {$importedCount} akun pengurus ke daftar kas.");
     }
 
     /**
-     * Tambah Periode Kas Baru (contoh: Kas November 2026)
+     * Tambah Periode Kas Baru (contoh: Kas November 2026 - 5 Minggu / Rp 25.000)
      */
     public function storePeriod(Request $request)
     {
         $request->validate([
             'name' => 'required|string|max:100',
-            'amount' => 'required|numeric|min:1000',
+            'weeks_count' => 'nullable|integer|in:4,5',
+            'amount' => 'nullable|numeric|min:1000',
             'due_date' => 'nullable|date',
+            'description' => 'nullable|string',
         ]);
+
+        $weeksCount = (int) ($request->weeks_count ?: 4);
+        $amount = $request->filled('amount') ? (int) $request->amount : ($weeksCount == 5 ? 25000 : 20000);
+        $desc = $request->description ?: "{$weeksCount} Minggu x Rp 5.000/minggu";
 
         $period = CashPeriod::create([
             'name' => $request->name,
-            'amount' => (int) $request->amount,
+            'weeks_count' => $weeksCount,
+            'amount' => $amount,
             'due_date' => $request->due_date,
+            'description' => $desc,
             'is_active' => true,
         ]);
 
@@ -818,15 +1009,15 @@ class CashController extends Controller
                 'user_name' => auth()->user()->name,
                 'role' => auth()->user()->role,
                 'action' => 'BUAT PERIODE KAS',
-                'description' => auth()->user()->name . " membuka periode kas baru: {$period->name} (Rp " . number_format($period->amount, 0, ',', '.') . ")",
+                'description' => auth()->user()->name . " membuka periode kas baru: {$period->name} ({$period->weeks_count} Minggu — Rp " . number_format($period->amount, 0, ',', '.') . ")",
             ]);
         }
 
-        return back()->with('success', "Periode {$period->name} berhasil dibuat.");
+        return back()->with('success', "Periode {$period->name} ({$period->weeks_count} Minggu — Rp " . number_format($period->amount, 0, ',', '.') . ") berhasil dibuat.");
     }
 
     /**
-     * Simpan Pengaturan Kas (Info Rekening Bank & Nominal Kas Default)
+     * Simpan Pengaturan Kas (Info Rekening Bank & Nominal Kas Mingguan)
      */
     public function updateSettings(Request $request)
     {
@@ -840,17 +1031,17 @@ class CashController extends Controller
             CashSetting::set('default_nominal', $request->default_nominal);
         }
 
-        return back()->with('success', 'Pengaturan info rekening kas berhasil disimpan.');
+        return back()->with('success', 'Pengaturan kas berhasil disimpan.');
     }
 
     /**
-     * Export Rekap Iuran Kas Volunteer ke CSV
+     * Export Rekap Iuran Kas Anak ke CSV
      */
     public function exportCsv()
     {
-        $fileName = 'Rekap_Kas_Volunteer_DOT_' . date('Y_m_d') . '.csv';
+        $fileName = 'Rekap_Kas_Anak_DOT_' . date('Y_m_d') . '.csv';
 
-        $volunteers = CashVolunteer::with('payments')->where('is_active', true)->orderBy('name', 'asc')->get();
+        $volunteers = CashVolunteer::with(['payments', 'member'])->where('is_active', true)->orderBy('name', 'asc')->get();
         $periods = CashPeriod::where('is_active', true)->orderBy('id', 'asc')->get();
 
         $headers = [
@@ -865,17 +1056,18 @@ class CashController extends Controller
             $file = fopen('php://output', 'w');
             fprintf($file, chr(0xEF).chr(0xBB).chr(0xBF));
 
-            $headerCols = ['No', 'Nama Pengerja', 'Divisi', 'No. WhatsApp', 'Status Kas', 'Total Tunggakan (Rp)'];
+            $headerCols = ['No', 'Nama Anak / Remaja', 'Cool / Divisi', 'No. WhatsApp', 'Status Kas', 'Total Sisa Tunggakan (Rp)'];
             foreach ($periods as $p) {
-                $headerCols[] = $p->name;
+                $weeks = $p->weeks_count ?: 4;
+                $headerCols[] = "{$p->name} ({$weeks} Mgg - Rp " . number_format($p->amount, 0, ',', '.') . ")";
             }
             fputcsv($file, $headerCols);
 
             $no = 1;
             foreach ($volunteers as $v) {
-                $unpaid = $v->getUnpaidPeriods($periods);
-                $totalTunggakan = $unpaid->sum('amount');
-                $status = ($totalTunggakan == 0) ? 'LUNAS' : 'MENUNGGAK';
+                $totalTunggakan = $v->getTotalTunggakan($periods);
+                $hasPaidSomething = $v->payments->where('amount_paid', '>', 0)->count() > 0;
+                $status = ($totalTunggakan == 0) ? 'LUNAS' : ($hasPaidSomething ? 'SEBAGIAN / CICIL' : 'MENUNGGAK');
 
                 $row = [
                     $no++,
@@ -886,9 +1078,15 @@ class CashController extends Controller
                     $totalTunggakan,
                 ];
 
-                $paidPeriodIds = $v->payments->pluck('cash_period_id')->toArray();
                 foreach ($periods as $p) {
-                    $row[] = in_array($p->id, $paidPeriodIds) ? 'Lunas' : 'Belum';
+                    $detail = $v->getPeriodDetail($p);
+                    if ($detail->status === 'lunas') {
+                        $row[] = "Lunas ({$detail->weeks_count}/{$detail->weeks_count} Mgg - Rp " . number_format($detail->amount_paid, 0, ',', '.') . ")";
+                    } elseif ($detail->status === 'sebagian') {
+                        $row[] = "Cicil ({$detail->weeks_paid}/{$detail->weeks_count} Mgg - Bayar Rp " . number_format($detail->amount_paid, 0, ',', '.') . ", Sisa Rp " . number_format($detail->remaining, 0, ',', '.') . ")";
+                    } else {
+                        $row[] = "Belum Bayar (Tunggakan Rp " . number_format($detail->target_amount, 0, ',', '.') . ")";
+                    }
                 }
 
                 fputcsv($file, $row);
@@ -932,7 +1130,7 @@ class CashController extends Controller
                 'Tipe Arus Kas',
                 'Kategori',
                 'Keperluan / Judul Transaksi',
-                'Sumber Dana / Donatur / Pengerja',
+                'Sumber Dana / Donatur / Anak',
                 'Pemasukan (Rp)',
                 'Pengeluaran (Rp)',
                 'Saldo Berjalan (Rp)',
@@ -944,15 +1142,15 @@ class CashController extends Controller
             // Kumpulkan semua transaksi
             $ledger = collect();
 
-            // Kas Pengerja
+            // Kas Anak & Remaja
             $payments = CashPayment::with(['volunteer', 'period'])->get();
             foreach ($payments as $p) {
                 $ledger->push((object)[
                     'date' => $p->paid_at->format('Y-m-d'),
                     'type' => 'PEMASUKAN',
-                    'category' => 'Kas Pengerja',
-                    'title' => "Iuran " . ($p->period->name ?? 'Kas') . " - " . ($p->volunteer->name ?? 'Pengerja'),
-                    'person' => $p->volunteer->name ?? 'Pengerja',
+                    'category' => 'Kas Anak & Remaja',
+                    'title' => "Uang Kas " . ($p->period->name ?? 'Kas') . " - " . ($p->volunteer->name ?? 'Anak'),
+                    'person' => $p->volunteer->name ?? 'Anak',
                     'inflow' => (int) $p->amount_paid,
                     'expense' => 0,
                     'method' => strtoupper($p->payment_method),

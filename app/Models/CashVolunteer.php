@@ -11,6 +11,7 @@ class CashVolunteer extends Model
 
     protected $fillable = [
         'user_id',
+        'member_id',
         'name',
         'phone',
         'division',
@@ -27,6 +28,11 @@ class CashVolunteer extends Model
     public function user()
     {
         return $this->belongsTo(User::class);
+    }
+
+    public function member()
+    {
+        return $this->belongsTo(Member::class);
     }
 
     public function payments()
@@ -49,18 +55,59 @@ class CashVolunteer extends Model
     }
 
     /**
-     * Hitung periode yang belum dibayar oleh volunteer ini
+     * Hitung detail status pembayaran untuk periode tertentu
+     */
+    public function getPeriodDetail($period)
+    {
+        $payment = $this->payments->firstWhere('cash_period_id', $period->id);
+        $amountPaid = $payment ? (int)$payment->amount_paid : 0;
+        $targetAmount = (int)$period->amount;
+        $weeksCount = $period->weeks_count ?: ($targetAmount >= 25000 ? 5 : 4);
+        $weeklyRate = $weeksCount > 0 ? (int)round($targetAmount / $weeksCount) : 5000;
+        $weeksPaid = $weeklyRate > 0 ? min($weeksCount, (int)floor($amountPaid / $weeklyRate)) : 0;
+        $remaining = max(0, $targetAmount - $amountPaid);
+
+        $status = 'belum';
+        if ($amountPaid >= $targetAmount) {
+            $status = 'lunas';
+        } elseif ($amountPaid > 0) {
+            $status = 'sebagian';
+        }
+
+        return (object)[
+            'payment' => $payment,
+            'amount_paid' => $amountPaid,
+            'target_amount' => $targetAmount,
+            'weeks_count' => $weeksCount,
+            'weeks_paid' => $weeksPaid,
+            'weekly_rate' => $weeklyRate,
+            'remaining' => $remaining,
+            'status' => $status,
+        ];
+    }
+
+    /**
+     * Dapatkan periode-periode yang masih memiliki sisa tunggakan
      */
     public function getUnpaidPeriods($allPeriods)
     {
-        $paidPeriodIds = $this->payments->pluck('cash_period_id')->toArray();
-        return $allPeriods->filter(function ($period) use ($paidPeriodIds) {
-            return !in_array($period->id, $paidPeriodIds);
+        return $allPeriods->filter(function ($period) {
+            return $this->getPeriodDetail($period)->remaining > 0;
         });
     }
 
     /**
-     * Generate URL One-Click WhatsApp dengan template pesan ramah
+     * Hitung total sisa tunggakan keseluruhan periode aktif
+     */
+    public function getTotalTunggakan($allPeriods): int
+    {
+        return (int) $allPeriods->sum(function ($period) {
+            return $this->getPeriodDetail($period)->remaining;
+        });
+    }
+
+    /**
+     * Generate URL One-Click WhatsApp dengan template pesan ramah per anak
      */
     public function generateWaLink($unpaidPeriods, $bankInfo = null)
     {
@@ -69,20 +116,34 @@ class CashVolunteer extends Model
             return '#';
         }
 
-        $periodNames = $unpaidPeriods->pluck('name')->implode(', ');
-        $totalAmount = $unpaidPeriods->sum('amount');
-        $nominalFormatted = 'Rp ' . number_format($totalAmount, 0, ',', '.');
+        $detailsList = [];
+        $totalAmount = 0;
 
+        foreach ($unpaidPeriods as $period) {
+            $detail = $this->getPeriodDetail($period);
+            $sisaNominal = 'Rp ' . number_format($detail->remaining, 0, ',', '.');
+            if ($detail->weeks_paid > 0) {
+                $keterangan = "{$period->name}: Sisa {$sisaNominal} (terbayar {$detail->weeks_paid}/{$detail->weeks_count} mgg)";
+            } else {
+                $keterangan = "{$period->name}: {$sisaNominal} ({$detail->weeks_count} minggu)";
+            }
+            $detailsList[] = "• " . $keterangan;
+            $totalAmount += $detail->remaining;
+        }
+
+        $periodListText = !empty($detailsList) ? implode("\n", $detailsList) : "Semua periode lunas";
+        $nominalFormatted = 'Rp ' . number_format($totalAmount, 0, ',', '.');
         $rekeningText = $bankInfo ?: "BCA 6390086774 a.n Hizqia Chandra Wiguno";
 
-        $pesan = "Shalom Kak {$this->name}! 👋✨\n"
-               . "Semoga pelayanannya selalu diberkati ya.\n\n"
-               . "Mengingatkan untuk iuran kas *DOT Teens* yang masih belum tercatat:\n"
-               . "📌 *Periode:* {$periodNames}\n"
-               . "💰 *Total Tunggakan:* *{$nominalFormatted}*\n\n"
-               . "Bisa diserahkan tunai ke Bendahara atau transfer melalui:\n"
+        $pesan = "Shalom {$this->name}! 👋✨\n"
+               . "Semoga harimu menyenangkan dan selalu diberkati Tuhan Yesus.\n\n"
+               . "Mengingatkan untuk iuran kas *DOT Teens* (wajib Rp 5.000/minggu):\n"
+               . "📌 *Rincian Tunggakan Kas:*\n"
+               . "{$periodListText}\n\n"
+               . "💰 *Total Yang Harus Dibayar:* *{$nominalFormatted}*\n\n"
+               . "Bisa diserahkan tunai ke Bendahara saat ibadah atau transfer melalui:\n"
                . "💳 *{$rekeningText}*\n\n"
-               . "Jika sudah transfer, mohon konfirmasi dengan mengirimkan bukti transfer ke chat ini ya Kak. Terima kasih atas komitmen & pelayanannya! Tuhan Yesus memberkati 🙏🔥";
+               . "Jika sudah transfer, mohon konfirmasi dengan mengirimkan bukti transfer ke chat ini ya. Terima kasih atas komitmennya! Tuhan Yesus memberkati 🙏🔥";
 
         return 'https://wa.me/' . $phone . '?text=' . urlencode($pesan);
     }

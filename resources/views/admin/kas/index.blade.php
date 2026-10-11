@@ -384,7 +384,7 @@
                     <i class="fa-solid fa-scale-balanced text-secondary me-2"></i> Cashflow & Keuangan Bendahara
                 </h2>
                 <p class="text-muted mb-0" style="font-size: 0.9rem;">
-                    Pencatatan arus kas masuk (Dana Usaha, Janji Iman, Dana Donatur, Kas Pengerja) serta seluruh pengeluaran operasional DOT Teens secara transparan & akurat.
+                    Pencatatan arus kas masuk (Dana Usaha, Janji Iman, Dana Donatur, Kas Anak) serta seluruh pengeluaran operasional DOT Teens secara transparan & akurat.
                 </p>
             </div>
             
@@ -396,7 +396,7 @@
                     <i class="fa-solid fa-minus"></i> <span>Catat Pengeluaran</span>
                 </button>
                 <button class="btn btn-action-secondary rounded-pill px-3.5 py-2 shadow-sm d-flex align-items-center gap-2" data-bs-toggle="modal" data-bs-target="#modalPayment">
-                    <i class="fa-solid fa-wallet"></i> <span>Bayar Kas Pengerja</span>
+                    <i class="fa-solid fa-wallet"></i> <span>Bayar Kas Anak</span>
                 </button>
                 <div class="dropdown">
                     <button class="btn btn-action-secondary rounded-pill px-3 py-2 d-flex align-items-center gap-2 dropdown-toggle" type="button" data-bs-toggle="dropdown">
@@ -410,7 +410,7 @@
                         </li>
                         <li>
                             <a class="dropdown-item text-white py-2" href="{{ route('admin.kas.export') }}">
-                                <i class="fa-solid fa-users text-secondary me-2"></i> Export Rekap Iuran Pengerja
+                                <i class="fa-solid fa-users text-secondary me-2"></i> Export Rekap Iuran Kas Anak
                             </a>
                         </li>
                     </ul>
@@ -548,18 +548,18 @@
                 </li>
                 <li class="nav-item">
                     <button class="nav-link" id="tab-tunggakan-btn" data-bs-toggle="pill" data-bs-target="#tab-tunggakan" type="button">
-                        <i class="fa-solid fa-users me-1.5"></i> <strong>Kas Bulanan Pengerja (WA)</strong>
+                        <i class="fa-solid fa-child-reaching me-1.5"></i> <strong>Kas Remaja & Anak (Rp 5.000/Mgg)</strong>
                         @php
                             $menunggakCount = collect($volunteerSummary)->where('total_tunggakan', '>', 0)->count();
                         @endphp
                         @if($menunggakCount > 0)
-                            <span class="badge bg-danger bg-opacity-75 rounded-pill ms-1 px-2">{{ $menunggakCount }} nunggak</span>
+                            <span class="badge bg-danger bg-opacity-75 rounded-pill ms-1 px-2">{{ $menunggakCount }} belum lunas</span>
                         @endif
                     </button>
                 </li>
                 <li class="nav-item">
                     <button class="nav-link" id="tab-pengerja-btn" data-bs-toggle="pill" data-bs-target="#tab-pengerja" type="button">
-                        <i class="fa-solid fa-sliders me-1.5"></i> Master Pengerja & Periode
+                        <i class="fa-solid fa-sliders me-1.5"></i> Master Data Anak & Periode
                     </button>
                 </li>
                 @if($cctv_kas->isNotEmpty())
@@ -1034,56 +1034,85 @@
             </div>
 
             <!-- ========================================== -->
-            <!-- TAB 4: KAS VOLUNTEER (PENGERJA & WA)       -->
+            <!-- TAB 4: KAS REMAJA & ANAK (RP 5.000 / MINGGU) -->
             <!-- ========================================== -->
             <div class="tab-pane fade" id="tab-tunggakan" role="tabpanel">
                 <div class="glass-card">
-                    <!-- FILTER VOLUNTEER -->
+                    <!-- BANNER EDUKASI ATURAN KAS PER ANAK -->
+                    <div class="p-3.5 mb-4 rounded-4 d-flex flex-column flex-md-row align-items-md-center justify-content-between gap-3" style="background: rgba(37, 99, 235, 0.08); border: 1px solid rgba(59, 130, 246, 0.25);">
+                        <div class="d-flex align-items-center gap-3">
+                            <div class="bg-primary bg-opacity-20 text-info p-2.5 rounded-3 fs-5 d-flex align-items-center justify-content-center" style="width: 44px; height: 44px;">
+                                <i class="fa-solid fa-child-reaching"></i>
+                            </div>
+                            <div>
+                                <div class="fw-bold text-white fs-6">
+                                    Ketentuan Wajib Uang Kas Remaja & Anak — DOT Teens
+                                </div>
+                                <div class="text-muted small mt-0.5">
+                                    Setiap anak wajib bayar uang kas sebesar <strong class="text-info">Rp 5.000 / minggu</strong>. 
+                                    Bulan 4 Minggu = <strong class="text-white">Rp 20.000</strong> &bull; Bulan 5 Minggu = <strong class="text-white">Rp 25.000</strong>.
+                                </div>
+                            </div>
+                        </div>
+                        <div class="d-flex gap-2 flex-wrap">
+                            <form action="{{ route('admin.kas.sync_members') }}" method="POST" class="d-inline">
+                                @csrf
+                                <button type="submit" class="btn btn-sm btn-action-primary rounded-pill px-3 py-1.5 shadow-sm d-flex align-items-center gap-1.5" title="Sinkronkan seluruh anak terdaftar di database jemaat/pastoral">
+                                    <i class="fa-solid fa-users"></i> <span>Sinkron Dari Database Jemaat</span>
+                                </button>
+                            </form>
+                            <button class="btn btn-sm btn-action-secondary rounded-pill px-3 py-1.5 shadow-sm d-flex align-items-center gap-1.5" data-bs-toggle="modal" data-bs-target="#modalVolunteer">
+                                <i class="fa-solid fa-user-plus"></i> <span>Tambah Anak Baru</span>
+                            </button>
+                        </div>
+                    </div>
+
+                    <!-- FILTER & PENCARIAN ANAK -->
                     <div class="row g-3 align-items-center justify-content-between mb-4">
-                        <div class="col-12 col-md-7">
+                        <div class="col-12 col-md-8">
                             <form action="/admin/kas" method="GET" class="d-flex flex-wrap gap-2">
                                 <input type="hidden" name="tab" value="tab-tunggakan">
-                                <div class="input-group" style="max-width: 320px;">
+                                <div class="input-group" style="max-width: 280px;">
                                     <span class="input-group-text border-secondary bg-dark text-muted"><i class="fa-solid fa-magnifying-glass"></i></span>
-                                    <input type="text" name="search" class="form-control form-control-sm" placeholder="Cari nama atau No. WA..." value="{{ request('search') }}">
+                                    <input type="text" name="search" class="form-control form-control-sm" placeholder="Cari nama anak atau No. WA..." value="{{ request('search') }}">
                                 </div>
-                                <select name="division" class="form-select form-select-sm" style="max-width: 200px;" onchange="this.form.submit()">
-                                    <option value="">Semua Divisi</option>
+                                <select name="status_filter" class="form-select form-select-sm" style="max-width: 170px;" onchange="this.form.submit()">
+                                    <option value="">Semua Status Kas</option>
+                                    <option value="lunas" {{ request('status_filter') == 'lunas' ? 'selected' : '' }}>Lunas Semua</option>
+                                    <option value="sebagian" {{ request('status_filter') == 'sebagian' ? 'selected' : '' }}>Cicil / Sebagian</option>
+                                    <option value="nunggak" {{ request('status_filter') == 'nunggak' ? 'selected' : '' }}>Belum Bayar</option>
+                                </select>
+                                <select name="division" class="form-select form-select-sm" style="max-width: 180px;" onchange="this.form.submit()">
+                                    <option value="">Semua Cool / Kelompok</option>
                                     @foreach($divisions as $div)
                                         <option value="{{ $div }}" {{ request('division') == $div ? 'selected' : '' }}>{{ $div }}</option>
                                     @endforeach
                                 </select>
                                 <button type="submit" class="btn btn-sm btn-action-secondary rounded-pill px-3">Filter</button>
-                                @if(request('search') || request('division'))
+                                @if(request('search') || request('division') || request('status_filter'))
                                     <a href="/admin/kas?tab=tab-tunggakan" class="btn btn-sm btn-action-secondary rounded-pill px-3">Reset</a>
                                 @endif
                             </form>
                         </div>
 
-                        <div class="col-12 col-md-5 text-md-end d-flex justify-content-md-end gap-2 flex-wrap">
-                            <button class="btn btn-sm btn-action-primary rounded-pill px-3" data-bs-toggle="modal" data-bs-target="#modalVolunteer">
-                                <i class="fa-solid fa-user-plus me-1"></i> Tambah Pengerja
-                            </button>
-                            <form action="{{ route('admin.kas.sync') }}" method="POST" class="d-inline">
-                                @csrf
-                                <button type="submit" class="btn btn-sm btn-action-secondary rounded-pill px-3" title="Impor otomatis pengurus website yang sudah approved">
-                                    <i class="fa-solid fa-rotate me-1"></i> Sync Pengurus
-                                </button>
-                            </form>
+                        <div class="col-12 col-md-4 text-md-end d-flex justify-content-md-end gap-2 flex-wrap">
+                            <a href="{{ route('admin.kas.export') }}" class="btn btn-sm btn-action-secondary rounded-pill px-3 d-flex align-items-center gap-1.5">
+                                <i class="fa-solid fa-file-csv"></i> Unduh Rekap CSV
+                            </a>
                         </div>
                     </div>
 
-                    <!-- TABEL MONITORING TUNGGAKAN -->
+                    <!-- TABEL MONITORING KAS PER ANAK -->
                     <div class="table-responsive">
                         <table class="table table-custom align-middle">
                             <thead>
                                 <tr>
-                                    <th>Pengerja / Volunteer</th>
-                                    <th>Divisi Pelayanan</th>
+                                    <th>Anak / Remaja</th>
+                                    <th>Cool / Kategori</th>
                                     <th>No. WhatsApp</th>
                                     <th>Status Kas</th>
-                                    <th>Rincian Tunggakan</th>
-                                    <th>Total Tagihan</th>
+                                    <th>Rincian Periode (Rp 5rb/Mgg)</th>
+                                    <th>Sisa Tunggakan</th>
                                     <th class="text-end">Aksi Cepat</th>
                                 </tr>
                             </thead>
@@ -1094,6 +1123,8 @@
                                         $unpaid = $item['unpaid_periods'];
                                         $tunggakan = $item['total_tunggakan'];
                                         $waLink = $item['wa_link'];
+                                        $statusLabel = $item['status_label'];
+                                        $periodStatuses = $item['period_statuses'] ?? [];
                                         $isLunas = ($tunggakan == 0);
                                     @endphp
                                     <tr>
@@ -1104,13 +1135,13 @@
                                                 </div>
                                                 <div>
                                                     <div class="fw-semibold text-white fs-6">{{ $v->name }}</div>
-                                                    <span class="text-muted small" style="font-size: 0.72rem;">Iuran: Rp {{ number_format($v->monthly_due, 0, ',', '.') }}/bln</span>
+                                                    <span class="text-muted small" style="font-size: 0.72rem;">Wajib: Rp 5.000 / minggu</span>
                                                 </div>
                                             </div>
                                         </td>
                                         <td>
                                             <span class="badge rounded-pill px-2.5 py-1 bg-secondary bg-opacity-25 text-light">
-                                                {{ $v->division }}
+                                                {{ $v->division ?: 'Remaja DOT' }}
                                             </span>
                                         </td>
                                         <td>
@@ -1119,32 +1150,45 @@
                                             </a>
                                         </td>
                                         <td>
-                                            @if($isLunas)
+                                            @if($statusLabel === 'LUNAS')
                                                 <span class="badge-status badge-lunas">
                                                     <i class="fa-solid fa-circle-check"></i> LUNAS
                                                 </span>
+                                            @elseif($statusLabel === 'SEBAGIAN')
+                                                <span class="badge-status badge-tunggak" style="background: rgba(245, 158, 11, 0.15) !important; color: #FBBF24 !important; border-color: rgba(245, 158, 11, 0.3) !important;">
+                                                    <i class="fa-solid fa-clock-rotate-left"></i> SEBAGIAN
+                                                </span>
                                             @else
                                                 <span class="badge-status badge-tunggak">
-                                                    <i class="fa-solid fa-clock"></i> {{ $unpaid->count() }} Periode Menunggak
+                                                    <i class="fa-solid fa-clock"></i> MENUNGGAK
                                                 </span>
                                             @endif
                                         </td>
                                         <td>
-                                            @if($isLunas)
-                                                <span class="text-muted small"><i class="fa-solid fa-check-double me-1"></i> Semua periode terbayar</span>
-                                            @else
-                                                <div class="d-flex flex-wrap gap-1" style="max-width: 250px;">
-                                                    @foreach($unpaid as $up)
-                                                        <span class="badge bg-danger bg-opacity-20 text-danger border border-danger border-opacity-25" style="font-size: 0.7rem;">
-                                                            {{ $up->name }}
+                                            <div class="d-flex flex-wrap gap-1" style="max-width: 320px;">
+                                                @foreach($allPeriods as $p)
+                                                    @php
+                                                        $st = $periodStatuses[$p->id] ?? null;
+                                                    @endphp
+                                                    @if($st && $st->status === 'lunas')
+                                                        <span class="badge bg-success bg-opacity-20 text-success border border-success border-opacity-25 py-1" style="font-size: 0.7rem;" title="{{ $p->name }}: Lunas {{ $st->weeks_count }}/{{ $st->weeks_count }} mgg">
+                                                            <i class="fa-solid fa-check me-0.5"></i> {{ $p->name }}: Lunas ({{ $st->weeks_count }} mgg)
                                                         </span>
-                                                    @endforeach
-                                                </div>
-                                            @endif
+                                                    @elseif($st && $st->status === 'sebagian')
+                                                        <span class="badge bg-warning bg-opacity-20 text-warning border border-warning border-opacity-25 py-1" style="font-size: 0.7rem;" title="{{ $p->name }}: Terbayar {{ $st->weeks_paid }}/{{ $st->weeks_count }} mgg (Sisa Rp {{ number_format($st->remaining, 0, ',', '.') }})">
+                                                            <i class="fa-solid fa-hourglass-half me-0.5"></i> {{ $p->name }}: {{ $st->weeks_paid }}/{{ $st->weeks_count }} mgg (sisa {{ number_format($st->remaining / 1000, 0) }}rb)
+                                                        </span>
+                                                    @else
+                                                        <span class="badge bg-danger bg-opacity-20 text-danger border border-danger border-opacity-25 py-1" style="font-size: 0.7rem;" title="{{ $p->name }}: Belum bayar (Tunggakan Rp {{ number_format($p->amount, 0, ',', '.') }})">
+                                                            <i class="fa-solid fa-xmark me-0.5"></i> {{ $p->name }}: 0/{{ $p->weeks_count }} mgg ({{ number_format($p->amount / 1000, 0) }}rb)
+                                                        </span>
+                                                    @endif
+                                                @endforeach
+                                            </div>
                                         </td>
                                         <td>
                                             @if($isLunas)
-                                                <span class="text-muted small">-</span>
+                                                <span class="text-success small fw-semibold"><i class="fa-solid fa-check"></i> Rp 0</span>
                                             @else
                                                 <span class="fw-bold text-danger fs-6">Rp {{ number_format($tunggakan, 0, ',', '.') }}</span>
                                             @endif
@@ -1152,14 +1196,14 @@
                                         <td class="text-end">
                                             <div class="d-inline-flex gap-1.5 align-items-center">
                                                 @if(!$isLunas)
-                                                    <a href="{{ route('admin.kas.send_wa', $v->id) }}" target="_blank" class="btn btn-sm btn-outline-success rounded-pill px-3 fw-medium d-inline-flex align-items-center gap-1.5" title="Kirim Pesan WhatsApp Pengingat">
+                                                    <a href="{{ route('admin.kas.send_wa', $v->id) }}" target="_blank" class="btn btn-sm btn-outline-success rounded-pill px-3 fw-medium d-inline-flex align-items-center gap-1.5" title="Kirim Tagihan WhatsApp">
                                                         <i class="fa-brands fa-whatsapp fs-6"></i> <span>Kirim WA</span>
                                                     </a>
                                                 @endif
-                                                <button type="button" class="btn btn-sm btn-action-secondary rounded-pill px-2.5 py-1" onclick="quickPay({{ $v->id }}, '{{ addslashes($v->name) }}', {{ json_encode($unpaid->pluck('id')) }})" title="Catat Bayar">
+                                                <button type="button" class="btn btn-sm btn-action-secondary rounded-pill px-2.5 py-1" onclick="quickPayChild({{ $v->id }}, '{{ addslashes($v->name) }}', {{ json_encode($allPeriods->map(function($p) use ($v) { $d = $v->getPeriodDetail($p); return ['id' => $p->id, 'name' => $p->name, 'weeks' => $d->weeks_count, 'rate' => $d->weekly_rate, 'amount' => $d->target_amount, 'paid' => $d->amount_paid, 'remaining' => $d->remaining, 'status' => $d->status]; })) }})" title="Catat Pembayaran Kas">
                                                     <i class="fa-solid fa-plus-circle me-1"></i> Bayar
                                                 </button>
-                                                <button type="button" class="btn btn-sm btn-action-secondary rounded-circle p-1.5" onclick="editVolunteer({{ json_encode($v) }})" title="Edit Data">
+                                                <button type="button" class="btn btn-sm btn-action-secondary rounded-circle p-1.5" onclick="editVolunteer({{ json_encode($v) }})" title="Edit Data Anak">
                                                     <i class="fa-solid fa-pen-to-square"></i>
                                                 </button>
                                             </div>
@@ -1169,9 +1213,9 @@
                                     <tr>
                                         <td colspan="7" class="text-center py-5">
                                             <div class="text-muted">
-                                                <i class="fa-solid fa-users fs-1 mb-3 d-block text-secondary"></i>
-                                                <h5>Belum Ada Data Pengerja</h5>
-                                                <p class="small">Gunakan tombol "Sync Pengurus" atau "Tambah Pengerja" untuk memasukkan data.</p>
+                                                <i class="fa-solid fa-child-reaching fs-1 mb-3 d-block text-secondary"></i>
+                                                <h5>Belum Ada Data Anak Kas</h5>
+                                                <p class="small">Klik tombol <strong>"Sinkron Dari Database Jemaat"</strong> untuk mengimpor seluruh anak secara otomatis.</p>
                                             </div>
                                         </td>
                                     </tr>
@@ -1183,26 +1227,26 @@
             </div>
 
             <!-- ========================================== -->
-            <!-- TAB 5: MASTER PENGERJA & PERIODE KAS       -->
+            <!-- TAB 5: MASTER DATA ANAK & PERIODE KAS      -->
             <!-- ========================================== -->
             <div class="tab-pane fade" id="tab-pengerja" role="tabpanel">
                 <div class="row g-4">
                     <div class="col-12 col-lg-8">
                         <div class="glass-card">
                             <div class="d-flex justify-content-between align-items-center mb-3">
-                                <h5 class="fw-bold text-white mb-0"><i class="fa-solid fa-users-gear text-secondary me-2"></i> Master Data Pengerja ({{ $volunteers->count() }})</h5>
+                                <h5 class="fw-bold text-white mb-0"><i class="fa-solid fa-child-reaching text-secondary me-2"></i> Master Data Anak & Remaja ({{ $volunteers->count() }})</h5>
                                 <button class="btn btn-sm btn-action-primary rounded-pill px-3" data-bs-toggle="modal" data-bs-target="#modalVolunteer">
-                                    <i class="fa-solid fa-plus me-1"></i> Pengerja Baru
+                                    <i class="fa-solid fa-plus me-1"></i> Anak Baru
                                 </button>
                             </div>
                             <div class="table-responsive">
                                 <table class="table table-custom align-middle">
                                     <thead>
                                         <tr>
-                                            <th>Nama Pengerja</th>
-                                            <th>Divisi</th>
+                                            <th>Nama Anak / Remaja</th>
+                                            <th>Cool / Divisi</th>
                                             <th>WhatsApp</th>
-                                            <th>Nominal Kas</th>
+                                            <th>Wajib Kas</th>
                                             <th class="text-end">Aksi</th>
                                         </tr>
                                     </thead>
@@ -1210,17 +1254,17 @@
                                         @foreach($volunteers as $v)
                                             <tr>
                                                 <td class="fw-bold text-white">{{ $v->name }}</td>
-                                                <td><span class="badge bg-secondary bg-opacity-25 text-light">{{ $v->division }}</span></td>
+                                                <td><span class="badge bg-secondary bg-opacity-25 text-light">{{ $v->division ?: 'Remaja DOT' }}</span></td>
                                                 <td class="text-light-sub">{{ $v->phone }}</td>
-                                                <td>Rp {{ number_format($v->monthly_due, 0, ',', '.') }}</td>
+                                                <td>Rp 5.000 / mgg</td>
                                                 <td class="text-end">
                                                     <button class="btn btn-sm btn-action-secondary rounded-circle p-1.5" onclick="editVolunteer({{ json_encode($v) }})">
                                                         <i class="fa-solid fa-pencil"></i>
                                                     </button>
-                                                    <form action="{{ route('admin.kas.volunteer.delete', $v->id) }}" method="POST" class="d-inline" onsubmit="return confirm('Hapus pengerja {{ $v->name }} dari sistem kas?')">
+                                                    <form action="{{ route('admin.kas.volunteer.delete', $v->id) }}" method="POST" class="d-inline" onsubmit="return confirm('Hapus data anak {{ $v->name }} dari sistem kas?')">
                                                         @csrf
                                                         <button type="submit" class="btn btn-sm btn-action-secondary rounded-circle p-1.5">
-                                                            <i class="fa-solid fa-trash"></i>
+                                                             <i class="fa-solid fa-trash"></i>
                                                         </button>
                                                     </form>
                                                 </td>
@@ -1245,7 +1289,7 @@
                                     <div class="list-group-item bg-transparent text-white border-secondary border-opacity-25 px-0 py-2.5 d-flex justify-content-between align-items-center">
                                         <div>
                                             <div class="fw-semibold">{{ $p->name }}</div>
-                                            <span class="text-muted small">Jatuh Tempo: {{ $p->due_date ? date('d M Y', strtotime($p->due_date)) : '-' }}</span>
+                                            <span class="text-muted small">{{ $p->weeks_count ?: 4 }} Minggu (@ Rp 5.000) &bull; {{ $p->due_date ? date('d M Y', strtotime($p->due_date)) : 'Jatuh tempo akhir bulan' }}</span>
                                         </div>
                                         <div class="text-end">
                                             <span class="badge bg-secondary bg-opacity-25 text-light fw-bold">Rp {{ number_format($p->amount, 0, ',', '.') }}</span>
@@ -1451,42 +1495,116 @@
         </div>
     </div>
 
-    <!-- 3. MODAL CATAT PEMBAYARAN KAS PENGERJA -->
+    <!-- 3. MODAL CATAT PEMBAYARAN KAS ANAK -->
     <div class="modal fade" id="modalPayment" tabindex="-1">
         <div class="modal-dialog modal-dialog-centered">
             <div class="modal-content">
                 <div class="modal-header">
-                    <h5 class="modal-title fw-bold text-white"><i class="fa-solid fa-wallet text-secondary me-2"></i> Bayar Kas Pengerja</h5>
+                    <h5 class="modal-title fw-bold text-white"><i class="fa-solid fa-wallet text-secondary me-2"></i> Bayar Kas Remaja / Anak</h5>
                     <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
                 </div>
                 <form action="{{ route('admin.kas.payment.store') }}" method="POST" enctype="multipart/form-data">
                     @csrf
                     <div class="modal-body">
+                        <!-- Pilih Anak -->
                         <div class="mb-3">
-                            <label class="form-label small fw-semibold text-muted">Pilih Pengerja / Volunteer</label>
+                            <label class="form-label small fw-semibold text-muted">Pilih Anak / Remaja <span class="text-danger">*</span></label>
                             <select name="cash_volunteer_id" id="pay_volunteer_id" class="form-select" required>
-                                <option value="">-- Pilih Pengerja --</option>
+                                <option value="">-- Pilih Nama Anak --</option>
                                 @foreach($volunteers as $v)
-                                    <option value="{{ $v->id }}">{{ $v->name }} ({{ $v->division }})</option>
+                                    <option value="{{ $v->id }}">{{ $v->name }} ({{ $v->division ?: 'Remaja DOT' }})</option>
                                 @endforeach
                             </select>
                         </div>
 
+                        <!-- Pilih Tab Mode: Bayar 1 Periode (Bisa Per Minggu / Lunas) ATAU Multi-Periode Sekaligus -->
                         <div class="mb-3">
-                            <label class="form-label small fw-semibold text-muted">Pilih Periode Kas (Bisa lebih dari 1)</label>
-                            <div class="bg-dark bg-opacity-50 p-3 rounded-3 border border-secondary border-opacity-25" style="max-height: 180px; overflow-y: auto;">
-                                @foreach($allPeriods as $p)
-                                    <div class="form-check mb-2">
-                                        <input class="form-check-input period-checkbox" type="checkbox" name="period_ids[]" value="{{ $p->id }}" id="period_{{ $p->id }}">
-                                        <label class="form-check-label text-white d-flex justify-content-between" for="period_{{ $p->id }}">
-                                            <span>{{ $p->name }}</span>
-                                            <span class="text-light fw-semibold">Rp {{ number_format($p->amount, 0, ',', '.') }}</span>
-                                        </label>
+                            <div class="d-flex gap-2 p-1 rounded-3 mb-3" style="background: rgba(255, 255, 255, 0.05); border: 1px solid var(--card-border);">
+                                <button type="button" class="btn btn-sm flex-fill rounded-2 fw-semibold text-white" id="btnModeSingle" style="background: #2563EB;" onclick="switchPayMode('single')">
+                                    <i class="fa-solid fa-calendar-check me-1"></i> Bayar 1 Periode (Cicil/Lunas)
+                                </button>
+                                <button type="button" class="btn btn-sm flex-fill rounded-2 fw-semibold text-muted" id="btnModeMulti" onclick="switchPayMode('multi')">
+                                    <i class="fa-solid fa-list-check me-1"></i> Bayar Banyak Bulan Sekaligus
+                                </button>
+                            </div>
+
+                            <!-- KONTEN MODE SINGLE PERIODE -->
+                            <div id="sectionPaySingle">
+                                <div class="mb-3">
+                                    <label class="form-label small fw-semibold text-muted">Pilih Periode Kas <span class="text-danger">*</span></label>
+                                    <select name="period_id" id="pay_period_id" class="form-select" onchange="onPeriodSelected()">
+                                        @foreach($allPeriods as $p)
+                                            <option value="{{ $p->id }}" data-weeks="{{ $p->weeks_count ?: 4 }}" data-amount="{{ $p->amount }}">
+                                                {{ $p->name }} ({{ $p->weeks_count ?: 4 }} Minggu — Rp {{ number_format($p->amount, 0, ',', '.') }})
+                                            </option>
+                                        @endforeach
+                                    </select>
+                                </div>
+
+                                <div class="mb-3">
+                                    <label class="form-label small fw-semibold text-muted">Pilihan Nominal Bayar Kas</label>
+                                    <div class="p-3 rounded-3" style="background: rgba(0, 0, 0, 0.25); border: 1px solid rgba(255, 255, 255, 0.08);">
+                                        <!-- Opsi Lunas Penuh -->
+                                        <div class="form-check mb-2">
+                                            <input class="form-check-input" type="radio" name="pay_type" id="payTypeFull" value="full" checked onchange="togglePayInputs()">
+                                            <label class="form-check-label text-white fw-semibold" for="payTypeFull">
+                                                Lunas Penuh Bulan Ini (<span id="labelFullAmount">Rp 20.000</span>)
+                                            </label>
+                                            <div class="text-muted small ps-1">Membayar lunas seluruh minggu pada periode ini</div>
+                                        </div>
+
+                                        <!-- Opsi Bayar Per Minggu (@ 5.000) -->
+                                        <div class="form-check mb-2">
+                                            <input class="form-check-input" type="radio" name="pay_type" id="payTypeWeeks" value="weeks" onchange="togglePayInputs()">
+                                            <label class="form-check-label text-white fw-semibold" for="payTypeWeeks">
+                                                Bayar Per Minggu (@ Rp 5.000 / minggu)
+                                            </label>
+                                            <div id="weeksSelectContainer" class="mt-2 ps-1" style="display: none;">
+                                                <select name="weeks_count_paid" id="weeks_count_paid" class="form-select form-select-sm">
+                                                    <option value="1">1 Minggu — Rp 5.000</option>
+                                                    <option value="2">2 Minggu — Rp 10.000</option>
+                                                    <option value="3">3 Minggu — Rp 15.000</option>
+                                                    <option value="4" selected>4 Minggu — Rp 20.000</option>
+                                                    <option value="5">5 Minggu — Rp 25.000</option>
+                                                </select>
+                                            </div>
+                                        </div>
+
+                                        <!-- Opsi Nominal Kustom -->
+                                        <div class="form-check">
+                                            <input class="form-check-input" type="radio" name="pay_type" id="payTypeCustom" value="custom" onchange="togglePayInputs()">
+                                            <label class="form-check-label text-white fw-semibold" for="payTypeCustom">
+                                                Nominal Kustom (Rp)
+                                            </label>
+                                            <div id="customAmountContainer" class="mt-2 ps-1" style="display: none;">
+                                                <div class="input-group input-group-sm">
+                                                    <span class="input-group-text bg-dark border-secondary text-secondary">Rp</span>
+                                                    <input type="number" name="custom_amount" id="custom_amount" class="form-control" placeholder="Contoh: 10000" min="1000" step="1000">
+                                                </div>
+                                            </div>
+                                        </div>
                                     </div>
-                                @endforeach
+                                </div>
+                            </div>
+
+                            <!-- KONTEN MODE MULTI PERIODE -->
+                            <div id="sectionPayMulti" style="display: none;">
+                                <label class="form-label small fw-semibold text-muted">Centang Periode yang Hendak Dilunasi Sekaligus:</label>
+                                <div class="bg-dark bg-opacity-50 p-3 rounded-3 border border-secondary border-opacity-25" style="max-height: 180px; overflow-y: auto;">
+                                    @foreach($allPeriods as $p)
+                                        <div class="form-check mb-2">
+                                            <input class="form-check-input period-checkbox" type="checkbox" name="period_ids[]" value="{{ $p->id }}" id="period_{{ $p->id }}">
+                                            <label class="form-check-label text-white d-flex justify-content-between" for="period_{{ $p->id }}">
+                                                <span>{{ $p->name }} ({{ $p->weeks_count ?: 4 }} Mgg)</span>
+                                                <span class="text-light fw-semibold">Rp {{ number_format($p->amount, 0, ',', '.') }}</span>
+                                            </label>
+                                        </div>
+                                    @endforeach
+                                </div>
                             </div>
                         </div>
 
+                        <!-- Tanggal & Metode Bayar -->
                         <div class="row g-2 mb-3">
                             <div class="col-6">
                                 <label class="form-label small fw-semibold text-muted">Tanggal Bayar</label>
@@ -1495,8 +1613,9 @@
                             <div class="col-6">
                                 <label class="form-label small fw-semibold text-muted">Metode Pembayaran</label>
                                 <select name="payment_method" class="form-select" required>
-                                    <option value="cash">Tunai (Cash)</option>
-                                    <option value="transfer">Transfer Bank / QRIS</option>
+                                    <option value="cash">Tunai (Cash saat ibadah)</option>
+                                    <option value="transfer">Transfer Bank</option>
+                                    <option value="qris">QRIS</option>
                                 </select>
                             </div>
                         </div>
@@ -1508,7 +1627,7 @@
 
                         <div class="mb-2">
                             <label class="form-label small fw-semibold text-muted">Catatan (Opsional)</label>
-                            <input type="text" name="notes" class="form-control" placeholder="Contoh: Titip lewat Kak Kevin">
+                            <input type="text" name="notes" id="pay_notes" class="form-control" placeholder="Contoh: Titip lewat Kak Hizqia">
                         </div>
                     </div>
                     <div class="modal-footer">
@@ -1522,41 +1641,42 @@
         </div>
     </div>
 
-    <!-- 4. MODAL TAMBAH / EDIT PENGERJA -->
+    <!-- 4. MODAL TAMBAH / EDIT ANAK / REMASA -->
     <div class="modal fade" id="modalVolunteer" tabindex="-1">
         <div class="modal-dialog modal-dialog-centered">
             <div class="modal-content">
                 <div class="modal-header">
-                    <h5 class="modal-title fw-bold text-white" id="modalVolunteerTitle"><i class="fa-solid fa-user-plus text-secondary me-2"></i> Tambah Pengerja Baru</h5>
+                    <h5 class="modal-title fw-bold text-white" id="modalVolunteerTitle"><i class="fa-solid fa-user-plus text-secondary me-2"></i> Tambah Data Anak Baru</h5>
                     <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
                 </div>
                 <form id="formVolunteer" action="{{ route('admin.kas.volunteer.store') }}" method="POST">
                     @csrf
                     <div class="modal-body">
                         <div class="mb-3">
-                            <label class="form-label small fw-semibold text-muted">Nama Lengkap Pengerja</label>
+                            <label class="form-label small fw-semibold text-muted">Nama Lengkap Anak <span class="text-danger">*</span></label>
                             <input type="text" name="name" id="vol_name" class="form-control" placeholder="Contoh: Hizqia Chandra" required>
                         </div>
 
                         <div class="mb-3">
-                            <label class="form-label small fw-semibold text-muted">Nomor WhatsApp</label>
+                            <label class="form-label small fw-semibold text-muted">Nomor WhatsApp (Anak / Ortu) <span class="text-danger">*</span></label>
                             <div class="input-group">
                                 <span class="input-group-text bg-dark border-secondary text-secondary"><i class="fa-brands fa-whatsapp"></i></span>
                                 <input type="text" name="phone" id="vol_phone" class="form-control" placeholder="08123456789" required>
                             </div>
+                            <div class="form-text small text-muted">Digunakan untuk pengiriman reminder & kwitansi kas via WhatsApp.</div>
                         </div>
 
                         <div class="mb-3">
-                            <label class="form-label small fw-semibold text-muted">Divisi Pelayanan</label>
-                            <input type="text" name="division" id="vol_division" class="form-control" placeholder="Contoh: Usher / Singer / Multimedia" required>
+                            <label class="form-label small fw-semibold text-muted">Komsel / Kelas / Kelompok</label>
+                            <input type="text" name="division" id="vol_division" class="form-control" placeholder="Contoh: Teens 1 / Remaja / Kelompok Daud" value="Remaja DOT">
                         </div>
 
                         <div class="row g-2 mb-2" id="vol_edit_extra" style="display: none;">
                             <div class="col-12">
-                                <label class="form-label small fw-semibold text-muted">Status Aktif</label>
+                                <label class="form-label small fw-semibold text-muted">Status Keaktifan</label>
                                 <select name="is_active" id="vol_is_active" class="form-select">
-                                    <option value="1">Aktif</option>
-                                    <option value="0">Non-Aktif (Istirahat)</option>
+                                    <option value="1">Aktif (Wajib Kas)</option>
+                                    <option value="0">Non-Aktif (Istirahat/Pindah)</option>
                                 </select>
                             </div>
                         </div>
@@ -1569,7 +1689,7 @@
                     <div class="modal-footer">
                         <button type="button" class="btn btn-action-secondary rounded-pill px-3" data-bs-dismiss="modal">Batal</button>
                         <button type="submit" class="btn btn-action-primary rounded-pill px-4 fw-semibold">
-                            <i class="fa-solid fa-save me-1"></i> Simpan
+                            <i class="fa-solid fa-save me-1"></i> Simpan Data Anak
                         </button>
                     </div>
                 </form>
@@ -1589,13 +1709,36 @@
                     @csrf
                     <div class="modal-body">
                         <div class="mb-3">
-                            <label class="form-label small fw-semibold text-muted">Nama Periode Kas</label>
+                            <label class="form-label small fw-semibold text-muted">Nama Periode Kas <span class="text-danger">*</span></label>
                             <input type="text" name="name" class="form-control" placeholder="Contoh: Kas November 2026" required>
                         </div>
 
                         <div class="mb-3">
-                            <label class="form-label small fw-semibold text-muted">Tarif Kas per Orang (Rp)</label>
-                            <input type="number" name="amount" class="form-control" value="10000" min="1000" required>
+                            <label class="form-label small fw-semibold text-muted">Jumlah Minggu dalam Bulan Tersebut <span class="text-danger">*</span></label>
+                            <div class="row g-2">
+                                <div class="col-6">
+                                    <div class="p-3 rounded-3 border text-center h-100" id="cardWeeks4" style="background: rgba(37,99,235,0.15); border-color: #2563EB !important; cursor: pointer;" onclick="selectPeriodWeeks(4)">
+                                        <input type="radio" name="weeks_count" id="radioWeeks4" value="4" checked class="form-check-input mb-2" onchange="updatePeriodAmountPreview()">
+                                        <div class="fw-bold text-white fs-6">4 Minggu</div>
+                                        <div class="text-info fw-bold small">Rp 20.000</div>
+                                        <div class="text-muted" style="font-size: 0.72rem;">(4 x Rp 5.000)</div>
+                                    </div>
+                                </div>
+                                <div class="col-6">
+                                    <div class="p-3 rounded-3 border text-center h-100" id="cardWeeks5" style="background: rgba(255,255,255,0.03); border-color: rgba(255,255,255,0.1) !important; cursor: pointer;" onclick="selectPeriodWeeks(5)">
+                                        <input type="radio" name="weeks_count" id="radioWeeks5" value="5" class="form-check-input mb-2" onchange="updatePeriodAmountPreview()">
+                                        <div class="fw-bold text-white fs-6">5 Minggu</div>
+                                        <div class="text-warning fw-bold small">Rp 25.000</div>
+                                        <div class="text-muted" style="font-size: 0.72rem;">(5 x Rp 5.000)</div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="mb-3">
+                            <label class="form-label small fw-semibold text-muted">Total Kewajiban Kas Periode Ini (Rp)</label>
+                            <input type="number" name="amount" id="period_amount_input" class="form-control fw-bold" value="20000" min="1000" readonly style="background: rgba(0,0,0,0.3); color: #fff;">
+                            <div class="form-text small text-muted">Dihitung otomatis: tarif wajib Rp 5.000 per minggu.</div>
                         </div>
 
                         <div class="mb-2">
@@ -1715,7 +1858,130 @@
             }
         }
 
-        // Quick Pay Modal
+        // Mode Pembayaran Kas: Single Periode atau Multi Periode
+        function switchPayMode(mode) {
+            const btnSingle = document.getElementById('btnModeSingle');
+            const btnMulti = document.getElementById('btnModeMulti');
+            const secSingle = document.getElementById('sectionPaySingle');
+            const secMulti = document.getElementById('sectionPayMulti');
+
+            if (mode === 'single') {
+                secSingle.style.display = 'block';
+                secMulti.style.display = 'none';
+                btnSingle.style.background = '#2563EB';
+                btnSingle.className = 'btn btn-sm flex-fill rounded-2 fw-semibold text-white';
+                btnMulti.style.background = 'transparent';
+                btnMulti.className = 'btn btn-sm flex-fill rounded-2 fw-semibold text-muted';
+            } else {
+                secSingle.style.display = 'none';
+                secMulti.style.display = 'block';
+                btnMulti.style.background = '#2563EB';
+                btnMulti.className = 'btn btn-sm flex-fill rounded-2 fw-semibold text-white';
+                btnSingle.style.background = 'transparent';
+                btnSingle.className = 'btn btn-sm flex-fill rounded-2 fw-semibold text-muted';
+            }
+        }
+
+        // Toggle input nominal pembayaran kas (full / weeks / custom)
+        function togglePayInputs() {
+            const isWeeks = document.getElementById('payTypeWeeks').checked;
+            const isCustom = document.getElementById('payTypeCustom').checked;
+
+            const weeksContainer = document.getElementById('weeksSelectContainer');
+            const customContainer = document.getElementById('customAmountContainer');
+
+            if (weeksContainer) weeksContainer.style.display = isWeeks ? 'block' : 'none';
+            if (customContainer) customContainer.style.display = isCustom ? 'block' : 'none';
+        }
+
+        // Saat dropdown periode di modal payment dipilih
+        function onPeriodSelected() {
+            const periodSelect = document.getElementById('pay_period_id');
+            if (!periodSelect || !periodSelect.selectedOptions[0]) return;
+
+            const opt = periodSelect.selectedOptions[0];
+            const weeksCount = parseInt(opt.getAttribute('data-weeks')) || 4;
+            const amount = parseInt(opt.getAttribute('data-amount')) || (weeksCount * 5000);
+
+            // Update label Full Amount
+            const labelFull = document.getElementById('labelFullAmount');
+            if (labelFull) {
+                labelFull.innerText = 'Rp ' + amount.toLocaleString('id-ID');
+            }
+
+            // Update pilihan minggu di dropdown weeks_count_paid
+            const weeksSelect = document.getElementById('weeks_count_paid');
+            if (weeksSelect) {
+                weeksSelect.innerHTML = '';
+                for (let i = 1; i <= weeksCount; i++) {
+                    const option = document.createElement('option');
+                    option.value = i;
+                    option.text = i + ' Minggu — Rp ' + (i * 5000).toLocaleString('id-ID');
+                    if (i === weeksCount) option.selected = true;
+                    weeksSelect.appendChild(option);
+                }
+            }
+        }
+
+        // Quick Pay Modal untuk Anak Spesifik
+        function quickPayChild(volunteerId, volunteerName, periodDetails) {
+            // Set ID anak
+            const volSelect = document.getElementById('pay_volunteer_id');
+            if (volSelect) volSelect.value = volunteerId;
+
+            // Reset ke mode single periode
+            switchPayMode('single');
+
+            // Cari periode pertama yang belum lunas
+            let unpaidFound = false;
+            if (Array.isArray(periodDetails) && periodDetails.length > 0) {
+                for (const p of periodDetails) {
+                    if (p.status !== 'lunas') {
+                        const periodSelect = document.getElementById('pay_period_id');
+                        if (periodSelect) {
+                            periodSelect.value = p.id;
+                            onPeriodSelected();
+                        }
+
+                        // Uncheck all period checkboxes lalu centang yang belum lunas
+                        document.querySelectorAll('.period-checkbox').forEach(cb => cb.checked = false);
+                        const multiCb = document.getElementById('period_' + p.id);
+                        if (multiCb) multiCb.checked = true;
+
+                        // Defaultkan ke opsi bayar per minggu sisa atau lunas
+                        const sisaMinggu = Math.ceil((p.remaining || 0) / 5000);
+                        if (sisaMinggu > 0 && sisaMinggu < (p.weeks || 4)) {
+                            const payTypeWeeks = document.getElementById('payTypeWeeks');
+                            if (payTypeWeeks) {
+                                payTypeWeeks.checked = true;
+                                togglePayInputs();
+                                const weeksSelect = document.getElementById('weeks_count_paid');
+                                if (weeksSelect) weeksSelect.value = sisaMinggu;
+                            }
+                        } else {
+                            const payTypeFull = document.getElementById('payTypeFull');
+                            if (payTypeFull) payTypeFull.checked = true;
+                            togglePayInputs();
+                        }
+
+                        unpaidFound = true;
+                        break;
+                    }
+                }
+            }
+
+            if (!unpaidFound) {
+                const payTypeFull = document.getElementById('payTypeFull');
+                if (payTypeFull) payTypeFull.checked = true;
+                togglePayInputs();
+                onPeriodSelected();
+            }
+
+            const modal = new bootstrap.Modal(document.getElementById('modalPayment'));
+            modal.show();
+        }
+
+        // Quick Pay Modal umum (backward compatibility)
         function quickPay(volunteerId, volunteerName, unpaidPeriodIds) {
             document.getElementById('pay_volunteer_id').value = volunteerId;
             document.querySelectorAll('.period-checkbox').forEach(cb => cb.checked = false);
@@ -1725,22 +1991,52 @@
                     const cb = document.getElementById('period_' + id);
                     if (cb) cb.checked = true;
                 });
-            } else {
-                const firstCb = document.querySelector('.period-checkbox');
-                if (firstCb) firstCb.checked = true;
+                const firstPeriod = document.getElementById('pay_period_id');
+                if (firstPeriod) firstPeriod.value = unpaidPeriodIds[0];
             }
 
+            onPeriodSelected();
             const modal = new bootstrap.Modal(document.getElementById('modalPayment'));
             modal.show();
         }
 
-        // Edit Pengerja
+        // Pilihan Jumlah Minggu di Modal Periode Baru (4 minggu = 20rb, 5 minggu = 25rb)
+        function selectPeriodWeeks(weeks) {
+            const r4 = document.getElementById('radioWeeks4');
+            const r5 = document.getElementById('radioWeeks5');
+            const c4 = document.getElementById('cardWeeks4');
+            const c5 = document.getElementById('cardWeeks5');
+            const amtInput = document.getElementById('period_amount_input');
+
+            if (weeks === 4) {
+                r4.checked = true;
+                c4.style.background = 'rgba(37,99,235,0.15)';
+                c4.style.borderColor = '#2563EB';
+                c5.style.background = 'rgba(255,255,255,0.03)';
+                c5.style.borderColor = 'rgba(255,255,255,0.1)';
+                if (amtInput) amtInput.value = 20000;
+            } else {
+                r5.checked = true;
+                c5.style.background = 'rgba(245,158,11,0.15)';
+                c5.style.borderColor = '#F59E0B';
+                c4.style.background = 'rgba(255,255,255,0.03)';
+                c4.style.borderColor = 'rgba(255,255,255,0.1)';
+                if (amtInput) amtInput.value = 25000;
+            }
+        }
+
+        function updatePeriodAmountPreview() {
+            const r5 = document.getElementById('radioWeeks5');
+            selectPeriodWeeks(r5 && r5.checked ? 5 : 4);
+        }
+
+        // Edit Data Anak
         function editVolunteer(v) {
-            document.getElementById('modalVolunteerTitle').innerHTML = '<i class="fa-solid fa-pen-to-square text-secondary me-2"></i> Edit Pengerja';
+            document.getElementById('modalVolunteerTitle').innerHTML = '<i class="fa-solid fa-user-pen text-secondary me-2"></i> Edit Data Anak';
             document.getElementById('formVolunteer').action = '/admin/kas/volunteer/update/' + v.id;
             document.getElementById('vol_name').value = v.name;
             document.getElementById('vol_phone').value = v.phone;
-            document.getElementById('vol_division').value = v.division;
+            document.getElementById('vol_division').value = v.division || 'Remaja DOT';
             document.getElementById('vol_notes').value = v.notes || '';
             document.getElementById('vol_is_active').value = v.is_active ? '1' : '0';
             document.getElementById('vol_edit_extra').style.display = 'block';
@@ -1751,17 +2047,18 @@
 
         // Reset form volunteer
         document.getElementById('modalVolunteer').addEventListener('hidden.bs.modal', function () {
-            document.getElementById('modalVolunteerTitle').innerHTML = '<i class="fa-solid fa-user-plus text-secondary me-2"></i> Tambah Pengerja Baru';
+            document.getElementById('modalVolunteerTitle').innerHTML = '<i class="fa-solid fa-user-plus text-secondary me-2"></i> Tambah Data Anak Baru';
             document.getElementById('formVolunteer').action = '{{ route("admin.kas.volunteer.store") }}';
             document.getElementById('vol_name').value = '';
             document.getElementById('vol_phone').value = '';
-            document.getElementById('vol_division').value = '';
+            document.getElementById('vol_division').value = 'Remaja DOT';
             document.getElementById('vol_notes').value = '';
             document.getElementById('vol_edit_extra').style.display = 'none';
         });
 
-        // Buka tab berdasarkan parameter URL ?tab=...
+        // Buka tab berdasarkan parameter URL ?tab=... & inisialisasi dropdown periode
         document.addEventListener("DOMContentLoaded", function() {
+            onPeriodSelected();
             const urlParams = new URLSearchParams(window.location.search);
             const tabParam = urlParams.get('tab');
             if (tabParam) {

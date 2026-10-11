@@ -325,6 +325,7 @@ Route::middleware('auth')->group(function () {
     Route::post('/admin/kas/volunteer/update/{id}', [CashController::class, 'updateVolunteer'])->name('admin.kas.volunteer.update');
     Route::post('/admin/kas/volunteer/delete/{id}', [CashController::class, 'deleteVolunteer'])->name('admin.kas.volunteer.delete');
     Route::post('/admin/kas/sync-users', [CashController::class, 'syncFromUsers'])->name('admin.kas.sync');
+    Route::post('/admin/kas/sync-members', [CashController::class, 'syncFromMembers'])->name('admin.kas.sync_members');
     Route::post('/admin/kas/period/store', [CashController::class, 'storePeriod'])->name('admin.kas.period.store');
     Route::post('/admin/kas/settings', [CashController::class, 'updateSettings'])->name('admin.kas.settings.update');
     Route::get('/admin/kas/export-csv', [CashController::class, 'exportCsv'])->name('admin.kas.export');
