@@ -19,18 +19,15 @@ Route::get('/', function () {
     $cellSchedules = \App\Models\CellSchedule::where('meeting_date', '>=', now()->toDateString())->orderBy('meeting_date', 'asc')->get();
     $galleries = \App\Models\Gallery::orderBy('created_at', 'desc')->take(6)->get(); 
     
-    // Ambil event yang dipilih Admin sebagai Pop Up Banner Beranda (is_popup = true)
+    // Ambil event yang dipilih Admin sebagai Pop Up Banner Beranda (HANYA jika is_popup = true)
     $featuredEvent = null;
     try {
         \App\Models\Event::ensureIsPopupColumnExists();
         if (\Illuminate\Support\Facades\Schema::hasColumn('events', 'is_popup')) {
             $featuredEvent = \App\Models\Event::where('is_popup', true)->first();
         }
-        if (!$featuredEvent) {
-            $featuredEvent = $events->first() ?? \App\Models\Event::where('title', 'like', '%Revival%')->first() ?? \App\Models\Event::orderBy('event_date', 'desc')->first();
-        }
     } catch (\Throwable $e) {
-        $featuredEvent = $events->first() ?? null;
+        $featuredEvent = null;
     }
 
     // Cek status saklar dari file
@@ -304,6 +301,8 @@ Route::middleware('auth')->group(function () {
     Route::get('/admin/events/scan/{event_id?}', [EventRegistrationController::class, 'scannerPage'])->name('admin.events.scan');
     Route::post('/admin/events/scan-process', [EventRegistrationController::class, 'processScan'])->name('admin.events.scan.process');
     Route::get('/admin/events/{event_id}/participants', [EventRegistrationController::class, 'participantsList'])->name('admin.events.participants')->whereNumber('event_id');
+    Route::post('/admin/events/{event_id}/participants/manual', [EventRegistrationController::class, 'storeManualAttendance'])->name('admin.events.participants.manual')->whereNumber('event_id');
+    Route::post('/admin/events/{event_id}/participants/sync-pastoral', [EventRegistrationController::class, 'syncToPastoral'])->name('admin.events.participants.sync_pastoral')->whereNumber('event_id');
     Route::post('/admin/events/participants/{id}/toggle', [EventRegistrationController::class, 'toggleAttendance'])->name('admin.events.participants.toggle')->whereNumber('id');
     Route::delete('/admin/events/participants/{id}', [EventRegistrationController::class, 'destroyParticipant'])->name('admin.events.participants.delete')->whereNumber('id');
     Route::get('/admin/events/{event_id}/export', [EventRegistrationController::class, 'exportCsv'])->name('admin.events.export')->whereNumber('event_id');

@@ -4,6 +4,8 @@ namespace App\Http\Controllers;
 
 use App\Models\Event;
 use App\Models\EventRegistration;
+use App\Models\Member;
+use App\Models\Attendance;
 use App\Models\ActivityLog;
 use Illuminate\Http\Request;
 use Illuminate\Support\Str;
@@ -214,9 +216,8 @@ class EventRegistrationController extends Controller
         $events = Event::orderBy('event_date', 'desc')->get();
 
         if (!$event_id) {
-            // Pilih event mendatang terdekat atau event dengan judul Disciples Revival Night
-            $selectedEvent = Event::where('title', 'like', '%Revival%')
-                ->orWhere('event_date', '>=', now()->toDateString())
+            // Pilih event mendatang terdekat atau event aktif terbaru
+            $selectedEvent = Event::where('event_date', '>=', now()->toDateString())
                 ->orderBy('event_date', 'asc')
                 ->first() ?? $events->first();
         } else {
@@ -346,10 +347,12 @@ class EventRegistrationController extends Controller
         $totalRegistered = EventRegistration::where('event_id', $registration->event_id)->count();
         $totalAttended = EventRegistration::where('event_id', $registration->event_id)->where('status', 'attended')->count();
 
+        $eventTitle = $registration->event ? $registration->event->title : 'Acara DOT Teens';
+
         return response()->json([
             'success' => true,
             'status' => 'success',
-            'message' => "✅ Check-in Berhasil! Selamat datang di Disciples Revival Night, {$registration->name}!",
+            'message' => "✅ Check-in Berhasil! Selamat datang di {$eventTitle}, {$registration->name}!",
             'participant' => [
                 'id' => $registration->id,
                 'name' => $registration->name,
@@ -607,5 +610,126 @@ class EventRegistrationController extends Controller
         // Fallback jika paket DomPDF belum terinstall di server (misal belum composer install di hosting)
         // Langsung tampilkan preview cetak HTML dengan auto-trigger Print ke PDF browser agar tidak terjadi Error 500
         return view('admin.events.pdf', array_merge($data, ['autoPrint' => true]));
+    }
+
+    /**
+     * Tambah Kehadiran Manual / Walk-in Peserta di Tempat (OTS) ke Database Event
+     */
+    public function storeManualAttendance(Request $request, $event_id)
+    {
+        $this->ensureTableExists();
+        $event = Event::findOrFail($event_id);
+
+        $request->validate([
+            'name' => 'required|string|max:150',
+            'phone' => 'nullable|string|max:30',
+            'category' => 'nullable|string|max:50',
+            'origin' => 'nullable|string|max:150',
+            'status' => 'required|in:attended,registered',
+            'notes' => 'nullable|string|max:500',
+        ]);
+
+        $ticketCode = 'EVT-' . strtoupper(Str::random(5));
+        while (EventRegistration::where('ticket_code', $ticketCode)->exists()) {
+            $ticketCode = 'EVT-' . strtoupper(Str::random(5));
+        }
+
+        $digits = preg_replace('/[^0-9]/', '', $request->phone ?? '');
+        $formattedPhone = $digits ? '+62' . ltrim(ltrim($digits, '62'), '0') : '08123456789';
+
+        $attendedAt = $request->status === 'attended' ? now('Asia/Jakarta') : null;
+        $scannedBy = $request->status === 'attended' ? (auth()->user()->name ?? 'Admin') : null;
+
+        $participant = EventRegistration::create([
+            'event_id' => $event->id,
+            'ticket_code' => $ticketCode,
+            'name' => trim($request->name),
+            'phone' => $formattedPhone,
+            'category' => $request->category ?: 'Remaja DOT',
+            'origin' => $request->origin ?: 'Hadir di Tempat (OTS)',
+            'status' => $request->status,
+            'attended_at' => $attendedAt,
+            'scanned_by' => $scannedBy,
+            'notes' => $request->notes ?: 'Dicatat manual oleh panitia',
+        ]);
+
+        if (Schema::hasTable('activity_logs') && auth()->check()) {
+            ActivityLog::create([
+                'user_name' => auth()->user()->name,
+                'role' => auth()->user()->role,
+                'action' => 'CATAT KEHADIRAN EVENT',
+                'description' => auth()->user()->name . " mencatat kehadiran manual: {$participant->name} di event {$event->title}",
+            ]);
+        }
+
+        return back()->with('success', "Kehadiran peserta '{$participant->name}' berhasil dicatat ke database event!");
+    }
+
+    /**
+     * Sinkronisasi data kehadiran event ke database jemaat & absensi pastoral
+     */
+    public function syncToPastoral(Request $request, $event_id)
+    {
+        $event = Event::findOrFail($event_id);
+        $attendedList = EventRegistration::where('event_id', $event_id)
+            ->where('status', 'attended')
+            ->get();
+
+        if ($attendedList->isEmpty()) {
+            return back()->with('error', 'Belum ada peserta yang berstatus HADIR pada event ini untuk disinkronkan.');
+        }
+
+        $syncedMembersCount = 0;
+        $syncedAttendancesCount = 0;
+
+        foreach ($attendedList as $reg) {
+            // Cek di tabel members
+            $member = Member::where('name', $reg->name)->first();
+            if (!$member && $reg->phone && $reg->phone !== '08123456789') {
+                $cleanPhone = preg_replace('/[^0-9]/', '', $reg->phone);
+                $member = Member::where('phone_number', 'like', "%{$cleanPhone}%")
+                    ->orWhere('phone', 'like', "%{$cleanPhone}%")
+                    ->first();
+            }
+
+            if (!$member) {
+                $member = Member::create([
+                    'name' => $reg->name,
+                    'phone_number' => $reg->phone,
+                    'school' => $reg->origin ?: 'Remaja DOT',
+                    'category' => $reg->category ?: 'Remaja',
+                    'status' => 'aktif',
+                    'is_joined' => true,
+                ]);
+                $syncedMembersCount++;
+            }
+
+            // Catat ke tabel attendances jika ada tabel attendances
+            if (Schema::hasTable('attendances')) {
+                $alreadyAttended = Attendance::where('member_id', $member->id)
+                    ->where('attendance_date', $event->event_date)
+                    ->first();
+
+                if (!$alreadyAttended) {
+                    Attendance::create([
+                        'member_id' => $member->id,
+                        'attendance_date' => $event->event_date,
+                        'status' => 'hadir',
+                    ]);
+                    $syncedAttendancesCount++;
+                }
+            }
+        }
+
+        if (Schema::hasTable('activity_logs') && auth()->check()) {
+            ActivityLog::create([
+                'user_name' => auth()->user()->name,
+                'role' => auth()->user()->role,
+                'action' => 'SINKRONISASI KEHADIRAN EVENT',
+                'description' => auth()->user()->name . " mensinkronkan {$attendedList->count()} kehadiran event {$event->title} ke database jemaat & pastoral.",
+            ]);
+        }
+
+        return back()->with('success', "Berhasil mensinkronkan {$attendedList->count()} kehadiran event ke database jemaat ({$syncedMembersCount} anak baru terdata, {$syncedAttendancesCount} absensi tercatat).");
     }
 }

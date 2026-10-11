@@ -153,19 +153,31 @@
     <nav class="navbar navbar-dark navbar-custom py-2.5 sticky-top">
         <div class="container-fluid px-3 px-lg-4 d-flex justify-content-between align-items-center">
             <div class="d-flex align-items-center gap-2 gap-sm-3">
-                <a class="btn btn-sm btn-outline-secondary text-light rounded-pill px-2.5 px-sm-3" href="{{ route('dashboard') }}">
-                    <i class="fa-solid fa-arrow-left me-1"></i> <span class="d-none d-sm-inline">Dashboard</span>
+                <a class="btn btn-sm btn-outline-secondary text-light rounded-pill px-2.5 px-sm-3" href="{{ route('events.index') }}">
+                    <i class="fa-solid fa-arrow-left me-1"></i> <span class="d-none d-sm-inline">Kembali ke Acara</span>
                 </a>
-                <span class="fw-bold text-white fs-6 fs-md-5 text-truncate" style="max-width: 45vw;">
-                    <i class="fa-solid fa-users text-info me-1 me-sm-2"></i> <span class="d-none d-sm-inline">Data Pendaftar </span>Event
+                <span class="fw-bold text-white fs-6 fs-md-5 text-truncate" style="max-width: 40vw;">
+                    <i class="fa-solid fa-users text-info me-1 me-sm-2"></i> Database Kehadiran Event
                 </span>
             </div>
-            <div class="d-flex gap-2">
+            <div class="d-flex gap-2 flex-wrap align-items-center">
+                <button type="button" class="btn btn-sm btn-success rounded-pill px-3 fw-semibold shadow-sm" data-bs-toggle="modal" data-bs-target="#modalManualAttendance">
+                    <i class="fa-solid fa-user-plus me-1"></i> + Catat Hadir (OTS)
+                </button>
+                <form action="{{ route('admin.events.participants.sync_pastoral', $event->id) }}" method="POST" class="d-inline" onsubmit="return confirm('Sinkronkan seluruh peserta yang HADIR pada event ini ke Database Jemaat & Absensi Pastoral?')">
+                    @csrf
+                    <button type="submit" class="btn btn-sm btn-outline-warning rounded-pill px-2.5 fw-semibold" title="Sinkronkan kehadiran ke data jemaat & pastoral">
+                        <i class="fa-solid fa-arrows-rotate me-1"></i> <span class="d-none d-md-inline">Sinkron </span>Pastoral
+                    </button>
+                </form>
                 <a href="{{ route('admin.events.scan', $event->id) }}" class="btn btn-sm btn-cyan">
                     <i class="fa-solid fa-qrcode me-1"></i> <span class="d-none d-sm-inline">Buka </span>Scanner
                 </a>
                 <a href="{{ route('admin.events.export', $event->id) }}" class="btn btn-sm btn-outline-success rounded-pill px-2.5 px-sm-3">
-                    <i class="fa-solid fa-file-csv me-1"></i> <span class="d-none d-sm-inline">Export </span>CSV
+                    <i class="fa-solid fa-file-csv me-1"></i> CSV
+                </a>
+                <a href="{{ route('admin.events.export_pdf', $event->id) }}" class="btn btn-sm btn-outline-danger rounded-pill px-2.5 px-sm-3" target="_blank">
+                    <i class="fa-solid fa-file-pdf me-1"></i> PDF
                 </a>
             </div>
         </div>
@@ -350,5 +362,70 @@
         </div>
     </div>
 
+    <!-- MODAL CATAT KEHADIRAN MANUAL (WALK-IN / OTS) -->
+    <div class="modal fade" id="modalManualAttendance" tabindex="-1" aria-labelledby="modalManualAttendanceLabel" aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered">
+            <form action="{{ route('admin.events.participants.manual', $event->id) }}" method="POST" class="modal-content text-start" style="background: #112240; border: 1px solid rgba(56, 189, 248, 0.3); border-radius: 20px; color: #fff;">
+                @csrf
+                <div class="modal-header border-bottom border-secondary border-opacity-25 px-4 py-3">
+                    <h5 class="modal-title fw-bold text-white fs-5" id="modalManualAttendanceLabel">
+                        <i class="fa-solid fa-user-check text-info me-2"></i> Catat Kehadiran Peserta (OTS)
+                    </h5>
+                    <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body px-4 py-3">
+                    <div class="mb-3">
+                        <label class="form-label small fw-semibold text-muted">Nama Lengkap Peserta <span class="text-danger">*</span></label>
+                        <input type="text" name="name" class="form-control" placeholder="Contoh: Joshua Kurniawan" required>
+                    </div>
+
+                    <div class="mb-3">
+                        <label class="form-label small fw-semibold text-muted">Nomor WhatsApp / HP</label>
+                        <input type="text" name="phone" class="form-control" placeholder="08123456789">
+                        <div class="form-text small text-muted">Digunakan untuk kirim konfirmasi / rekaman data jemaat.</div>
+                    </div>
+
+                    <div class="row g-2 mb-3">
+                        <div class="col-6">
+                            <label class="form-label small fw-semibold text-muted">Kategori</label>
+                            <select name="category" class="form-select">
+                                <option value="SMP">SMP</option>
+                                <option value="SMA" selected>SMA / SMK</option>
+                                <option value="Kuliah">Kuliah / Mahasiswa</option>
+                                <option value="Umum">Umum / Jemaat</option>
+                                <option value="Volunteer">Volunteer / Pengerja</option>
+                            </select>
+                        </div>
+                        <div class="col-6">
+                            <label class="form-label small fw-semibold text-muted">Status Kehadiran</label>
+                            <select name="status" class="form-select">
+                                <option value="attended" selected>HADIR (Check-in Sekarang)</option>
+                                <option value="registered">Terdaftar (Belum Hadir)</option>
+                            </select>
+                        </div>
+                    </div>
+
+                    <div class="mb-3">
+                        <label class="form-label small fw-semibold text-muted">Asal Sekolah / Komsel / Gereja</label>
+                        <input type="text" name="origin" class="form-control" placeholder="Contoh: SMAN 1 Depok / Komsel Daud">
+                    </div>
+
+                    <div class="mb-2">
+                        <label class="form-label small fw-semibold text-muted">Catatan Khusus (Opsional)</label>
+                        <input type="text" name="notes" class="form-control" placeholder="Contoh: Datang bersama teman">
+                    </div>
+                </div>
+                <div class="modal-footer border-top border-secondary border-opacity-25 px-4 py-3">
+                    <button type="button" class="btn btn-sm btn-outline-secondary rounded-pill px-3" data-bs-dismiss="modal">Batal</button>
+                    <button type="submit" class="btn btn-sm btn-cyan rounded-pill px-4 fw-bold">
+                        <i class="fa-solid fa-check me-1"></i> Simpan Kehadiran
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- Bootstrap Bundle JS -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
 </body>
 </html>

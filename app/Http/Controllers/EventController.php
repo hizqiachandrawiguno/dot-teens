@@ -15,7 +15,13 @@ class EventController extends Controller
     {
         Event::ensureIsPopupColumnExists();
 
-        $events = Event::orderBy('event_date', 'asc')->get();
+        $events = Event::withCount([
+            'registrations as total_registered',
+            'registrations as total_attended' => function($q) {
+                $q->where('status', 'attended');
+            }
+        ])->orderBy('event_date', 'desc')->get();
+
         $currentPopupEvent = null;
         try {
             if (Schema::hasColumn('events', 'is_popup')) {

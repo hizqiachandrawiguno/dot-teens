@@ -324,12 +324,18 @@
                             <tr>
                                 <th style="width: 80px;">Poster</th>
                                 <th>Detail Acara</th>
-                                <th style="width: 210px;">Waktu & Lokasi</th>
-                                <th class="text-center" style="width: 100px;">Aksi</th>
+                                <th style="width: 250px;">Database Kehadiran</th>
+                                <th style="width: 200px;">Waktu & Lokasi</th>
+                                <th class="text-center" style="width: 90px;">Aksi</th>
                             </tr>
                         </thead>
                         <tbody>
                             @forelse($events as $event)
+                            @php
+                                $totReg = $event->total_registered ?? $event->registrations()->count();
+                                $totAtt = $event->total_attended ?? $event->registrations()->where('status', 'attended')->count();
+                                $totPending = max(0, $totReg - $totAtt);
+                            @endphp
                             <tr>
                                 <td>
                                     @if($event->image)
@@ -344,41 +350,67 @@
                                     <div class="d-flex align-items-center gap-2 flex-wrap mb-1">
                                         <div class="fw-bold text-white fs-6">{{ $event->title }}</div>
                                         @if($event->is_popup)
-                                            <span class="badge rounded-pill px-2 py-1" style="background: linear-gradient(135deg, #F59E0B, #EF4444); color: #FFFFFF; font-size: 10px; letter-spacing: 0.5px;">
-                                                <i class="fa-solid fa-star me-1"></i> POP UP AKTIF
+                                            <span class="badge rounded-pill px-2.5 py-1 fw-bold" style="background: linear-gradient(135deg, #10B981, #059669); color: #FFFFFF; font-size: 10px; letter-spacing: 0.5px; box-shadow: 0 2px 8px rgba(16,185,129,0.4);">
+                                                <i class="fa-solid fa-circle-check me-1"></i> POP UP BANNER AKTIF
+                                            </span>
+                                        @else
+                                            <span class="badge rounded-pill px-2 py-0.5 bg-secondary bg-opacity-25 text-secondary" style="font-size: 10px;">
+                                                Pop Up Non-Aktif
                                             </span>
                                         @endif
                                     </div>
                                     <div class="small text-secondary mb-2">{{ Str::limit($event->description, 60) }}</div>
-                                    <div class="d-flex gap-1 flex-wrap align-items-center">
-                                        <!-- Tombol Pop Up Banner -->
+                                    
+                                    <!-- Tombol Kontrol Pop Up Banner -->
+                                    <div class="d-flex gap-1.5 flex-wrap align-items-center">
                                         @if($event->is_popup)
                                             <form action="{{ route('admin.events.toggle_popup', $event->id) }}" method="POST" class="d-inline">
                                                 @csrf
-                                                <button type="submit" class="btn btn-xs rounded-pill px-2 py-1 fw-bold shadow-sm" style="background: #F59E0B; color: #000; font-size: 11px;" title="Acara ini sedang aktif sebagai Pop Up. Klik untuk menonaktifkan">
-                                                    <i class="fa-solid fa-star me-1"></i> Pop Up Banner (Aktif)
+                                                <button type="submit" class="btn btn-xs btn-outline-danger rounded-pill px-2.5 py-1 fw-semibold shadow-sm" style="font-size: 11px;" title="Klik untuk MENONAKTIFKAN Pop Up Banner beranda ini">
+                                                    <i class="fa-solid fa-power-off me-1"></i> Nonaktifkan Banner
                                                 </button>
                                             </form>
                                         @else
                                             <form action="{{ route('admin.events.toggle_popup', $event->id) }}" method="POST" class="d-inline">
                                                 @csrf
-                                                <button type="submit" class="btn btn-xs btn-outline-warning rounded-pill px-2 py-1 fw-semibold" style="font-size: 11px;" title="Klik untuk menjadikan acara ini Pop Up Banner di awal website">
-                                                    <i class="fa-regular fa-star me-1"></i> Jadikan Pop Up Banner
+                                                <button type="submit" class="btn btn-xs btn-outline-warning rounded-pill px-2.5 py-1 fw-semibold" style="font-size: 11px;" title="Klik untuk mengaktifkan acara ini sebagai Pop Up Banner di beranda">
+                                                    <i class="fa-solid fa-bullhorn me-1"></i> Jadikan Pop Up Banner
                                                 </button>
                                             </form>
                                         @endif
 
-                                        <a href="{{ route('admin.events.scan', $event->id) }}" class="btn btn-xs btn-outline-info rounded-pill px-2 py-1 small" style="font-size: 11px;">
-                                            <i class="fa-solid fa-qrcode me-1"></i> Scan Kehadiran
-                                        </a>
-                                        <a href="{{ route('admin.events.participants', $event->id) }}" class="btn btn-xs btn-outline-light rounded-pill px-2 py-1 small" style="font-size: 11px;">
-                                            <i class="fa-solid fa-users me-1"></i> Peserta ({{ $event->registrations()->count() }})
-                                        </a>
-                                        <button type="button" class="btn btn-xs btn-outline-warning rounded-pill px-2 py-1 small" data-bs-toggle="modal" data-bs-target="#modalEditEvent{{ $event->id }}" style="font-size: 11px;" title="Edit data acara atau perbarui banner">
-                                            <i class="fa-solid fa-pen-to-square me-1"></i> Edit Banner
+                                        <button type="button" class="btn btn-xs btn-action-secondary rounded-pill px-2 py-1 small" data-bs-toggle="modal" data-bs-target="#modalEditEvent{{ $event->id }}" style="font-size: 11px;" title="Edit data acara atau ganti banner">
+                                            <i class="fa-solid fa-pen-to-square me-1"></i> Edit Acara
                                         </button>
                                     </div>
                                 </td>
+
+                                <!-- KOLOM DATABASE KEHADIRAN EVENT -->
+                                <td>
+                                    <div class="p-2.5 rounded-3 mb-2" style="background: rgba(15, 23, 42, 0.6); border: 1px solid rgba(56, 189, 248, 0.15);">
+                                        <div class="d-flex justify-content-between align-items-center mb-1">
+                                            <span class="small text-muted" style="font-size: 11px;">Total Terdaftar:</span>
+                                            <strong class="text-white">{{ $totReg }}</strong>
+                                        </div>
+                                        <div class="d-flex justify-content-between align-items-center mb-1">
+                                            <span class="small text-success" style="font-size: 11px;"><i class="fa-solid fa-circle-check me-1"></i> Sudah Hadir:</span>
+                                            <strong class="text-success">{{ $totAtt }}</strong>
+                                        </div>
+                                        <div class="d-flex justify-content-between align-items-center">
+                                            <span class="small text-warning" style="font-size: 11px;"><i class="fa-solid fa-clock me-1"></i> Belum Hadir:</span>
+                                            <strong class="text-warning">{{ $totPending }}</strong>
+                                        </div>
+                                    </div>
+                                    <div class="d-flex gap-1 flex-wrap">
+                                        <a href="{{ route('admin.events.participants', $event->id) }}" class="btn btn-xs btn-outline-info rounded-pill px-2.5 py-1 fw-semibold" style="font-size: 11px;" title="Lihat database kehadiran lengkap">
+                                            <i class="fa-solid fa-users-viewfinder me-1"></i> Database Hadir
+                                        </a>
+                                        <a href="{{ route('admin.events.scan', $event->id) }}" class="btn btn-xs btn-cyan rounded-pill px-2 py-1 fw-semibold" style="font-size: 11px;" title="Scan QR Code Kehadiran">
+                                            <i class="fa-solid fa-qrcode me-1"></i> Scanner QR
+                                        </a>
+                                    </div>
+                                </td>
+
                                 <td>
                                     <div class="small text-info fw-semibold"><i class="fa-regular fa-clock me-1 text-warning"></i> {{ date('d M Y', strtotime($event->event_date)) }} • {{ $event->time_formatted }} WIB</div>
                                     <div class="small text-secondary mt-1"><i class="fa-solid fa-location-dot me-1"></i> {{ $event->location }}</div>
