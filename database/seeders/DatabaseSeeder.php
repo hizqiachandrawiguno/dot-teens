@@ -26,5 +26,7 @@ class DatabaseSeeder extends Seeder
                 'status' => 'approved'
             ]
         );
+
+        $this->call(CashVolunteerSeeder::class);
     }
 }
