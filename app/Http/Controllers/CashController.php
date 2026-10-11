@@ -115,13 +115,20 @@ class CashController extends Controller
             });
         }
 
-        // Perbarui nominal periode kas lama yang masih Rp 10.000 agar mengikuti aturan 5.000/minggu
+        // Hapus periode September karena uang kas baru mulai berlaku per Oktober 2026
         try {
-            if (CashPeriod::count() > 0) {
-                CashPeriod::where('amount', 10000)->where(function($q) {
-                    $q->where('name', 'like', '%September%')
-                      ->orWhere('name', 'like', '%Oktober%');
-                })->update(['amount' => 20000, 'weeks_count' => 4]);
+            if (Schema::hasTable('cash_periods')) {
+                $septemberPeriods = CashPeriod::where('name', 'like', '%September%')->get();
+                foreach ($septemberPeriods as $sp) {
+                    if (Schema::hasTable('cash_payments')) {
+                        CashPayment::where('cash_period_id', $sp->id)->delete();
+                    }
+                    $sp->delete();
+                }
+
+                // Perbarui nominal periode kas lama yang masih Rp 10.000 agar mengikuti aturan 5.000/minggu
+                CashPeriod::where('amount', 10000)->where('name', 'like', '%Oktober%')
+                    ->update(['amount' => 20000, 'weeks_count' => 4]);
 
                 CashPeriod::where('amount', 10000)->where('name', 'like', '%November%')
                     ->update(['amount' => 25000, 'weeks_count' => 5]);
@@ -181,16 +188,8 @@ class CashController extends Controller
 
         self::ensureTablesExist();
 
-        // Seed periode awal jika belum ada sama sekali
+        // Seed periode awal jika belum ada sama sekali (mulai berlaku bulan Oktober 2026)
         if (CashPeriod::count() == 0) {
-            CashPeriod::create([
-                'name' => 'Kas September 2026',
-                'weeks_count' => 4,
-                'amount' => 20000,
-                'due_date' => '2026-09-30',
-                'is_active' => true,
-                'description' => '4 Minggu x Rp 5.000/minggu',
-            ]);
             CashPeriod::create([
                 'name' => 'Kas Oktober 2026',
                 'weeks_count' => 4,
