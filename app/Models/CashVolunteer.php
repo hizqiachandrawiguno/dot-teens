@@ -125,7 +125,7 @@ class CashVolunteer extends Model
             if ($detail->weeks_paid > 0) {
                 $keterangan = "{$period->name}: Sisa {$sisaNominal} (terbayar {$detail->weeks_paid}/{$detail->weeks_count} mgg)";
             } else {
-                $keterangan = "{$period->name}: {$sisaNominal} ({$detail->weeks_count} minggu)";
+                $keterangan = "{$period->name}: {$sisaNominal} ({$detail->weeks_count} mgg)";
             }
             $detailsList[] = "• " . $keterangan;
             $totalAmount += $detail->remaining;
@@ -136,14 +136,12 @@ class CashVolunteer extends Model
         $rekeningText = $bankInfo ?: "BCA 6390086774 a.n Hizqia Chandra Wiguno";
 
         $pesan = "Shalom {$this->name}! 👋✨\n"
-               . "Semoga harimu menyenangkan dan selalu diberkati Tuhan Yesus.\n\n"
-               . "Mengingatkan untuk iuran kas *DOT Teens* (wajib Rp 5.000/minggu):\n"
-               . "📌 *Rincian Tunggakan Kas:*\n"
-               . "{$periodListText}\n\n"
-               . "💰 *Total Yang Harus Dibayar:* *{$nominalFormatted}*\n\n"
-               . "Bisa diserahkan tunai ke Bendahara saat ibadah atau transfer melalui:\n"
+               . "Mau ingetin uang kas DOT Teens kamu ya (Rp 5.000/minggu):\n\n"
+               . "{$periodListText}\n"
+               . "👉 Total: *{$nominalFormatted}*\n\n"
+               . "Bisa tunai pas ibadah atau transfer ke:\n"
                . "💳 *{$rekeningText}*\n\n"
-               . "Jika sudah transfer, mohon konfirmasi dengan mengirimkan bukti transfer ke chat ini ya. Terima kasih atas komitmennya! Tuhan Yesus memberkati 🙏🔥";
+               . "Kalo udah transfer, kirim buktinya ke sini yaa. Thank you! 🙏🔥";
 
         return 'https://wa.me/' . $phone . '?text=' . urlencode($pesan);
     }

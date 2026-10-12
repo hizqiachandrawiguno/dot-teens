@@ -240,6 +240,50 @@
             font-weight: 600;
         }
 
+        /* BADGE PERIODE RINCIAN KAS */
+        .badge-period-lunas {
+            background: rgba(16, 185, 129, 0.15) !important;
+            color: #34D399 !important;
+            border: 1px solid rgba(16, 185, 129, 0.35) !important;
+            font-size: 0.72rem !important;
+            font-weight: 600 !important;
+            padding: 4px 9px !important;
+            border-radius: 6px !important;
+            display: inline-flex !important;
+            align-items: center !important;
+            gap: 5px !important;
+            white-space: nowrap !important;
+            text-decoration: none !important;
+        }
+        .badge-period-sebagian {
+            background: rgba(245, 158, 11, 0.18) !important;
+            color: #FBBF24 !important;
+            border: 1px solid rgba(245, 158, 11, 0.4) !important;
+            font-size: 0.72rem !important;
+            font-weight: 600 !important;
+            padding: 4px 9px !important;
+            border-radius: 6px !important;
+            display: inline-flex !important;
+            align-items: center !important;
+            gap: 5px !important;
+            white-space: nowrap !important;
+            text-decoration: none !important;
+        }
+        .badge-period-tunggak {
+            background: rgba(244, 63, 94, 0.15) !important;
+            color: #FB7185 !important;
+            border: 1px solid rgba(244, 63, 94, 0.35) !important;
+            font-size: 0.72rem !important;
+            font-weight: 600 !important;
+            padding: 4px 9px !important;
+            border-radius: 6px !important;
+            display: inline-flex !important;
+            align-items: center !important;
+            gap: 5px !important;
+            white-space: nowrap !important;
+            text-decoration: none !important;
+        }
+
         /* MODAL DARK STYLING */
         .modal-content {
             background-color: #111C2E;
@@ -1171,16 +1215,16 @@
                                                         $st = $periodStatuses[$p->id] ?? null;
                                                     @endphp
                                                     @if($st && $st->status === 'lunas')
-                                                        <span class="badge bg-success bg-opacity-20 text-success border border-success border-opacity-25 py-1" style="font-size: 0.7rem;" title="{{ $p->name }}: Lunas {{ $st->weeks_count }}/{{ $st->weeks_count }} mgg">
-                                                            <i class="fa-solid fa-check me-0.5"></i> {{ $p->name }}: Lunas ({{ $st->weeks_count }} mgg)
+                                                        <span class="badge-period-lunas" title="{{ $p->name }}: Lunas {{ $st->weeks_count }}/{{ $st->weeks_count }} mgg">
+                                                            <i class="fa-solid fa-check"></i> {{ $p->name }}: Lunas ({{ $st->weeks_count }} mgg)
                                                         </span>
                                                     @elseif($st && $st->status === 'sebagian')
-                                                        <span class="badge bg-warning bg-opacity-20 text-warning border border-warning border-opacity-25 py-1" style="font-size: 0.7rem;" title="{{ $p->name }}: Terbayar {{ $st->weeks_paid }}/{{ $st->weeks_count }} mgg (Sisa Rp {{ number_format($st->remaining, 0, ',', '.') }})">
-                                                            <i class="fa-solid fa-hourglass-half me-0.5"></i> {{ $p->name }}: {{ $st->weeks_paid }}/{{ $st->weeks_count }} mgg (sisa {{ number_format($st->remaining / 1000, 0) }}rb)
+                                                        <span class="badge-period-sebagian" title="{{ $p->name }}: Terbayar {{ $st->weeks_paid }}/{{ $st->weeks_count }} mgg (Sisa Rp {{ number_format($st->remaining, 0, ',', '.') }})">
+                                                            <i class="fa-solid fa-hourglass-half"></i> {{ $p->name }}: {{ $st->weeks_paid }}/{{ $st->weeks_count }} mgg (sisa {{ number_format($st->remaining / 1000, 0) }}rb)
                                                         </span>
                                                     @else
-                                                        <span class="badge bg-danger bg-opacity-20 text-danger border border-danger border-opacity-25 py-1" style="font-size: 0.7rem;" title="{{ $p->name }}: Belum bayar (Tunggakan Rp {{ number_format($p->amount, 0, ',', '.') }})">
-                                                            <i class="fa-solid fa-xmark me-0.5"></i> {{ $p->name }}: 0/{{ $p->weeks_count }} mgg ({{ number_format($p->amount / 1000, 0) }}rb)
+                                                        <span class="badge-period-tunggak" title="{{ $p->name }}: Belum bayar (Tunggakan Rp {{ number_format($p->amount, 0, ',', '.') }})">
+                                                            <i class="fa-solid fa-xmark"></i> {{ $p->name }}: 0/{{ $p->weeks_count }} mgg ({{ number_format($p->amount / 1000, 0) }}rb)
                                                         </span>
                                                     @endif
                                                 @endforeach
