@@ -137,43 +137,6 @@ class CashController extends Controller
             // Abaikan jika query update gagal saat runtime
         }
 
-        // Pastikan akun 21 volunteer kas terdaftar otomatis
-        try {
-            if (Schema::hasTable('cash_volunteers')) {
-                $defaultVolunteers = [
-                    'Veli', 'Caca', 'Melfi', 'Joshua', 'Andreas',
-                    'Valen', 'Maureen', 'Evelyn', 'Rendra', 'Matius',
-                    'Matias', 'Yoel', 'Alvaro', 'Djaro', 'Andrew',
-                    'Peter', 'Renata', 'Joey', 'Amel', 'Ezra', 'Yoel Natan'
-                ];
-
-                foreach ($defaultVolunteers as $vName) {
-                    $existVol = CashVolunteer::where('name', $vName)->first();
-                    if (!$existVol) {
-                        $mb = null;
-                        if (Schema::hasTable('members')) {
-                            $mb = Member::where('name', 'like', '%' . $vName . '%')->first();
-                        }
-                        $phone = $mb ? ($mb->phone_number ?: ($mb->phone ?: '08123456789')) : '08123456789';
-                        $div = 'Volunteer DOT Teens';
-                        if ($mb && (!empty($mb->fire_cell) || !empty($mb->cell_name))) {
-                            $div = 'Volunteer (' . ($mb->fire_cell ?: $mb->cell_name) . ')';
-                        }
-                        CashVolunteer::create([
-                            'member_id' => $mb ? $mb->id : null,
-                            'name' => $vName,
-                            'phone' => $phone,
-                            'division' => $div,
-                            'monthly_due' => 20000,
-                            'is_active' => true,
-                            'notes' => 'Akun Kas Volunteer DOT Teens',
-                        ]);
-                    }
-                }
-            }
-        } catch (\Throwable $e) {
-            // Abaikan jika query gagal saat skema belum siap
-        }
     }
 
     /**
@@ -915,6 +878,11 @@ class CashController extends Controller
     {
         $volunteer = CashVolunteer::findOrFail($id);
         $name = $volunteer->name;
+
+        if (Schema::hasTable('cash_payments')) {
+            CashPayment::where('cash_volunteer_id', $volunteer->id)->delete();
+        }
+
         $volunteer->delete();
 
         return back()->with('success', "Data {$name} berhasil dihapus dari sistem kas.");
