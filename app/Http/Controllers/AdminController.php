@@ -113,6 +113,33 @@ class AdminController extends Controller
         return back()->with('success', 'Akses akun pengurus berhasil dicabut!');
     }
 
+    // --- FUNGSI SUPER ADMIN: UBAH ROLE / DIVISI PENGURUS ---
+    public function updateUserRole(Request $request, $id)
+    {
+        if (auth()->user()->role !== 'super_admin') {
+            abort(403, 'Hanya Super Admin yang berhak mengubah jabatan/role pengurus.');
+        }
+
+        $request->validate([
+            'role' => 'required|string|in:super_admin,bendahara,volunteer,div_cell,div_acara,div_sosmed,div_musik,div_prayer,div_pastoral'
+        ]);
+
+        $targetUser = User::findOrFail($id);
+        $oldRole = $targetUser->role;
+        $targetUser->role = $request->role;
+        $targetUser->save();
+
+        // 🎥 CCTV REKAM JEJAK
+        ActivityLog::create([
+            'user_name' => auth()->user()->name,
+            'role' => auth()->user()->role,
+            'action' => 'UBAH ROLE PENGURUS',
+            'description' => auth()->user()->name . " mengubah peran {$targetUser->name} dari '{$oldRole}' menjadi '{$request->role}'"
+        ]);
+
+        return back()->with('success', "Peran {$targetUser->name} berhasil diubah menjadi " . ucwords(str_replace('_', ' ', $request->role)) . "!");
+    }
+
     // --- FUNGSI DIVISI CELL: UPDATE STATUS JEMAAT ---
     public function updateStatus($id)
     {

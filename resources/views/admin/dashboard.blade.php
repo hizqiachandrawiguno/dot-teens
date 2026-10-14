@@ -612,15 +612,32 @@
                                         </td>
                                         <td class="text-secondary">{{ $admin->email }}</td>
                                         <td>
-                                            <span class="badge rounded-pill px-3 py-1" style="background: rgba(96, 165, 250, 0.1); color:#60A5FA; border: 1px solid rgba(96, 165, 250, 0.3);">
-                                                {{ ucwords(str_replace('_', ' ', $admin->role)) }}
-                                            </span>
+                                            @if($admin->id != $user->id)
+                                                <form action="/admin/user/role/{{ $admin->id }}" method="POST" class="d-inline">
+                                                    @csrf
+                                                    <select name="role" class="form-select form-select-sm d-inline-block w-auto rounded-pill py-1 px-2.5 text-white" style="font-size: 0.78rem; background: #0D1726; border: 1px solid rgba(255,255,255,0.15); cursor: pointer;" onchange="if(confirm('Ubah peran ' + '{{ $admin->name }}' + ' menjadi ' + this.options[this.selectedIndex].text + '?')) { this.form.submit(); } else { location.reload(); }">
+                                                        <option value="super_admin" {{ $admin->role == 'super_admin' ? 'selected' : '' }}>👑 Super Admin</option>
+                                                        <option value="bendahara" {{ $admin->role == 'bendahara' ? 'selected' : '' }}>💰 Bendahara / Keuangan</option>
+                                                        <option value="volunteer" {{ $admin->role == 'volunteer' ? 'selected' : '' }}>🎫 Volunteer / Usher</option>
+                                                        <option value="div_cell" {{ $admin->role == 'div_cell' ? 'selected' : '' }}>🌱 Divisi Cell</option>
+                                                        <option value="div_acara" {{ $admin->role == 'div_acara' ? 'selected' : '' }}>🎉 Divisi Acara</option>
+                                                        <option value="div_sosmed" {{ $admin->role == 'div_sosmed' ? 'selected' : '' }}>📸 Divisi Sosmed</option>
+                                                        <option value="div_musik" {{ $admin->role == 'div_musik' ? 'selected' : '' }}>🎵 Divisi Musik</option>
+                                                        <option value="div_prayer" {{ $admin->role == 'div_prayer' ? 'selected' : '' }}>🙏 Divisi Prayer</option>
+                                                        <option value="div_pastoral" {{ $admin->role == 'div_pastoral' ? 'selected' : '' }}>📋 Divisi Pastoral</option>
+                                                    </select>
+                                                </form>
+                                            @else
+                                                <span class="badge rounded-pill px-3 py-1.5" style="background: rgba(96, 165, 250, 0.15); color:#60A5FA; border: 1px solid rgba(96, 165, 250, 0.3);">
+                                                    👑 {{ ucwords(str_replace('_', ' ', $admin->role)) }}
+                                                </span>
+                                            @endif
                                         </td>
                                         <td class="text-center">
                                             @if($admin->id != $user->id)
                                                 <form action="/admin/user/delete/{{ $admin->id }}" method="POST" class="d-inline">
                                                     @csrf
-                                                    <button type="submit" class="btn btn-sm btn-outline-danger rounded-pill px-3 fw-semibold" onclick="return confirm('Yakin ingin menghapus akses {{ $admin->name }}?')">
+                                                    <button type="submit" class="btn btn-sm btn-outline-danger rounded-pill px-3 fw-semibold" onclick="return confirm('Yakin ingin mencabut akses {{ $admin->name }}?')">
                                                         <i class="fa-solid fa-trash me-1"></i> Hapus
                                                     </button>
                                                 </form>

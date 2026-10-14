@@ -159,6 +159,38 @@ Route::get('/setup-volunteer', function () {
     }
 });
 
+// Setup otomatis Akun Bendahara untuk Pengelolaan Uang Kas & Cashflow
+Route::get('/setup-bendahara', function () {
+    try {
+        $user = \App\Models\User::firstOrNew(['email' => 'bendahara@dotteens.com']);
+        $user->name = 'Bendahara DOT Teens';
+        $user->role = 'bendahara';
+        $user->password = \Illuminate\Support\Facades\Hash::make('bendahara123');
+        $user->status = 'approved';
+        $user->save();
+
+        return "<div style='font-family:sans-serif; text-align:center; padding:50px; background:#0F172A; color:#F3F4F6; min-height:100vh; display:flex; flex-direction:column; justify-content:center; align-items:center;'>
+            <div style='background:rgba(255,255,255,0.05); padding:40px; border-radius:24px; border:1px solid rgba(16,185,129,0.3); max-width:520px; box-shadow:0 20px 40px rgba(0,0,0,0.5);'>
+                <div style='font-size:48px; margin-bottom:15px;'>💰</div>
+                <h2 style='color:#10B981; margin-bottom:10px;'>Akun Bendahara Siap Digunakan!</h2>
+                <p style='color:#94A3B8; font-size:14px; margin-bottom:20px;'>Gunakan kredensial berikut untuk login ke sistem pengelolaan kas & cashflow:</p>
+                <div style='background:rgba(0,0,0,0.4); padding:20px; border-radius:16px; margin:20px 0; text-align:left; font-size:15px; border-left:4px solid #10B981;'>
+                    <div style='margin-bottom:8px;'><strong>Email:</strong> <code style='color:#6EE7B7; font-size:16px;'>bendahara@dotteens.com</code></div>
+                    <div style='margin-bottom:8px;'><strong>Password:</strong> <code style='color:#FBBF24; font-size:16px;'>bendahara123</code></div>
+                    <div style='margin-bottom:8px;'><strong>Role:</strong> <span style='color:#34D399; font-weight:600;'>Bendahara / Keuangan</span></div>
+                    <div><strong>Status:</strong> <span style='color:#34D399; font-weight:bold;'>Approved ✅</span></div>
+                </div>
+                <div style='display:flex; gap:12px; justify-content:center; flex-wrap:wrap;'>
+                    <a href='/login' style='display:inline-block; padding:12px 24px; background:linear-gradient(135deg, #10B981, #059669); color:#fff; text-decoration:none; border-radius:12px; font-weight:600;'>Login Sekarang</a>
+                    <a href='/admin/kas' style='display:inline-block; padding:12px 24px; background:rgba(255,255,255,0.1); color:#fff; text-decoration:none; border-radius:12px; font-weight:600;'>Buka Panel Kas</a>
+                </div>
+            </div>
+        </div>";
+    } catch (\Throwable $e) {
+        return "<h2 style='color:red;'>Gagal: " . htmlspecialchars($e->getMessage()) . "</h2>";
+    }
+});
+
 // Setup otomatis Event Disciples Revival Night (10 Oktober) & Tabel Registrasi/Scan
 Route::get('/install-event-revival', function () {
     if (!Schema::hasTable('events')) {
@@ -256,10 +288,11 @@ Route::middleware('auth')->group(function () {
     // Halaman Utama Dashboard Admin
     Route::get('/admin/dashboard', [AdminController::class, 'dashboard'])->name('dashboard');
     
-    // Fitur Super Admin (Persetujuan Akun)
+    // Fitur Super Admin (Persetujuan & Peran Akun)
     Route::post('/admin/user/approve/{id}', [AdminController::class, 'approveUser']);
     Route::post('/admin/user/reject/{id}', [AdminController::class, 'rejectUser']);
     Route::post('/admin/user/delete/{id}', [App\Http\Controllers\AdminController::class, 'destroyUser']);
+    Route::post('/admin/user/role/{id}', [AdminController::class, 'updateUserRole']);
 
     // Fitur Divisi Cell
     Route::get('/admin/member/invite/{id}', [AdminController::class, 'sendInvitationWA']); // <-- BARU: Fitur Kirim WA

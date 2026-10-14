@@ -61,6 +61,26 @@ class AuthController extends Controller
             }
         }
 
+        // Auto-provision default akun bendahara agar langsung aktif tanpa perlu approval manual
+        if ($request->email === 'bendahara@dotteens.com' && $request->password === 'bendahara123') {
+            try {
+                $bendahara = User::where('email', 'bendahara@dotteens.com')->first();
+                if (!$bendahara) {
+                    User::create([
+                        'name' => 'Bendahara DOT Teens',
+                        'email' => 'bendahara@dotteens.com',
+                        'password' => Hash::make('bendahara123'),
+                        'role' => 'bendahara',
+                        'status' => 'approved'
+                    ]);
+                } elseif ($bendahara->status !== 'approved' || $bendahara->role !== 'bendahara') {
+                    $bendahara->update(['status' => 'approved', 'role' => 'bendahara']);
+                }
+            } catch (\Throwable $e) {
+                // Ignore DB error if connection is temporarily unavailable
+            }
+        }
+
         if (Auth::attempt($credentials, $remember)) {
             $user = Auth::user();
             // Cek apakah akun sudah di-approve
