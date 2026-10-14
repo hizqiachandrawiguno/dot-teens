@@ -17,17 +17,6 @@ use Illuminate\Database\Schema\Blueprint;
 
 class CashController extends Controller
 {
-    public function __construct()
-    {
-        $this->middleware(function ($request, $next) {
-            $user = auth()->user();
-            if (!$user || !in_array($user->role, ['super_admin', 'bendahara', 'admin'])) {
-                abort(403, 'Akses terbatas untuk Bendahara atau Super Admin.');
-            }
-            return $next($request);
-        });
-    }
-
     /**
      * Memastikan tabel-tabel kas sudah tersedia otomatis di database
      */
